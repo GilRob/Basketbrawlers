@@ -33,9 +33,9 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	gravity = 0.2f;
 	diMultiplier = 0.5f;
 
-	runspeed = 0.18f;//max speed
-	runaccel = 0.1f;//accel multiplyer
-	jumpforce = 0.2f;//velocity going up
+	runspeed = 0.2f;//max speed
+	runaccel = 0.3f;//accel multiplyer
+	jumpforce = 0.3f;//velocity going up
 	jumpframes = 10;//length of jump
 
 	//scaling
@@ -111,6 +111,9 @@ void Character::update(int t, std::vector<bool> inputs) {
 	//If in Hitstun reduce directional influence
 	if (action == 10)
 		force.x *= diMultiplier;
+	//If in Hitstun reduce directional influence
+	if (action == 1)
+		force.x *= 0.3f;
 
 	//physics update
 	//force.y = gravity *-1;
@@ -119,7 +122,7 @@ void Character::update(int t, std::vector<bool> inputs) {
 	velocity = velocity + (acceleration);
 
 	//jumping
-	if (((int)inputs[0] - (int)inputs[2]) > 0 && interuptable == true && action != 1) {
+	if ((((int)inputs[0] - (int)inputs[2]) > 0 || inputs[6]) && interuptable == true && action != 1) {
 		interuptable = false;
 		action = 1;
 		activeFrames = jumpframes;
@@ -155,6 +158,9 @@ void Character::update(int t, std::vector<bool> inputs) {
 
 	if (position.y <= 1.2f && ((int)inputs[1] - (int)inputs[3]) == 0) {
 		velocity.x = velocity.x * 0.9f;
+	}
+	if (position.y > 1.2f && ((int)inputs[1] - (int)inputs[3]) == 0) {
+		velocity.x = velocity.x * 0.99f;
 	}
 
 	//Update Position

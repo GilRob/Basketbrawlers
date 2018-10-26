@@ -71,6 +71,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="character.cpp" />
+    <ClCompile Include="controller.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="hitbox.cpp" />
@@ -85,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="character.h" />
+    <ClInclude Include="controller.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="hitbox.h" />

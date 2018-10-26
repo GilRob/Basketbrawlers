@@ -46,11 +46,11 @@ void Game::initializeGame()
 
 	InitFullScreenQuad();
 
-	inputs = { false, false, false, false, false, false }; //up, left, down, right, A, B
+	inputs = { false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A
 
 	playerOne = new Character("./Assets/Models/Knight.obj", "./Assets/Textures/StoneNormal.png");
 
-	inputs2 = { false, false, false, false, false, false }; //up, left, down, right, A, B
+	inputs2 = { false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A
 
 	playerTwo = new Character("./Assets/Models/Knight.obj", "./Assets/Textures/Grass.png");
 
@@ -328,7 +328,7 @@ void Game::update()
 		}
 		i++;
 	}
-
+	updateInputs();
 	playerOne->update(deltaTime, inputs);
 	playerTwo->update(deltaTime, inputs2);
 
@@ -794,4 +794,187 @@ void Game::mouseClicked(int button, int state, int x, int y)
  */
 void Game::mouseMoved(int x, int y)
 {
+}
+
+
+void Game::updateInputs()
+{
+
+	//Controler Ready.
+	//Keep last frames inputs saved for comparing, to track ButtonPress, and ButtonRelease.
+	//if was pressed las frame but not this frame, ButtonRelease() == true
+	//if  not pressed last frame, but is pressed this frame, ButtonPress() == true
+	Aold = Anew;
+	Bold = Bnew;
+	Yold = Ynew;
+	Xold = Xnew;
+	Sold = Snew;
+	LBold = LBnew;
+	RBold = RBnew;
+	LTold = LTnew;
+	RTold = RTnew;
+	//Update inputs
+	XBoxController.DownloadPackets(1);
+	/*
+	if (XBoxController.GetConnected(0)) {
+		//Allow Release and Press
+		if (XBoxController.GetButton(0, Input::A)) {
+			Anew = true;
+			pad = true;
+		}
+		else Anew = false;
+		if (XBoxController.GetButton(0, Input::B)) {
+			Bnew = true;
+			pad = true;
+		}
+		else Bnew = false;
+		if (XBoxController.GetButton(0, Input::Y)) {
+			Ynew = true;
+			pad = true;
+		}
+		else Ynew = false;
+		if (XBoxController.GetButton(0, Input::X)) {
+			Xnew = true;
+			pad = true;
+		}
+		else Xnew = false;
+		if (XBoxController.GetButton(0, Input::RB)) {
+			RBnew = true;
+			pad = true;
+		}
+		else RBnew = false;
+		if (XBoxController.GetButton(0, Input::LB)) {
+			LBnew = true;
+			pad = true;
+		}
+		else LBnew = false;
+
+		XBoxController.GetTriggers(0, lTrig, rTrig);
+		if (rTrig > 0.5) {
+			RTnew = true;
+			pad = true;
+		}
+		else RTnew = false;
+		if (lTrig > 0.5) {
+			LTnew = true;
+			pad = true;
+		}
+		else LTnew = false;
+	}
+
+	Input::Stick lStick, rStick;
+	XBoxController.GetSticks(0, lStick, rStick);
+	if ((lStick.xAxis <= -0.7 || lStick.xAxis >= 0.7))
+		pad = true;
+
+	//Inputs
+	if (lStick.xAxis >= 0.7)//if key held
+		inputs[1] = true;
+	if (lStick.xAxis <= -0.7)//if key held
+		inputs[3] = true;
+	if (lStick.yAxis >= 0.7)//if key held
+		inputs[0] = true;
+	if (lStick.yAxis <= -0.7)//if key held
+		inputs[2] = true;
+	if (Xnew == true && Xold == false)
+		inputs[4] = true;
+	if (Ynew == true && Yold == false)
+		inputs[5] = true;
+
+	if (lStick.xAxis < 0.7)//if key held
+		inputs[1] = false;
+	if (lStick.xAxis > -0.7)//if key held
+		inputs[3] = false;
+	if (lStick.yAxis < 0.7)//if key held
+		inputs[0] = false;
+	if (lStick.yAxis > -0.7)//if key held
+		inputs[2] = false;
+	if (Xnew == false && Xold == true)
+		inputs[4] = false;
+	if (Ynew == false && Yold == true)
+		inputs[5] = false;*/
+
+	if (XBoxController.GetConnected(0)) {
+		//Allow Release and Press
+		if (XBoxController.GetButton(0, Input::A)) {
+			Anew = true;
+			pad = true;
+		}
+		else Anew = false;
+		if (XBoxController.GetButton(0, Input::B)) {
+			Bnew = true;
+			pad = true;
+		}
+		else Bnew = false;
+		if (XBoxController.GetButton(0, Input::Y)) {
+			Ynew = true;
+			pad = true;
+		}
+		else Ynew = false;
+		if (XBoxController.GetButton(0, Input::X)) {
+			Xnew = true;
+			pad = true;
+		}
+		else Xnew = false;
+		if (XBoxController.GetButton(0, Input::RB)) {
+			RBnew = true;
+			pad = true;
+		}
+		else RBnew = false;
+		if (XBoxController.GetButton(0, Input::LB)) {
+			LBnew = true;
+			pad = true;
+		}
+		else LBnew = false;
+
+		XBoxController.GetTriggers(0, lTrig, rTrig);
+		if (rTrig > 0.5) {
+			RTnew = true;
+			pad = true;
+		}
+		else RTnew = false;
+		if (lTrig > 0.5) {
+			LTnew = true;
+			pad = true;
+		}
+		else LTnew = false;
+	}
+
+
+	Input::Stick lStick, rStick;
+	XBoxController.GetSticks(0, lStick, rStick);
+	if ((lStick.xAxis <= -0.7 || lStick.xAxis >= 0.7))
+		pad = true;
+
+	//Inputs
+	if (lStick.xAxis >= 0.7)//if key held
+		inputs2[1] = true;
+	if (lStick.xAxis <= -0.7)//if key held
+		inputs2[3] = true;
+	if (lStick.yAxis >= 0.7)//if key held
+		inputs2[0] = true;
+	if (lStick.yAxis <= -0.7)//if key held
+		inputs2[2] = true;
+	if (Xnew == true && Xold == false)
+		inputs2[4] = true;
+	if (Ynew == true && Yold == false)
+		inputs2[5] = true;
+	if (Anew == true && Aold == false)
+		inputs2[6] = true;
+
+	if (lStick.xAxis < 0.7)//if key held
+		inputs2[1] = false;
+	if (lStick.xAxis > -0.7)//if key held
+		inputs2[3] = false;
+	if (lStick.yAxis < 0.7)//if key held
+		inputs2[0] = false;
+	if (lStick.yAxis > -0.7)//if key held
+		inputs2[2] = false;
+	if (Xnew == false && Xold == true)
+		inputs2[4] = false;
+	if (Ynew == false && Yold == true)
+		inputs2[5] = false;
+	if (Anew == false && Aold == true)
+		inputs2[6] = false;
+	
 }

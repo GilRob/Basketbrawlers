@@ -13,6 +13,8 @@
 #include <GL/glut.h>
 
 #include "character.h"
+#include "controller.h"
+#pragma comment( lib, "Xinput9_1_0.lib" ) 
 
 #include "Timer.h"
 
@@ -95,6 +97,15 @@ public:
 	mat4 ShadowProjection;
 
 	mat4 ViewToShadowMap;
+
+	void updateInputs();
+	//controller
+	Input::XBoxInput XBoxController;
+	bool Aold, Anew, Bold, Bnew, Yold, Ynew, Xold, Xnew, Snew, Sold;
+	bool RBold, RBnew, LBold, LBnew, RTold, RTnew, LTold, LTnew;
+	bool pad;
+
+	float lTrig, rTrig;
 
 private:
 

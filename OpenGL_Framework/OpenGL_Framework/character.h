@@ -58,7 +58,7 @@ public:
 	void comboAdd() {
 		if (comboTimer < comboMaxTime) {
 			comboCount++;
-			comboMeter += (int)(comboCount*0.5f);
+			comboMeter += (int)(comboCount);
 			resetTimer();
 		}
 		else {
