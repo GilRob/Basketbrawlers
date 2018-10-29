@@ -52,11 +52,8 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	//looking
 	facingRight = true;
 
-	action = 0;//0 idle, 1 jumping
-	activeFrames = 0;
-	currentFrame = 0;
-	interuptable = true;
-
+	action = ACTION_FALL;//0 idle, 1 jumping
+	idle();
 	//debug hitbox
 	//boxMesh = new Mesh("./res/transparentsphere.obj");
 	//boxShader = new Shader("./res/blueclear");
@@ -94,33 +91,27 @@ void Character::update(int t, std::vector<bool> inputs) {
 
 	//actual update
 
-	if (action != 10) {
-		transform = atkInputHandler(inputs);
-		//transform = mat4();
-	}
-	else {
-		transform = mat4();
-	}
-	//transform.Scale(vec3(scaleX, scaleY, scaleZ));
-	//transform.Translate(vec3(position.x, position.y, position.z));
-	//transform.Scale(vec3(scaleX, scaleY, scaleZ));
+	//if (action != 10) {
+	transform = atkInputHandler(inputs);
+	//transform = mat4();
+//}
+//else {
+//	transform = mat4();
+//}
 
-	//left right
-	force = vec3(((int)inputs[1] - (int)inputs[3])*runaccel, 0, 0);
-	
-	//If in Hitstun reduce directional influence
-	if (action == 10)
+
+//If in Hitstun reduce directional influence
+	if (action == ACTION_HIT)
 		force.x *= diMultiplier;
 	//If in Hitstun reduce directional influence
-	if (action == 1)
+	if (action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2)
 		force.x *= 0.3f;
 
 	//physics update
-	//force.y = gravity *-1;
 	force = vec3(force.x, 0 - gravity, 0);
 	acceleration = force / mass;
 	velocity = velocity + (acceleration);
-
+	/*
 	//jumping
 	if ((((int)inputs[0] - (int)inputs[2]) > 0 || inputs[6]) && interuptable == true && action != 1) {
 		interuptable = false;
@@ -139,19 +130,19 @@ void Character::update(int t, std::vector<bool> inputs) {
 	}
 	else if(action == 10){
 		interuptable = true;
-	}
-	
+	}*/
+
 
 	//quick turnaround code
 	///allows "dashdancing" to feel less slow and sluggish
-	if (velocity.x > 0 && ((int)inputs[1] - (int)inputs[3]) < 0 && action == 0)
-		velocity.x = velocity.x * 0.5f; //-0.2
-	else if (velocity.x < 0 && ((int)inputs[1] - (int)inputs[3]) > 0 && action == 0)
-		velocity.x = velocity.x * 0.5f;
+	//if (velocity.x > 0 && ((int)inputs[1] - (int)inputs[3]) < 0 && action == 0)
+	//	velocity.x = velocity.x * 0.5f; //-0.2
+	//else if (velocity.x < 0 && ((int)inputs[1] - (int)inputs[3]) > 0 && action == 0)
+	//	velocity.x = velocity.x * 0.5f;
 
 	//max speed
 	float mag = velocity.x;
-	if (velocity.x > runspeed) 
+	if (velocity.x > runspeed)
 		velocity.x = runspeed;
 	if (velocity.x < (0 - runspeed))
 		velocity.x = (0 - runspeed);
@@ -166,43 +157,37 @@ void Character::update(int t, std::vector<bool> inputs) {
 	//Update Position
 	position = position + (velocity);
 
-	//Fake Floor Code
-	///Will be changed later
-	if (position.y <= 1.2f) {
-		position.y = 1.2f;
-		if (currentFrame >= activeFrames && (action == 1 || action == 10)) {
-			action = 0;
-			interuptable = true;
-			activeFrames = 0;
-			currentFrame = 0;
-		}
-	}
-	else {
-		if (currentFrame >= activeFrames && action == 10) {
-			action = 1;
-			interuptable = false;
-			activeFrames = jumpframes;
-			currentFrame = jumpframes + 1;
-		}
-	}
-
-	///check the way it should face
-	if (action == 0 || action == 1) {
+	if (action == ACTION_IDLE || action == ACTION_FALL) {
+		///check the way it should face
 		if ((int)inputs[1] - (int)inputs[3] > 0) {
 			facingRight = true;
 		}
 		else if ((int)inputs[1] - (int)inputs[3] < 0) {
 			facingRight = false;
 		}
-	
-		///Rotate the player to the correct way they should look
-		/*if ((int)inputs[0] - (int)inputs[2] > 0)
-			transform.GetRot()->y = 3.14f;
-		else */
-		if (facingRight == true)
-			transform.RotateY(90);
-		else
-			transform.RotateY(270);
+	}
+
+	///Rotate the player to the correct way they should look
+	/*if ((int)inputs[0] - (int)inputs[2] > 0)
+		transform.GetRot()->y = 3.14f;
+	else */
+	if (facingRight == true)
+		transform.RotateY(90);
+	else
+		transform.RotateY(270);
+
+	//Fake Floor Code
+	///Will be changed later
+	if (position.y <= 1.2f) {
+		position.y = 1.2f;
+		if (currentFrame >= activeFrames && (action == ACTION_FALL || action == ACTION_HIT)) {
+			idle();
+		}
+	}
+	else {
+		if (currentFrame >= activeFrames && action == ACTION_HIT) {
+			fall();
+		}
 	}
 	
 	//Testing Code for Spawning Hitboxes
@@ -294,45 +279,310 @@ void Character::hit(Hitbox* hitBy) {
 
 		vec3 add(result * xComp, 0.06f * yComp, 0);
 		hitforce = add;
-		action = 10;
+		action = ACTION_HIT;
 		interuptable = false;
 		activeFrames = 10 + hitBy->getKnockback();
 		currentFrame = 1;
 }
 
+///0-up, 1-left, 2-down, 3-right, 4-A, 5-B
+
 mat4 Character::atkInputHandler(std::vector<bool> inputs)
 {
-	//0-up, 1-left, 2-down, 3-right, 4-A, 5-B
 	mat4 result;
-	if ((inputs[2] && inputs[4] && action == 1) || action == 8) {//down & A and in air = Dair
+	///hit
+	if (action == ACTION_HIT) {
+		//todo
+		velocity = hitforce;
+	}
+	//AIR
+	else if ((inputs[2] && inputs[4] && (action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2)) || action == ACTION_DOWN_AERIAL) {//down & A and in air = Dair
 		result = dAir();
 	}
-	else if ((inputs[0] && inputs[4] && action == 1) || action == 9) {//up & A and in air = Uair
+	else if ((inputs[0] && inputs[4] && (action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2)) || action == ACTION_UP_AERIAL) {//up & A and in air = Uair
 		result = uAir();
 	}
-	else if ((((inputs[1] || inputs[3]) && inputs[4]) && action == 1) || action == 7) {//left or right & A in air = fair
-		result = fAir();
+	else if ((((inputs[1] || inputs[3]) && inputs[4]) && (action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2)) || action == ACTION_SIDE_AERIAL) {//left or right & A in air = fair
+		result = sAir();
 	}
-	else if ((inputs[4] && action == 1) || action == 6) {//just A in air = nair
+	else if ((inputs[4] && (action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2)) || action == ACTION_NEUTRAL_AERIAL) {//just A in air = nair
 		result = nAir();
 	}
-	else if ((inputs[2] && inputs[4]) || action == 4) {//down & A = Dtilt
-		result = dTilt();
+	///jump
+	else if (action == ACTION_JUMP) {
+		result = jump();
 	}
-	else if (((inputs[1] || inputs[3]) && inputs[4]) || action == 3) {//left or right & A = Ftilt
-		result = fTilt();
+	///jump2
+	else if ((inputs[6] && action == ACTION_FALL) || action == ACTION_JUMP2) {
+		result = jump2();
 	}
-	else if ((inputs[4]) || action == 2) {//just A = jab
+	///fall
+	else if (action == ACTION_FALL) {
+		result = fall();
+	}
+	///prejump
+	else if ((inputs[6] && (action == ACTION_IDLE || action == ACTION_RUN || action == ACTION_WALK)) || action == ACTION_PREJUMP) {
+		result = prejump();
+	}
+	//GROUNDED
+	else if ((inputs[2] && inputs[4]) || action == ACTION_DOWN_ATTACK) {//down & A = Dtilt
+		result = dAttack();
+	}
+	else if (((inputs[1] || inputs[3]) && inputs[4]) || action == ACTION_SIDE_ATTACK) {//left or right & A = Ftilt
+		result = sAttack();
+	}
+	else if ((inputs[4]) || action == ACTION_JAB) {//just A = jab
 		result = jab();
 	}
-	else if (((inputs[1] || inputs[3]) && inputs[5]) || action == 12) {//left or right + B = side Special
+	//SPECIALS
+	else if (((inputs[1] || inputs[3]) && inputs[5]) || action == ACTION_SIDE_SPECIAL) {//left or right + B = side Special
 		result = sSpecial();
 	}
-	else if ((inputs[5]) || action == 11) {//just B = Neutral Special
+	else if ((inputs[5]) || action == ACTION_NEUTRAL_SPECIAL) {//just B = Neutral Special
 		result = nSpecial(inputs[5]);
 	}
+	//NON-OFFENSIVE
+	///dash
+	else if ((((inputs[1] || inputs[3]) && action == ACTION_IDLE) || action == ACTION_DASH) && action != ACTION_RUN) {
+		result = dash();
+	}
+	///run
+	else if ((inputs[1] || inputs[3]) && (action == ACTION_WALK || action == ACTION_RUN)) {
+		result = run();
+	}
+	///walk
+	else if ((inputs[1] || inputs[3]) && (action == ACTION_WALK || action == ACTION_IDLE)) {
+		result = walk();
+	}
+	///idle
+	else if (!(inputs[1] || inputs[3]) || action == ACTION_IDLE) {
+		result = idle();
+	}
+
 	return result;
 
+}
+
+/*
+
+order & equation
+
+air attacks
+grounded attacks
+specials
+jumpsquat
+jumping
+falling
+dash
+running
+standing
+
+*/
+
+mat4 Character::idle()
+{
+	mat4 result = mat4();
+	if (interuptable == true && action != ACTION_IDLE) {
+		action = ACTION_IDLE;
+		activeFrames = 60;
+		currentFrame = 1;
+		interuptable = true;
+	}
+	else if (action == ACTION_IDLE && currentFrame <= activeFrames) {
+
+		if (currentFrame == activeFrames) {
+			//if action over, goto idle
+			action = ACTION_PLACEHOLDER;
+			return idle();
+		}
+
+		//stuff goes here
+
+		
+		currentFrame++;
+	}
+	return result;
+}
+
+mat4 Character::walk()
+{
+	mat4 result = mat4();
+	if (interuptable == true && action != ACTION_WALK) {
+		action = ACTION_WALK;
+		activeFrames = 30;
+		currentFrame = 1;
+		interuptable = true;
+	}
+	else if (action == ACTION_WALK && currentFrame <= activeFrames) {
+
+		if (currentFrame == activeFrames) {
+			//if action over, goto idle
+			return idle();
+		}
+
+		//stuff goes here
+		int direction = (int)facingRight;
+		if (facingRight == 0)
+			direction = -1;
+		force.x = direction*runaccel;
+		
+		currentFrame++;
+	}
+	return result;
+}
+
+mat4 Character::run()
+{
+	mat4 result = mat4();
+	if (interuptable == true && action != ACTION_RUN) {
+		action = ACTION_RUN;
+		activeFrames = 30;
+		currentFrame = 1;
+		interuptable = true;
+	}
+	else if (action == ACTION_RUN && currentFrame <= activeFrames) {
+
+		if (currentFrame == activeFrames) {
+			//if action over, goto idle
+			return idle();
+		}
+
+		//stuff goes here
+		int direction = (int)facingRight;
+		if (facingRight == 0)
+			direction = -1;
+		force.x = direction * runaccel;
+
+		currentFrame++;
+	}
+	return result;
+}
+
+mat4 Character::dash()
+{
+	mat4 result = mat4();
+	if (interuptable == true && action != ACTION_DASH) {
+		action = ACTION_DASH;
+		activeFrames = 10;
+		currentFrame = 1;
+		interuptable = false;
+	}
+	else if (action == ACTION_DASH && currentFrame <= activeFrames) {
+
+		if (currentFrame == activeFrames) {
+			//if action over, goto idle
+			interuptable = true;
+			return run();
+		}
+
+		//stuff goes here
+		int direction = (int)facingRight;
+		if (facingRight == 0)
+			direction = -1;
+		force.x = direction * runaccel;
+
+		currentFrame++;
+	}
+	return result;
+}
+
+mat4 Character::prejump()
+{
+	mat4 result = mat4();
+	if (interuptable == true && action != ACTION_PREJUMP) {
+		action = ACTION_PREJUMP;
+		activeFrames = 6;
+		currentFrame = 1;
+		interuptable = false;
+	}
+	else if (action == ACTION_PREJUMP && currentFrame <= activeFrames) {
+
+		if (currentFrame == activeFrames) {
+			//if action over, goto idle
+			interuptable = true;
+			return jump();
+		}
+
+		//stuff goes here
+
+		currentFrame++;
+	}
+	return result;
+}
+
+mat4 Character::jump()
+{
+	mat4 result = mat4();
+	if (interuptable == true && action != ACTION_JUMP) {
+		action = ACTION_JUMP;
+		activeFrames = jumpframes;
+		currentFrame = 1;
+		interuptable = false;
+	}
+	else if (action == ACTION_JUMP && currentFrame <= activeFrames) {
+
+		if (currentFrame == activeFrames) {
+			//if action over, goto idle
+			interuptable = true;
+			return fall();
+		}
+
+		//stuff goes here
+		velocity.y = jumpforce;
+
+		currentFrame++;
+	}
+	return result;
+}
+
+mat4 Character::jump2()
+{
+	mat4 result = mat4();
+	if (interuptable == true && action != ACTION_JUMP2) {
+		action = ACTION_JUMP2;
+		activeFrames = jumpframes;
+		currentFrame = 1;
+		interuptable = false;
+	}
+	else if (action == ACTION_JUMP2 && currentFrame <= activeFrames) {
+
+		if (currentFrame == activeFrames) {
+			//if action over, goto idle
+			interuptable = true;
+			return fall();
+		}
+
+		//stuff goes here
+		velocity.y = jumpforce;
+
+		currentFrame++;
+	}
+	return result;
+}
+
+mat4 Character::fall()
+{
+	mat4 result = mat4();
+	if (interuptable == true && action != ACTION_FALL) {
+		action = ACTION_FALL;
+		activeFrames = 30;
+		currentFrame = 1;
+		interuptable = true;
+	}
+	else if (action == ACTION_FALL && currentFrame <= activeFrames) {
+
+		if (currentFrame == activeFrames) {
+			//if action over, goto idle
+			action = ACTION_PLACEHOLDER;
+			interuptable = true;
+			return fall();
+		}
+
+		//stuff goes here
+
+		currentFrame++;
+	}
+	return result;
 }
 
 //0 idle, 1 jumping, 2-jab, 3-fTilt, 4-dTilt, 5-uTilt, 10-hit
@@ -368,7 +618,7 @@ mat4 Character::jab()
 	return result;
 }
 
-mat4 Character::fTilt()
+mat4 Character::sAttack()
 {
 	mat4 result;
 	if (interuptable == true && action != 1) {
@@ -402,7 +652,7 @@ mat4 Character::fTilt()
 	return result;
 }
 
-mat4 Character::dTilt()
+mat4 Character::dAttack()
 {
 	mat4 result;
 	if (interuptable == true && action != 1) {
@@ -431,6 +681,11 @@ mat4 Character::dTilt()
 		currentFrame++;
 	}
 	return result;
+}
+
+mat4 Character::uAttack()
+{
+	return mat4();
 }
 
 //0 idle, 1 jumping, 6-nAir, 7-fAir, 8-dAir, 9-uAir, 10-hit
@@ -471,7 +726,7 @@ mat4 Character::nAir()
 	return result;
 }
 
-mat4 Character::fAir()
+mat4 Character::sAir()
 {
 	mat4 result;
 	if (action == 1 || interuptable == true) {
@@ -665,4 +920,14 @@ mat4 Character::sSpecial()
 		currentFrame++;
 	}
 	return result;
+}
+
+mat4 Character::dSpecial()
+{
+	return mat4();
+}
+
+mat4 Character::uSpecial()
+{
+	return mat4();
 }

@@ -15,9 +15,35 @@
 #include <iostream>
 
 
+#define ACTION_IDLE				0
+#define ACTION_WALK				1
+#define ACTION_RUN				2
+#define ACTION_DASH				3
+#define ACTION_PREJUMP			4
+#define ACTION_JUMP				5
+#define ACTION_JUMP2			6
+#define ACTION_FALL				7
+#define ACTION_HIT				8
+#define ACTION_PLACEHOLDER		9
+
+#define ACTION_JAB				10
+#define ACTION_SIDE_ATTACK		11
+#define ACTION_DOWN_ATTACK		12
+#define ACTION_UP_ATTACK		13
+#define ACTION_NEUTRAL_SPECIAL	14
+#define ACTION_SIDE_SPECIAL		15
+#define ACTION_DOWN_SPECIAL		16
+#define ACTION_UP_SPECIAL		17
+
+#define ACTION_NEUTRAL_AERIAL	20
+#define ACTION_SIDE_AERIAL		21
+#define ACTION_DOWN_AERIAL		22
+#define ACTION_UP_AERIAL		23
+
+
 //Will be the parent class for all other charcaters
 ///Has all basic functions/data that charcaters need but lacks the unique passives and thas virtual functions for each attack type
-class Character{
+class Character {
 
 public:
 	Character() {}
@@ -29,32 +55,30 @@ public:
 	vec3 getPosition();
 	void setPosition(vec3 pos);
 	std::vector<Hitbox*> getHitboxes();
-	void hit(Hitbox* hitBy);
 	mat4 atkInputHandler(std::vector<bool> inputs);
 
-	//AttackFunctions
+	mat4 idle();
+	mat4 walk();
+	mat4 run();
+	mat4 dash();
+	mat4 prejump();
+	mat4 jump();
+	mat4 jump2();
+	mat4 fall();
+	void hit(Hitbox* hitBy);
 	mat4 jab();
-	mat4 fTilt();
-	mat4 dTilt();
-	//virtual void uTilt();
-	mat4 nAir();
-	mat4 fAir();
-	//Transform bAir();
-	mat4 uAir();
-	mat4 dAir();
+	mat4 sAttack();
+	mat4 dAttack();
+	mat4 uAttack();
 	mat4 nSpecial(bool charging);
 	mat4 sSpecial();
 	mat4 dSpecial();
 	mat4 uSpecial();
+	mat4 nAir();
+	mat4 sAir();
+	mat4 dAir();
+	mat4 uAir();
 
-	/*
-	virtual void sideB();
-	virtual void upB();
-	virtual void downB();
-	virtual void neutBAir();
-	virtual void sideBAir();
-	virtual void upBAir();
-	virtual void downBAir();*/
 	void comboAdd() {
 		if (comboTimer < comboMaxTime) {
 			comboCount++;
@@ -67,8 +91,8 @@ public:
 		}
 		std::cout << "Count: " << comboCount << " Meter: " << comboMeter << std::endl;
 	}
-	void comboClear() { comboCount = 0; std::cout << comboCount << std::endl;}
-	void resetMeter() { comboMeter = 0; comboClear();}
+	void comboClear() { comboCount = 0; std::cout << comboCount << std::endl; }
+	void resetMeter() { comboMeter = 0; comboClear(); }
 	void comboTick() { comboTimer++; }
 	void resetTimer() { comboTimer = 0; }
 
