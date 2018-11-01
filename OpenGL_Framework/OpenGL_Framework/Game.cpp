@@ -20,6 +20,7 @@ Game::~Game()
 	BloomComposite.UnLoad();
 	GBufferPass.UnLoad();
 	DeferredLighting.UnLoad();
+	AniShader.UnLoad();
 	/*SobelPass.UnLoad();
 	Sword.Unload();
 	SwordTexture.Unload();
@@ -104,6 +105,13 @@ void Game::initializeGame()
 		exit(0);
 	}
 
+	if (!AniShader.Load("./Assets/Shaders/shaderAni.vert", "./Assets/Shaders/DeferredLighting.frag"))
+	{
+		std::cout << "AS Shaders failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
+
 	/*if (!SobelPass.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Toon/Sobel.frag"))
 	{
 		std::cout << "SP Shaders failed to initialize.\n";
@@ -182,12 +190,14 @@ void Game::initializeGame()
 	}
 	//My Cel-Shade is looking funky...
 	StepTexture.SetNearestFilter();*/
-	if (!Court.LoadFromFile("./Assets/Models/Court.obj"))
-	{
+	std::vector<std::string> court;
+	court.push_back("./Assets/Models/Court.obj");
+	Court.LoadFromFile(court);
+	/*{
 		std::cout << "Sword Model failed to load.\n";
 		system("pause");
 		exit(0);
-	}
+	}*/
 
 	if (!CourtTexture.Load("./Assets/Textures/CourtTexture.png"))
 	{
@@ -393,6 +403,25 @@ void Game::draw()
 	ShadowMap.Clear();
 	WorkBuffer1.Clear();
 	WorkBuffer2.Clear();
+
+	///Ani Shader///
+	AniShader.Bind();
+	static float aniTimer = 0.f;
+	static int index = 0;
+	aniTimer += updateTimer->getElapsedTimeSeconds() * 10.0f;
+	if (aniTimer > 1.0f)
+	{
+		aniTimer = 0.0f;
+		index = (index + 1) % 4;
+	}
+	// Ask for the handles identfying the uniform variables in our shader.
+	AniShader.SendUniformMat4("uModel", mat4().data, true);
+	AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
+	AniShader.SendUniform("interp", aniTimer);
+	AniShader.SendUniform("index", index);
+
+	AniShader.UnBind();
 
 	/// Generate The Shadow Map ///
 	glViewport(0, 0, SHADOW_RESOLUTION, SHADOW_RESOLUTION);
