@@ -105,7 +105,7 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	if (!AniShader.Load("./Assets/Shaders/shaderAni.vert", "./Assets/Shaders/DeferredLighting.frag"))
+	if (!AniShader.Load("./Assets/Shaders/shaderAni.vert", "./Assets/Shaders/GBufferPass.frag"))
 	{
 		std::cout << "AS Shaders failed to initialize.\n";
 		system("pause");
@@ -539,7 +539,6 @@ void Game::draw()
 	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
 	AniShader.SendUniform("interp", aniTimer);
 	AniShader.SendUniform("index", index);
-	GBufferPass.SendUniform("uTex", 0);
 
 	playerOne->draw(AniShader);
 	playerTwo->draw(AniShader);
