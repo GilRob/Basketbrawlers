@@ -262,6 +262,8 @@ void Character::draw(ShaderProgram GBufferPass) {
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
 		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
 	}
+
+	texture.UnBind();
 }
 
 void Character::drawShadow(ShaderProgram GBufferPass)

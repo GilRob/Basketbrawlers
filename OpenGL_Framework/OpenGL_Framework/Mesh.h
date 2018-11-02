@@ -3,6 +3,8 @@
 #include <vector>
 #include <GL\glew.h>
 
+struct MeshFaceFloat;
+
 class Mesh
 {
 public:

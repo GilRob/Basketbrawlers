@@ -310,7 +310,7 @@ void Game::update()
 		else {
 			float diffHx = playerOne->getPosition().x - playerTwo->getHitboxes()[i]->getPosition().x;//difference between characters x
 			float diffHy = playerOne->getPosition().y - playerTwo->getHitboxes()[i]->getPosition().y;//difference between characters y
-			if (abs(diffHx) < 0.3f + (playerTwo->getHitboxes()[i]->getSize() *0.1f) && (diffHy > -3.0f - (playerTwo->getHitboxes()[i]->getSize() *0.1f) && diffHy < 0.2f + +(playerTwo->getHitboxes()[i]->getSize() *0.1f))) {
+			if (abs(diffHx) < 0.3f + (playerTwo->getHitboxes()[i]->getSize() *0.1f) && (diffHy > -3.0f - (playerTwo->getHitboxes()[i]->getSize() *0.1f) && diffHy < 0.2f + (playerTwo->getHitboxes()[i]->getSize() *0.1f))) {
 				playerOne->hit(playerTwo->getHitboxes()[i]);
 				playerTwo->comboAdd();
 				playerTwo->getHitboxes()[i]->setDone();
@@ -329,7 +329,7 @@ void Game::update()
 		else {
 			float diffHx = playerTwo->getPosition().x - playerOne->getHitboxes()[i]->getPosition().x;//difference between characters x
 			float diffHy = playerTwo->getPosition().y - playerOne->getHitboxes()[i]->getPosition().y;//difference between characters y
-			if (abs(diffHx) < 0.3f + (playerOne->getHitboxes()[i]->getSize() *0.1f) && (diffHy > -3.0f - (playerOne->getHitboxes()[i]->getSize() *0.1f) && diffHy < 0.2f + +(playerOne->getHitboxes()[i]->getSize() *0.1f))) {
+			if (abs(diffHx) < 0.3f + (playerOne->getHitboxes()[i]->getSize() *0.1f) && (diffHy > -3.0f - (playerOne->getHitboxes()[i]->getSize() *0.1f) && diffHy < 0.2f + (playerOne->getHitboxes()[i]->getSize() *0.1f))) {
 				playerTwo->hit(playerOne->getHitboxes()[i]);
 				playerOne->comboAdd();
 				playerOne->getHitboxes()[i]->setDone();
@@ -404,25 +404,6 @@ void Game::draw()
 	WorkBuffer1.Clear();
 	WorkBuffer2.Clear();
 
-	///Ani Shader///
-	AniShader.Bind();
-	static float aniTimer = 0.f;
-	static int index = 0;
-	aniTimer += updateTimer->getElapsedTimeSeconds() * 10.0f;
-	if (aniTimer > 1.0f)
-	{
-		aniTimer = 0.0f;
-		index = (index + 1) % 4;
-	}
-	// Ask for the handles identfying the uniform variables in our shader.
-	AniShader.SendUniformMat4("uModel", mat4().data, true);
-	AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
-	AniShader.SendUniform("interp", aniTimer);
-	AniShader.SendUniform("index", index);
-
-	AniShader.UnBind();
-
 	/// Generate The Shadow Map ///
 	glViewport(0, 0, SHADOW_RESOLUTION, SHADOW_RESOLUTION);
 
@@ -494,8 +475,8 @@ void Game::draw()
 	glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
 	glActiveTexture(GL_TEXTURE0);
 
-	playerOne->draw(GBufferPass);
-	playerTwo->draw(GBufferPass);
+	//playerOne->draw(GBufferPass);
+	//playerTwo->draw(GBufferPass);
 
 	/*SwordTexture.Bind();
 	glBindVertexArray(Sword.VAO);
@@ -542,6 +523,28 @@ void Game::draw()
 
 	glBindVertexArray(0);
 
+	///Ani Shader///
+	AniShader.Bind();
+	static float aniTimer = 0.f;
+	static int index = 0;
+	aniTimer += updateTimer->getElapsedTimeSeconds();
+	if (aniTimer > 1.0f)
+	{
+		aniTimer = 0.0f;
+		index = (index + 1) % 2;
+	}
+	// Ask for the handles identfying the uniform variables in our shader.
+	AniShader.SendUniformMat4("uModel", playerOne->transform.data, true);
+	AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
+	AniShader.SendUniform("interp", aniTimer);
+	AniShader.SendUniform("index", index);
+	GBufferPass.SendUniform("uTex", 0);
+
+	playerOne->draw(AniShader);
+	playerTwo->draw(AniShader);
+	
+	AniShader.UnBind();
 	GBuffer.UnBind();
 	GBufferPass.UnBind();
 	/*SwordTexture.UnBind();
