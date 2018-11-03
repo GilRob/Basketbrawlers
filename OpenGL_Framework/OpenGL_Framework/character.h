@@ -57,9 +57,10 @@ public:
 	std::vector<Hitbox*> getHitboxes();
 	mat4 atkInputHandler(std::vector<bool> inputs);
 
+	//Actions
 	mat4 idle();
-	mat4 walk();
-	mat4 run();
+	mat4 walk(bool held);
+	mat4 run(bool held);
 	mat4 dash();
 	mat4 prejump();
 	mat4 jump();
@@ -79,10 +80,11 @@ public:
 	mat4 dAir();
 	mat4 uAir();
 
+	//----------------------------------------------------------
 	void comboAdd() {
 		if (comboTimer < comboMaxTime) {
 			comboCount++;
-			comboMeter += (int)(comboCount);
+			comboMeter += (2 + (int)(comboCount));//amount added to combo
 			resetTimer();
 		}
 		else {
@@ -93,7 +95,12 @@ public:
 	}
 	void comboClear() { comboCount = 0; std::cout << comboCount << std::endl; }
 	void resetMeter() { comboMeter = 0; comboClear(); }
-	void comboTick() { comboTimer++; }
+	void comboTick() {
+		if (comboMeter < 0) {
+			comboMeter = 0;
+		}
+		comboTimer++;
+	}
 	void resetTimer() { comboTimer = 0; }
 
 	void respawn() {
@@ -108,7 +115,6 @@ public:
 protected:
 	//model
 	Mesh body;
-	//Shader* shader;
 	Texture texture;
 
 	//physics
@@ -116,16 +122,25 @@ protected:
 	vec3 velocity;
 	vec3 acceleration;
 	vec3 force;
+	vec3 hitForce;
+	bool facingRight;
+
+	//Attributes
 	float mass;
 	float gravity;
-	int upwardsForce;
-	float runspeed;//max speed
-	float runaccel;//accel multiplyer
-	float jumpforce;//velocity going up
-	float diMultiplier;//multiplier for DI when in hitstun
-	unsigned int jumpframes;//length of jump
+	float runSpeed;//max
+	float runAccel;
+	float airAccel;
+	float jumpForce;
+	float diMultiplier;
+	unsigned int jumpFrames;
+	unsigned int dashLength;
+	unsigned int prejumpLength;
+	unsigned int airJumps;
+	int jumpsLeft;
+	int hitstun;
+	int hitframes;
 
-	vec3 hitforce;//velocity going up
 
 	//combo stuff
 	unsigned int comboCount;//counts hits in a row, resets after x time
@@ -143,22 +158,14 @@ protected:
 	std::vector<Hitbox*> activeHitboxes;
 
 	//actions
-	unsigned int action;//0 idle, 1 jumping, 2-jab, 3-fTilt, 4-dTilt
-	//0-idle, 1-jumping
-	//2-jab, 3-fTilt, 4-dTilt, 5-uTilt
-	//6-nAir, 7-fAir, 8-dAir, 9-uAir
-	//10-hit
-	//11-nSpecial, 12-sSpecial, 13-dSpecial, 14-uSpecial
+	unsigned int action;
 	unsigned int activeFrames;
 	unsigned int currentFrame;
 	bool interuptable;
 
-	//looking
-	bool facingRight;
 
 	//debug hitbox
 	Mesh boxMesh;
-	//Shader* boxShader;
 	Texture boxTexture;
 
 private:

@@ -12,13 +12,14 @@ Hitbox::Hitbox(vec3 _position, float _size, float _knockback, float _angleDeg, u
 	currentFrame = 1;
 	owner = _owner;
 	acceleration = vec3(0, 0, 0);
+	projectile = false;
 
 }
 
 Hitbox::~Hitbox() {
 
 }
-
+/*
 //updates the position
 void Hitbox::update(int t)
 {
@@ -29,19 +30,37 @@ void Hitbox::update(int t)
 		position = position + (velocity);
 		currentFrame++;
 	}
+}*/
+
+//updates the position
+void Hitbox::update(int t, vec3 parent = { 0,0,0 })
+{
+	if (currentFrame <= activeFrames) {
+		//update position
+		
+		velocity = velocity + (acceleration);
+		position = position + (velocity);
+		currentFrame++;
+		if (projectile) {
+			globalPosition = position;
+		}
+		else {
+			globalPosition = position + parent;
+		}
+	}
 }
 
 //Returns the position of the hitbox
 vec3 Hitbox::getPosition()
 {
-	return position;
+	return globalPosition;
 }
 
 //Returns the position of the hitbox
 mat4 Hitbox::getTransform()
 {
 	mat4 trans;
-	trans.SetTranslation(position);
+	trans.SetTranslation(globalPosition);
 	trans.Scale(vec3(size,size,size));
 	return trans;
 }
@@ -62,7 +81,7 @@ float Hitbox::getSize()
 //sets position
 void Hitbox::setPosition(vec3 pos)
 {
-	position = pos;
+	globalPosition = pos;
 }
 
 //returns true if active frames are up

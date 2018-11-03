@@ -101,8 +101,12 @@ public:
 	void updateInputs();
 	//controller
 	Input::XBoxInput XBoxController;
+
 	bool Aold, Anew, Bold, Bnew, Yold, Ynew, Xold, Xnew, Snew, Sold;
 	bool RBold, RBnew, LBold, LBnew, RTold, RTnew, LTold, LTnew;
+
+	bool Aold2, Anew2, Bold2, Bnew2, Yold2, Ynew2, Xold2, Xnew2, Snew2, Sold2;
+	bool RBold2, RBnew2, LBold2, LBnew2, RTold2, RTnew2, LTold2, LTnew2;
 	bool pad;
 
 	float lTrig, rTrig;

@@ -46,11 +46,11 @@ void Game::initializeGame()
 
 	InitFullScreenQuad();
 
-	inputs = { false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A
+	inputs = { false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A
 
 	playerOne = new Character("./Assets/Models/Knight.obj", "./Assets/Textures/StoneNormal.png");
 
-	inputs2 = { false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A
+	inputs2 = { false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A
 
 	playerTwo = new Character("./Assets/Models/Knight.obj", "./Assets/Textures/Grass.png");
 
@@ -673,40 +673,40 @@ void Game::keyboardDown(unsigned char key, int mouseX, int mouseY)
 	//case 27: // the escape key
 		//break;
 	case 'w': //w
-		inputs[0] = true;
+		//inputs[0] = true;
 		break;
 	case 'd': //d
-		inputs[1] = true;
+		//inputs[1] = true;
 		break;
 	case 's': //s
-		inputs[2] = true;
+		//inputs[2] = true;
 		break;
 	case 'a': //a
-		inputs[3] = true;
+		//inputs[3] = true;
 		break;
 	case 'v': //n
-		inputs[4] = true;
+		//inputs[4] = true;
 		break;
 	case 'b': //m
-		inputs[5] = true;
+		//inputs[5] = true;
 		break;
 	case 'i': //up
-		inputs2[0] = true;
+		//inputs2[0] = true;
 		break;
 	case 'l': //right
-		inputs2[1] = true;
+		//inputs2[1] = true;
 		break;
 	case 'k': //down
-		inputs2[2] = true;
+		//inputs2[2] = true;
 		break;
 	case 'j': //left
-		inputs2[3] = true;
+		//inputs2[3] = true;
 		break;
 	case '.': //a
-		inputs2[4] = true;
+		//inputs2[4] = true;
 		break;
 	case '/': //b
-		inputs2[5] = true;
+		//inputs2[5] = true;
 		break;
 	case 'q': // the 'q' key
 		//exit(1);
@@ -720,40 +720,40 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 	switch(key)
 	{
 	case 'w': //w
-		inputs[0] = false;
+		//inputs[0] = false;
 		break;
 	case 'd': //d
-		inputs[1] = false;
+		//inputs[1] = false;
 		break;
 	case 's': //s
-		inputs[2] = false;
+		//inputs[2] = false;
 		break;
 	case 'a': //a
-		inputs[3] = false;
+		//inputs[3] = false;
 		break;
 	case 'v': //n
-		inputs[4] = false;
+		//inputs[4] = false;
 		break;
 	case 'b': //m
-		inputs[5] = false;
+		// inputs[5] = false;
 		break;
 	case 'i': //up
-		inputs2[0] = false;
+		//inputs2[0] = false;
 		break;
 	case 'l': //right
-		inputs2[1] = false;
+		//inputs2[1] = false;
 		break;
 	case 'k': //down
-		inputs2[2] = false;
+		//inputs2[2] = false;
 		break;
 	case 'j': //left
-		inputs2[3] = false;
+		//inputs2[3] = false;
 		break;
 	case '.': //a
-		inputs2[4] = false;
+		//inputs2[4] = false;
 		break;
 	case '/': //b
-		inputs2[5] = false;
+		//inputs2[5] = false;
 		break;
 	case 'q': // the 'q' key
 		//exit(1);
@@ -772,6 +772,7 @@ void Game::mouseClicked(int button, int state, int x, int y)
 			break;
 		case GLUT_RIGHT_BUTTON:
 		
+		    
 			break;
 		case GLUT_MIDDLE_BUTTON:
 
@@ -814,85 +815,7 @@ void Game::updateInputs()
 	LTold = LTnew;
 	RTold = RTnew;
 	//Update inputs
-	XBoxController.DownloadPackets(1);
-	/*
-	if (XBoxController.GetConnected(0)) {
-		//Allow Release and Press
-		if (XBoxController.GetButton(0, Input::A)) {
-			Anew = true;
-			pad = true;
-		}
-		else Anew = false;
-		if (XBoxController.GetButton(0, Input::B)) {
-			Bnew = true;
-			pad = true;
-		}
-		else Bnew = false;
-		if (XBoxController.GetButton(0, Input::Y)) {
-			Ynew = true;
-			pad = true;
-		}
-		else Ynew = false;
-		if (XBoxController.GetButton(0, Input::X)) {
-			Xnew = true;
-			pad = true;
-		}
-		else Xnew = false;
-		if (XBoxController.GetButton(0, Input::RB)) {
-			RBnew = true;
-			pad = true;
-		}
-		else RBnew = false;
-		if (XBoxController.GetButton(0, Input::LB)) {
-			LBnew = true;
-			pad = true;
-		}
-		else LBnew = false;
-
-		XBoxController.GetTriggers(0, lTrig, rTrig);
-		if (rTrig > 0.5) {
-			RTnew = true;
-			pad = true;
-		}
-		else RTnew = false;
-		if (lTrig > 0.5) {
-			LTnew = true;
-			pad = true;
-		}
-		else LTnew = false;
-	}
-
-	Input::Stick lStick, rStick;
-	XBoxController.GetSticks(0, lStick, rStick);
-	if ((lStick.xAxis <= -0.7 || lStick.xAxis >= 0.7))
-		pad = true;
-
-	//Inputs
-	if (lStick.xAxis >= 0.7)//if key held
-		inputs[1] = true;
-	if (lStick.xAxis <= -0.7)//if key held
-		inputs[3] = true;
-	if (lStick.yAxis >= 0.7)//if key held
-		inputs[0] = true;
-	if (lStick.yAxis <= -0.7)//if key held
-		inputs[2] = true;
-	if (Xnew == true && Xold == false)
-		inputs[4] = true;
-	if (Ynew == true && Yold == false)
-		inputs[5] = true;
-
-	if (lStick.xAxis < 0.7)//if key held
-		inputs[1] = false;
-	if (lStick.xAxis > -0.7)//if key held
-		inputs[3] = false;
-	if (lStick.yAxis < 0.7)//if key held
-		inputs[0] = false;
-	if (lStick.yAxis > -0.7)//if key held
-		inputs[2] = false;
-	if (Xnew == false && Xold == true)
-		inputs[4] = false;
-	if (Ynew == false && Yold == true)
-		inputs[5] = false;*/
+	XBoxController.DownloadPackets(2);
 
 	if (XBoxController.GetConnected(0)) {
 		//Allow Release and Press
@@ -938,43 +861,189 @@ void Game::updateInputs()
 			pad = true;
 		}
 		else LTnew = false;
+
+
+		Input::Stick lStick, rStick;
+		XBoxController.GetSticks(0, lStick, rStick);
+		if ((lStick.xAxis <= -0.4 || lStick.xAxis >= 0.4))
+			pad = true;
+
+		if (lStick.xAxis >= 0.9)//if key held
+		{
+			inputs2[7] = true;
+		}
+		if (lStick.xAxis <= -0.9)//if key held
+		{
+			inputs2[8] = true;
+		}
+
+		//Inputs
+		if (lStick.xAxis >= 0.4)//if key held
+			inputs2[1] = true;
+		if (lStick.xAxis <= -0.4)//if key held
+			inputs2[3] = true;
+		if (lStick.yAxis >= 0.7)//if key held
+			inputs2[0] = true;
+		if (lStick.yAxis <= -0.7)//if key held
+			inputs2[2] = true;
+		if (Xnew == true && Xold == false)
+			inputs2[4] = true;
+		if (Ynew == true && Yold == false)
+			inputs2[5] = true;
+		if (Anew == true && Aold == false)
+			inputs2[6] = true;
+
+		if (lStick.xAxis < 0.9)//if key held
+		{
+			inputs2[7] = false;
+		}
+		if (lStick.xAxis > -0.9)//if key held
+		{
+			inputs2[8] = false;
+		}
+
+		if (lStick.xAxis < 0.4)//if key held
+			inputs2[1] = false;
+		if (lStick.xAxis > -0.4)//if key held
+			inputs2[3] = false;
+
+		if (lStick.yAxis < 0.7)//if key held
+			inputs2[0] = false;
+		if (lStick.yAxis > -0.7)//if key held
+			inputs2[2] = false;
+		if (Xnew == false && Xold == true)
+			inputs2[4] = false;
+		if (Ynew == false && Yold == true)
+			inputs2[5] = false;
+		if (Anew == false && Aold == true)
+			inputs2[6] = false;
+
+	}
+	else {
+
+		inputs2 = { false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A
 	}
 
+	//PLAYER 2
 
-	Input::Stick lStick, rStick;
-	XBoxController.GetSticks(0, lStick, rStick);
-	if ((lStick.xAxis <= -0.7 || lStick.xAxis >= 0.7))
-		pad = true;
+	//Controler Ready.
+	//Keep last frames inputs saved for comparing, to track ButtonPress, and ButtonRelease.
+	//if was pressed las frame but not this frame, ButtonRelease() == true
+	//if  not pressed last frame, but is pressed this frame, ButtonPress() == true
+	Aold2 = Anew2;
+	Bold2 = Bnew2;
+	Yold2 = Ynew2;
+	Xold2 = Xnew2;
+	Sold2 = Snew2;
+	LBold2 = LBnew2;
+	RBold2 = RBnew2;
+	LTold2 = LTnew2;
+	RTold2 = RTnew2;
 
-	//Inputs
-	if (lStick.xAxis >= 0.7)//if key held
-		inputs2[1] = true;
-	if (lStick.xAxis <= -0.7)//if key held
-		inputs2[3] = true;
-	if (lStick.yAxis >= 0.7)//if key held
-		inputs2[0] = true;
-	if (lStick.yAxis <= -0.7)//if key held
-		inputs2[2] = true;
-	if (Xnew == true && Xold == false)
-		inputs2[4] = true;
-	if (Ynew == true && Yold == false)
-		inputs2[5] = true;
-	if (Anew == true && Aold == false)
-		inputs2[6] = true;
+	if (XBoxController.GetConnected(1)) {
+		//Allow Release and Press
+		if (XBoxController.GetButton(1, Input::A)) {
+			Anew2 = true;
+			pad = true;
+		}
+		else Anew2 = false;
+		if (XBoxController.GetButton(1, Input::B)) {
+			Bnew2 = true;
+			pad = true;
+		}
+		else Bnew2 = false;
+		if (XBoxController.GetButton(1, Input::Y)) {
+			Ynew2 = true;
+			pad = true;
+		}
+		else Ynew2 = false;
+		if (XBoxController.GetButton(1, Input::X)) {
+			Xnew2 = true;
+			pad = true;
+		}
+		else Xnew2 = false;
+		if (XBoxController.GetButton(1, Input::RB)) {
+			RBnew2 = true;
+			pad = true;
+		}
+		else RBnew2 = false;
+		if (XBoxController.GetButton(1, Input::LB)) {
+			LBnew2 = true;
+			pad = true;
+		}
+		else LBnew2 = false;
 
-	if (lStick.xAxis < 0.7)//if key held
-		inputs2[1] = false;
-	if (lStick.xAxis > -0.7)//if key held
-		inputs2[3] = false;
-	if (lStick.yAxis < 0.7)//if key held
-		inputs2[0] = false;
-	if (lStick.yAxis > -0.7)//if key held
-		inputs2[2] = false;
-	if (Xnew == false && Xold == true)
-		inputs2[4] = false;
-	if (Ynew == false && Yold == true)
-		inputs2[5] = false;
-	if (Anew == false && Aold == true)
-		inputs2[6] = false;
-	
+		XBoxController.GetTriggers(1, lTrig, rTrig);
+		if (rTrig > 0.5) {
+			RTnew2 = true;
+			pad = true;
+		}
+		else RTnew2 = false;
+		if (lTrig > 0.5) {
+			LTnew2 = true;
+			pad = true;
+		}
+		else LTnew2 = false;
+
+
+		Input::Stick lStick2, rStick2;
+		XBoxController.GetSticks(1, lStick2, rStick2);
+		if ((lStick2.xAxis <= -0.4 || lStick2.xAxis >= 0.4))
+			pad = true;
+
+		if (lStick2.xAxis >= 0.9)//if key held
+		{
+			inputs[7] = true;
+		}
+		if (lStick2.xAxis <= -0.9)//if key held
+		{
+			inputs[8] = true;
+		}
+
+		//Inputs
+		if (lStick2.xAxis >= 0.4)//if key held
+			inputs[1] = true;
+		if (lStick2.xAxis <= -0.4)//if key held
+			inputs[3] = true;
+		if (lStick2.yAxis >= 0.7)//if key held
+			inputs[0] = true;
+		if (lStick2.yAxis <= -0.7)//if key held
+			inputs[2] = true;
+		if (Xnew2 == true && Xold2 == false)
+			inputs[4] = true;
+		if (Ynew2 == true && Yold2 == false)
+			inputs[5] = true;
+		if (Anew2 == true && Aold2 == false)
+			inputs[6] = true;
+
+		if (lStick2.xAxis < 0.9)//if key held
+		{
+			inputs[7] = false;
+		}
+		if (lStick2.xAxis > -0.9)//if key held
+		{
+			inputs[8] = false;
+		}
+
+		if (lStick2.xAxis < 0.4)//if key held
+			inputs[1] = false;
+		if (lStick2.xAxis > -0.4)//if key held
+			inputs[3] = false;
+
+		if (lStick2.yAxis < 0.7)//if key held
+			inputs[0] = false;
+		if (lStick2.yAxis > -0.7)//if key held
+			inputs[2] = false;
+		if (Xnew2 == false && Xold2 == true)
+			inputs[4] = false;
+		if (Ynew2 == false && Yold2 == true)
+			inputs[5] = false;
+		if (Anew2 == false && Aold2 == true)
+			inputs[6] = false;
+	}
+	else {
+
+
+		inputs = { false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A
+	}
 }
