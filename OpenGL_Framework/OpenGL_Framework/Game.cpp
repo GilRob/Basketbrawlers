@@ -523,6 +523,8 @@ void Game::draw()
 
 	glBindVertexArray(0);
 
+	CourtTexture.UnBind();
+
 	///Ani Shader///
 	AniShader.Bind();
 	static float aniTimer = 0.f;
@@ -550,7 +552,6 @@ void Game::draw()
 	StoneTexture.UnBind();
 	HouseTexture.UnBind();
 	GroundTexture.UnBind();*/
-	CourtTexture.UnBind();
 	//StaticGeometry.UnBind(); //Why no longer unbind this?
 
 	/// Detect Edges ///

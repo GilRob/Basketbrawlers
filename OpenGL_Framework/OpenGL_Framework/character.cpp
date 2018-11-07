@@ -261,6 +261,8 @@ void Character::draw(ShaderProgram GBufferPass) {
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
 		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+
+		boxTexture.UnBind();
 	}
 
 	texture.UnBind();
