@@ -55,6 +55,7 @@ public:
 	ShaderProgram BlurVertical;
 	ShaderProgram BloomComposite;
 	ShaderProgram DeferredLighting;
+	ShaderProgram AniShader;
 
 	Character* playerOne;
 	std::vector<bool> inputs2;

@@ -2,13 +2,21 @@
 
 Character::Character(const std::string& bodyName, const std::string& textureName){
 
-	//Load Model Texture
+	/*//Load Model Texture
 	if (!(body.LoadFromFile(bodyName)))//"./Assets/Models/Sphere.obj"))
 	{
 		std::cout << "Character Model failed to load.\n";
 		system("pause");
 		exit(0);
+	}*/
+	std::vector<std::string> knightFiles;
+	for (int c = 0; c < 2; ++c)
+	{
+		knightFiles.push_back("./Assets/Models/Pose" + std::to_string(c) + ".obj");
+		//marioFiles.push_back("../assets/models/Mario_Export" + std::to_string(c) + ".bin");
 	}
+	body.LoadFromFile(knightFiles);
+
 	if (!(texture.Load(textureName)))//"./Assets/Textures/Sword.png"))
 	{
 		std::cout << "Character Texture failed to load.\n";
@@ -75,13 +83,14 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	idle();
 
 
-	//load debug hitbox
-	if (!(boxMesh.LoadFromFile("./Assets/Models/Hitbox.obj")))
-	{
+	std::vector<std::string> hitBox;
+	hitBox.push_back("./Assets/Models/Hitbox.obj");
+	boxMesh.LoadFromFile(hitBox);
+	/*{
 		std::cout << "Character Model failed to load.\n";
 		system("pause");
 		exit(0);
-	}
+	}*/
 	if (!(boxTexture.Load("./Assets/Textures/redclear.png")))
 	{
 		std::cout << "Character Texture failed to load.\n";
@@ -204,6 +213,11 @@ void Character::draw(ShaderProgram GBufferPass) {
 	glDrawArrays(GL_TRIANGLES, 0, body.GetNumVertices());
 	glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
 
+}
+
+
+void Character::drawBoxes(ShaderProgram GBufferPass) {
+
 	for (int i = 0; i < activeHitboxes.size(); i++) {
 		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
 		glUniformMatrix4fv(modelLoc, 1, false, activeHitboxes[i]->getTransform().data);
@@ -232,7 +246,6 @@ void Character::draw(ShaderProgram GBufferPass) {
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
 		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
 	}
-
 }
 
 void Character::drawShadow(ShaderProgram GBufferPass)
