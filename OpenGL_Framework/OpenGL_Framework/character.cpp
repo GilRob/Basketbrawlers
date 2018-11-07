@@ -10,19 +10,26 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	//shader = new Shader(shaderName);
 	//texture = new Texture(textureName);
 
-	if (!(body.LoadFromFile(bodyName)))//"./Assets/Models/Sphere.obj"))
+	/*if (!(body.LoadFromFile(bodyName)))//"./Assets/Models/Sphere.obj"))
 	{
 		std::cout << "Character Model failed to load.\n";
 		system("pause");
 		exit(0);
+	}*/
+	std::vector<std::string> knightFiles;
+	for (int c = 0; c < 2; ++c)
+	{
+		knightFiles.push_back("./Assets/Models/Pose" + std::to_string(c) + ".obj");
+		//marioFiles.push_back("../assets/models/Mario_Export" + std::to_string(c) + ".bin");
 	}
+	body.LoadFromFile(knightFiles);
 
 	if (!(texture.Load(textureName)))//"./Assets/Textures/Sword.png"))
 	{
 		std::cout << "Character Texture failed to load.\n";
 		system("pause");
 		exit(0);
-	}
+	}	
 
 	//physics
 	position = vec3(0, 0, 0);
@@ -61,16 +68,18 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	//boxMesh = new Mesh("./res/transparentsphere.obj");
 	//boxShader = new Shader("./res/blueclear");
 	//boxTexture = new Texture("./res/redclear.png");
-	if (!(boxMesh.LoadFromFile("./Assets/Models/Hitbox.obj")))
-	{
+	std::vector<std::string> hitBox;
+	hitBox.push_back("./Assets/Models/Hitbox.obj");
+	boxMesh.LoadFromFile(hitBox);
+	/*{
 		std::cout << "Character Model failed to load.\n";
 		system("pause");
 		exit(0);
-	}
+	}*/
 
 	if (!(boxTexture.Load("./Assets/Textures/redclear.png")))
 	{
-		std::cout << "Character Texture failed to load.\n";
+		std::cout << "Hitbox Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
@@ -252,7 +261,11 @@ void Character::draw(ShaderProgram GBufferPass) {
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
 		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+
+		boxTexture.UnBind();
 	}
+
+	texture.UnBind();
 }
 
 void Character::drawShadow(ShaderProgram GBufferPass)
