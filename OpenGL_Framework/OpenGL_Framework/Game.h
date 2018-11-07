@@ -13,6 +13,8 @@
 #include <GL/glut.h>
 
 #include "character.h"
+#include "controller.h"
+#pragma comment( lib, "Xinput9_1_0.lib" ) 
 
 #include "Timer.h"
 
@@ -55,9 +57,9 @@ public:
 	ShaderProgram DeferredLighting;
 
 	Character* playerOne;
-	std::vector<bool> inputs;
-	Character* playerTwo;
 	std::vector<bool> inputs2;
+	Character* playerTwo;
+	std::vector<bool> inputs;
 
 	/// ENTITIES ///
 	//Mesh Monkey;
@@ -95,6 +97,20 @@ public:
 	mat4 ShadowProjection;
 
 	mat4 ViewToShadowMap;
+
+	void updateInputs();
+	//controller
+	Input::XBoxInput XBoxController;
+
+	bool Aold, Anew, Bold, Bnew, Yold, Ynew, Xold, Xnew, Snew, Sold;
+	bool RBold, RBnew, LBold, LBnew, RTold, RTnew, LTold, LTnew;
+
+	bool Aold2, Anew2, Bold2, Bnew2, Yold2, Ynew2, Xold2, Xnew2, Snew2, Sold2;
+	bool RBold2, RBnew2, LBold2, LBnew2, RTold2, RTnew2, LTold2, LTnew2;
+	bool pad;
+
+	float lTrig, rTrig;
+	float lTrig2, rTrig2;
 
 private:
 

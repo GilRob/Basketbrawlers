@@ -65,6 +65,9 @@
     <ClCompile Include="hitbox.cpp">
       <Filter>GameFunctions</Filter>
     </ClCompile>
+    <ClCompile Include="controller.cpp">
+      <Filter>GameFunctions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -98,6 +101,9 @@
       <Filter>GameFunctions</Filter>
     </ClInclude>
     <ClInclude Include="hitbox.h">
+      <Filter>GameFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="controller.h">
       <Filter>GameFunctions</Filter>
     </ClInclude>
   </ItemGroup>
