@@ -310,7 +310,6 @@ void Game::update()
 		else {
 			float diffHx = playerOne->getPosition().x - playerTwo->getHitboxes()[i]->getPosition().x;//difference between characters x
 			float diffHy = playerOne->getPosition().y - playerTwo->getHitboxes()[i]->getPosition().y;//difference between characters y
-<<<<<<< HEAD
 			if (abs(diffHx) < 0.3f + (playerTwo->getHitboxes()[i]->getSize() *0.1f) && (diffHy > -3.0f - (playerTwo->getHitboxes()[i]->getSize() *0.1f) && diffHy < 0.2f + +(playerTwo->getHitboxes()[i]->getSize() *0.1f))) {
 				if (playerOne->blocking && (playerOne->facingRight != playerTwo->facingRight)) {//add only in front condition
 					playerOne->blockSuccessful = true;
@@ -323,14 +322,6 @@ void Game::update()
 					playerTwo->getHitboxes()[i]->setDone();
 					done = true;
 				}
-=======
-			if (abs(diffHx) < 0.3f + (playerTwo->getHitboxes()[i]->getSize() *0.1f) && (diffHy > -3.0f - (playerTwo->getHitboxes()[i]->getSize() *0.1f) && diffHy < 0.2f + (playerTwo->getHitboxes()[i]->getSize() *0.1f))) {
-				playerOne->hit(playerTwo->getHitboxes()[i]);
-				playerTwo->comboAdd();
-				playerTwo->getHitboxes()[i]->setDone();
-				done = true;
-
->>>>>>> master
 			}
 		}
 		i++;
@@ -344,7 +335,6 @@ void Game::update()
 		else {
 			float diffHx = playerTwo->getPosition().x - playerOne->getHitboxes()[i]->getPosition().x;//difference between characters x
 			float diffHy = playerTwo->getPosition().y - playerOne->getHitboxes()[i]->getPosition().y;//difference between characters y
-<<<<<<< HEAD
 			if (abs(diffHx) < 0.3f + (playerOne->getHitboxes()[i]->getSize() *0.1f) && (diffHy > -3.0f - (playerOne->getHitboxes()[i]->getSize() *0.1f) && diffHy < 0.2f + +(playerOne->getHitboxes()[i]->getSize() *0.1f))) {
 				if (playerTwo->blocking && (playerOne->facingRight != playerTwo->facingRight)) {//add only in front condition
 					playerTwo->blockSuccessful = true;
@@ -357,13 +347,6 @@ void Game::update()
 					playerOne->getHitboxes()[i]->setDone();
 					done = true;
 				}
-=======
-			if (abs(diffHx) < 0.3f + (playerOne->getHitboxes()[i]->getSize() *0.1f) && (diffHy > -3.0f - (playerOne->getHitboxes()[i]->getSize() *0.1f) && diffHy < 0.2f + (playerOne->getHitboxes()[i]->getSize() *0.1f))) {
-				playerTwo->hit(playerOne->getHitboxes()[i]);
-				playerOne->comboAdd();
-				playerOne->getHitboxes()[i]->setDone();
-				done = true;
->>>>>>> master
 			}
 		}
 		i++;
@@ -505,15 +488,9 @@ void Game::draw()
 	glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
 	glActiveTexture(GL_TEXTURE0);
 
-<<<<<<< HEAD
-	playerOne->draw(GBufferPass);
-	playerTwo->draw(GBufferPass);
+	///playerOne->draw(GBufferPass);
+	///playerTwo->draw(GBufferPass);
 	
-=======
-	//playerOne->draw(GBufferPass);
-	//playerTwo->draw(GBufferPass);
-
->>>>>>> master
 	/*SwordTexture.Bind();
 	glBindVertexArray(Sword.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, Sword.GetNumVertices());
@@ -559,7 +536,13 @@ void Game::draw()
 
 	glBindVertexArray(0);
 
+	//GBuffer.UnBind();
+
 	CourtTexture.UnBind();
+
+
+	playerOne->drawBoxes(GBufferPass);
+	playerTwo->drawBoxes(GBufferPass);
 
 	///Ani Shader///
 	AniShader.Bind();
@@ -580,14 +563,16 @@ void Game::draw()
 
 	playerOne->draw(AniShader);
 	playerTwo->draw(AniShader);
-	
+
 	AniShader.UnBind();
 	GBuffer.UnBind();
 	GBufferPass.UnBind();
+
 	/*SwordTexture.UnBind();
 	StoneTexture.UnBind();
 	HouseTexture.UnBind();
 	GroundTexture.UnBind();*/
+	//CourtTexture.UnBind();
 	//StaticGeometry.UnBind(); //Why no longer unbind this?
 
 	/// Detect Edges ///

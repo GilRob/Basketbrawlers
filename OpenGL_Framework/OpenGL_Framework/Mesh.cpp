@@ -100,7 +100,7 @@ struct MeshFaceFloat
 
 Mesh::Mesh()
 {
-	
+
 }
 Mesh::~Mesh()
 {

@@ -54,6 +54,7 @@ public:
 
 	void update(int t, std::vector<bool> inputs);
 	void draw(ShaderProgram GBufferPass);
+	void drawBoxes(ShaderProgram GBufferPass);
 	void drawShadow(ShaderProgram GBufferPass);
 	vec3 getPosition();
 	void setPosition(vec3 pos);
@@ -63,12 +64,6 @@ public:
 	bool facingRight;
 	bool blocking;
 	bool blockSuccessful;
-
-	//actions
-	unsigned int action;
-	unsigned int activeFrames;
-	unsigned int currentFrame;
-	bool interuptable;
 
 
 	//Actions
@@ -157,6 +152,11 @@ protected:
 	int hitstun;
 	int hitframes;
 
+	//actions
+	unsigned int action;
+	unsigned int activeFrames;
+	unsigned int currentFrame;
+	bool interuptable;
 
 	//combo stuff
 	unsigned int comboCount;//counts hits in a row, resets after x time

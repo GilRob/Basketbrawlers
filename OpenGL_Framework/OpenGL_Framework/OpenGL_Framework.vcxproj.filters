@@ -150,8 +150,5 @@
     <None Include="Assets\Shaders\Toon\Sobel.frag">
       <Filter>Shaders\Toon</Filter>
     </None>
-    <None Include="Assets\Shaders\shaderAni.vert">
-      <Filter>Shaders</Filter>
-    </None>
   </ItemGroup>
 </Project>
