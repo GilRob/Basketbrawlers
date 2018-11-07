@@ -57,9 +57,9 @@ public:
 	ShaderProgram DeferredLighting;
 
 	Character* playerOne;
-	std::vector<bool> inputs;
-	Character* playerTwo;
 	std::vector<bool> inputs2;
+	Character* playerTwo;
+	std::vector<bool> inputs;
 
 	/// ENTITIES ///
 	//Mesh Monkey;
@@ -110,6 +110,7 @@ public:
 	bool pad;
 
 	float lTrig, rTrig;
+	float lTrig2, rTrig2;
 
 private:
 

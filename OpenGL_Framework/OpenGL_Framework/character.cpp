@@ -22,6 +22,8 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	acceleration = vec3(0, 0, 0);
 	force = vec3(0, 0, 0);
 	facingRight = true;
+	blocking = false;
+	blockSuccessful = false;
 	//scaling
 	scaleX = 1.1f;
 	scaleY = 1.15f;
@@ -34,19 +36,33 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 ///==============================================================
 
 	//Set Attributes
-	mass = 10;
-	gravity = 0.42f;
-	diMultiplier = 0.25f;
-	runSpeed = 0.25f;//max
-	runAccel = 0.35f;//accel
+	///-------------
+	///Mass
+	mass = 9;
+	///Gravity Force on Character
+	gravity = 0.36f;
+	///Multiplier for directional influence while character is in hitstun
+	diMultiplier = 0.1f;
+	///max run speed
+	runSpeed = 0.23f;
+	///force applied for running
+	runAccel = 0.35f;
+	///force appplied for directional movement in air
 	airAccel = 0.15f;
-	jumpForce = 0.35f;
+	///upwards force for jump
+	jumpForce = 0.3f;
+	///amount of frames jump last for
 	jumpFrames = 12;
-	dashLength = 8;
+	///Dash length (in frames)
+	dashLength = 18;
+	///number of frames before character leaves ground after jump input
 	prejumpLength =3;
+	///total number of air/double jumps
 	airJumps = jumpsLeft = 1;
-	hitstun = 7;//frames stunned after launch
-	hitframes = 10;//frames launched for
+	///amount of frames character is stunned after being launched
+	hitstun = 10;
+	///amount of frames character is launched for when hit
+	hitframes = 12;
 
 	//set combo stuff
 	comboCount = 0;
@@ -72,12 +88,18 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 		system("pause");
 		exit(0);
 	}
+	if (!(shieldTexture.Load("./Assets/Textures/shield.png")))
+	{
+		std::cout << "Character Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
 }
 
 void Character::update(int t, std::vector<bool> inputs) {
 
 	//Change Player Facing only during these actinos.
-	if (action == ACTION_IDLE || action == ACTION_FALL || action == ACTION_RUN) {
+	if (action <= 7 && action != ACTION_INTIAL_DASH) {
 		///check the way it should face
 		if ((int)inputs[1] - (int)inputs[3] > 0) {
 			facingRight = true;
@@ -107,10 +129,10 @@ void Character::update(int t, std::vector<bool> inputs) {
 		velocity.x = (0 - runSpeed);
 
 	//friction
-	if (position.y <= 1.2f && (((int)inputs[1] - (int)inputs[3]) == 0 || (action != ACTION_WALK && action != ACTION_RUN && action != ACTION_DASH))) {
+	if (position.y <= 1.2f && (((int)inputs[1] - (int)inputs[3]) == 0 || (action != ACTION_WALK && action != ACTION_RUN && action != ACTION_INTIAL_DASH))) {
 		velocity.x = velocity.x * 0.9f;
 	}
-	if (position.y > 1.2f && ((int)inputs[1] - (int)inputs[3]) == 0) {
+	if (position.y > 1.2f && !inputs[1] && !inputs[3]) {
 		velocity.x = velocity.x * 0.99f;
 	}
 
@@ -131,7 +153,8 @@ void Character::update(int t, std::vector<bool> inputs) {
 		position.y = 1.2f;
 		jumpsLeft = airJumps;
 		if (action == ACTION_HIT) {
-			velocity.y *= -0.9f;
+			velocity.y *= -0.75f;
+			velocity.x *= 0.5f;
 			hitForce.y *= -0.9f;
 		}
 		else if ((currentFrame >= activeFrames || interuptable == true) && (action == ACTION_FALL)) {
@@ -192,6 +215,24 @@ void Character::draw(ShaderProgram GBufferPass) {
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
 		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
 	}
+
+	if (blocking) {
+		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
+		mat4 shield;
+		int i = (int)facingRight;
+		if (i == 0) i = -1;
+		shield.SetTranslation(position + vec3(i*0.7f, 1.5f, 0));
+		shield.Scale(vec3(1, 5.5f, 5.5));
+		glUniformMatrix4fv(modelLoc, 1, false, shield.data);
+
+		shieldTexture.Bind();
+		glBindVertexArray(boxMesh.VAO);
+
+		// Adjust model matrix for next object's location
+		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
+		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+	}
+
 }
 
 void Character::drawShadow(ShaderProgram GBufferPass)
@@ -234,8 +275,8 @@ void Character::hit(Hitbox* hitBy) {
 }
 
 ///0-up, 1-left, 2-down, 3-right, 4-A, 5-B, 6-jump
-///7-softLeft, 8-softRight
-
+///7-hardLeft, 8-hardRight
+///9-shield
 mat4 Character::atkInputHandler(std::vector<bool> inputs)
 {
 	mat4 result;
@@ -243,7 +284,7 @@ mat4 Character::atkInputHandler(std::vector<bool> inputs)
 	if (action == ACTION_HIT) {
 		//todo
 		//If in Hitstun reduce directional influence
-		force.x = (inputs[3] - inputs[1]) *  diMultiplier;
+		force.x = (inputs[1] - inputs[3]) *  diMultiplier;
 		if (currentFrame < (hitframes))//only launched for hitframes, character will just be stunned for the remaining frames (hitstun + moves kb)
 			velocity = hitForce;
 		currentFrame++;
@@ -283,8 +324,12 @@ mat4 Character::atkInputHandler(std::vector<bool> inputs)
 			force.x *= 2.0f;
 	}
 	///prejump
-	else if ((inputs[6] && (action == ACTION_IDLE || action == ACTION_RUN || action == ACTION_WALK || action == ACTION_DASH)) || action == ACTION_PREJUMP) {
+	else if ((inputs[6] && (action == ACTION_IDLE || action == ACTION_RUN || action == ACTION_WALK || action == ACTION_INTIAL_DASH)) || action == ACTION_PREJUMP) {
 		result = prejump();
+	}
+	///SHIELD
+	else if (((inputs[9] && (action < 10)) || action == ACTION_BLOCK)) {//just B = Neutral Special
+		result = block(inputs[9]);
 	}
 	//GROUNDED
 	else if ((inputs[2] && inputs[4]) || action == ACTION_DOWN_ATTACK) {//down & A = Dtilt
@@ -313,13 +358,31 @@ mat4 Character::atkInputHandler(std::vector<bool> inputs)
 		result = nSpecial(inputs[5]);
 	}
 	//NON-OFFENSIVE
-	///dash
-	else if (((((inputs[7] || inputs[8]) && action == ACTION_IDLE) || action == ACTION_DASH) && action != ACTION_RUN)) {
-		result = dash();
+	///intial dash
+	else if (((((inputs[7] || inputs[8]) && (action == ACTION_IDLE || (action == ACTION_WALK && currentFrame < activeFrames*0.5f))) || action == ACTION_INTIAL_DASH) && action != ACTION_RUN)) {
+		
+		result = initialDash(inputs[7], inputs[8]);
 	}
 	///run
 	else if ((inputs[7] || inputs[8]) && (action == ACTION_WALK || action == ACTION_RUN)) {
-		result = run(inputs[7] || inputs[8]);
+
+		//dashdancing
+		if (facingRight && inputs[8]) {
+			velocity.x *= -0.75f;
+			facingRight = false;
+			interuptable = true;
+			action = ACTION_PLACEHOLDER;
+			result = initialDash(inputs[7], inputs[8]);
+		}
+		if (!facingRight && inputs[7]) {
+			velocity.x *= -0.75f;
+			facingRight = true;
+			interuptable = true;
+			action = ACTION_PLACEHOLDER;
+			result = initialDash(inputs[7], inputs[8]);
+		}
+		else
+			result = run(inputs[7] || inputs[8]);
 	}
 	///walk
 	else if ((inputs[1] || inputs[3]) && (action == ACTION_WALK || action == ACTION_IDLE)) {
@@ -354,7 +417,7 @@ mat4 Character::idle()
 
 		//stuff goes here
 
-		std::cout << "idle" << std::endl;
+		//std::cout << "idle" << std::endl;
 		
 		currentFrame++;
 	}
@@ -363,36 +426,6 @@ mat4 Character::idle()
 
 mat4 Character::walk(bool held)
 {
-	/*mat4 result = mat4();
-	if (interuptable == true && action != ACTION_WALK) {
-		action = ACTION_WALK;
-		activeFrames = 30;
-		currentFrame = 1;
-		interuptable = true;
-	}
-	else if (!held) {
-		interuptable = true;
-		action = ACTION_PLACEHOLDER;
-		return idle();
-	}
-	else if (action == ACTION_WALK && currentFrame <= activeFrames) {
-
-		if (currentFrame >= activeFrames) {
-			//if action over, goto idle
-			interuptable = true;
-			action = ACTION_PLACEHOLDER;
-			return walk(held);
-		}
-
-		//stuff goes here
-		int direction = (int)facingRight;
-		if (facingRight == 0)
-			direction = -1;
-		force.x = direction*(runAccel)*0.5f;
-		std::cout << "walk" << std::endl;
-		
-		currentFrame++;
-	}*/
 	mat4 result = mat4();
 	if (interuptable == true && action != ACTION_WALK) {
 		action = ACTION_WALK;
@@ -426,7 +459,7 @@ mat4 Character::walk(bool held)
 		if (facingRight == 0)
 			direction = -1;
 		force.x = direction * runAccel * 0.3f;
-		std::cout << "walk" << std::endl;
+		//std::cout << "walk" << std::endl;
 
 		currentFrame++;
 	}
@@ -460,24 +493,25 @@ mat4 Character::run(bool held)
 		int direction = (int)facingRight;
 		if (facingRight == 0)
 			direction = -1;
+
 		force.x = direction * runAccel;
-		std::cout << "run" << std::endl;
+		//std::cout << "run" << std::endl;
 
 		currentFrame++;
 	}
 	return result;
 }
 
-mat4 Character::dash()
+mat4 Character::initialDash(bool right, bool left)
 {
 	mat4 result = mat4();
-	if (interuptable == true && action != ACTION_DASH) {
-		action = ACTION_DASH;
+	if (interuptable == true && action != ACTION_INTIAL_DASH) {
+		action = ACTION_INTIAL_DASH;
 		activeFrames = dashLength;
 		currentFrame = 1;
 		interuptable = true;
 	}
-	else if (action == ACTION_DASH && currentFrame <= activeFrames) {
+	else if (action == ACTION_INTIAL_DASH && currentFrame <= activeFrames) {
 
 		if (currentFrame >= activeFrames) {
 			//if action over, goto run
@@ -485,15 +519,31 @@ mat4 Character::dash()
 			action = ACTION_PLACEHOLDER;
 			return run(true);
 		}
+		
 
 		//stuff goes here
 		int direction = (int)facingRight;
 		if (facingRight == 0)
 			direction = -1;
+
+		//dashdancing
+		if (direction == 1 && left == true) { 
+			velocity.x *= -0.1f; 
+			direction *= -1;
+			facingRight = false;
+			currentFrame = 1;
+		}
+		if (direction == -1 && right == true) {
+			velocity.x *= -0.1f;
+			direction *= -1;
+			facingRight = true;
+			currentFrame = 1;
+		}
+
 		force.x = direction * runAccel;
 
 		currentFrame++;
-		std::cout << " dash" << std::endl;
+		//std::cout << " dash" << std::endl;
 	}
 	return result;
 }
@@ -531,6 +581,7 @@ mat4 Character::jump()
 		activeFrames = jumpFrames;
 		currentFrame = 1;
 		interuptable = false;
+		velocity.x *= 0.9f;
 	}
 	else if (action == ACTION_JUMP && currentFrame <= activeFrames) {
 
@@ -613,16 +664,16 @@ mat4 Character::jab()
 	if (interuptable == true && action != ACTION_JAB) {
 		interuptable = false;
 		action = ACTION_JAB;
-		activeFrames = 11;
+		activeFrames = 17;
 		currentFrame = 1;
 	}
 	if (action == ACTION_JAB && currentFrame <= activeFrames) {
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
 
-		if (currentFrame == 3) {
-			float _kb = 2.5f + (3.55f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.1f, 1.8f, 0.1f), 1.7f, _kb, 55, 5, 0, vec3((-0.5f + (int)facingRight)*0.7f, 0.0f, 0.0f));
+		if (currentFrame == 5) {
+			float _kb = 3.5f + (3.55f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.05f, 1.8f, 0.1f), 1.7f, _kb, 55, 6, 0, vec3((-0.5f + (int)facingRight)*0.5f, 0.0f, 0.0f));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if(currentFrame == activeFrames){
@@ -644,15 +695,15 @@ mat4 Character::sAttack()
 	if (interuptable == true && action != ACTION_SIDE_ATTACK) {
 		interuptable = false;
 		action = ACTION_SIDE_ATTACK;
-		activeFrames = 17;
+		activeFrames = 24;
 		currentFrame = 1;
 	}
 	if (action == ACTION_SIDE_ATTACK && currentFrame <= activeFrames) {
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
 
-		if (currentFrame == 6) {
-			float _kb = 3.0f + (6.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+		if (currentFrame == 7) {
+			float _kb = 4.0f + (6.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.6f, 0.1f), 2.1f, _kb, 45, 7, 0, vec3((-0.5f + (int)facingRight)*1.95f, 0.4f, 0.0f));
 			newAtk->acceleration = vec3((-0.5f + (int)facingRight)*-0.42f, 0, 0);
 			activeHitboxes.push_back(newAtk);
@@ -679,16 +730,16 @@ mat4 Character::dAttack()
 	if (interuptable == true && action != ACTION_DOWN_ATTACK) {
 		interuptable = false;
 		action = ACTION_DOWN_ATTACK;
-		activeFrames = 15;
+		activeFrames = 23;
 		currentFrame = 1;
 	}
 	if (action == ACTION_DOWN_ATTACK && currentFrame <= activeFrames) {
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
 
-		if (currentFrame == 3) {
-			float _kb = 5.0f + (5.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.3f, 0.5f, 0.1f), 2.2f, _kb, 80, 5, 0, vec3((-0.5f + (int)facingRight)*0.95f, 0.0f, 0.0f));
+		if (currentFrame == 6) {
+			float _kb = 6.0f + (5.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.5f, 0.1f), 2.2f, _kb, 80, 6, 0, vec3((-0.5f + (int)facingRight)*0.75f, 0.0f, 0.0f));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -710,15 +761,15 @@ mat4 Character::uAttack()
 	if (interuptable == true && action != ACTION_UP_ATTACK) {
 		interuptable = false;
 		action = ACTION_UP_ATTACK;
-		activeFrames = 15;
+		activeFrames = 30;
 		currentFrame = 1;
 	}
 	if (action == ACTION_UP_ATTACK && currentFrame <= activeFrames) {
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
 
-		if (currentFrame == 3) {
-			float _kb = 4.0f + (4.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+		if (currentFrame == 6) {
+			float _kb = 5.0f + (4.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*2.5f, 0.55f, 0.05f), 2.9f, _kb, 89, 6, 0, vec3((-0.5f + (int)facingRight)*-0.8f, 1.66f, 0.0f));
 			newAtk->acceleration = vec3(0, -0.46,0);
 			activeHitboxes.push_back(newAtk);
@@ -730,7 +781,8 @@ mat4 Character::uAttack()
 			return idle();
 
 		}
-		result.Scale(vec3(1.0f, 1.0f - (7 - abs(currentFrame - 6.0f))*0.03f, 1.0f));
+		result.Scale(vec3(1.0f, 1.0f - (15 - abs(currentFrame - 13.0f))*0.03f, 1.0f));
+		result.RotateY(currentFrame * 2);
 		currentFrame++;
 	}
 	return result;
@@ -744,7 +796,7 @@ mat4 Character::nAir()
 	if (action != ACTION_NEUTRAL_AERIAL || interuptable == true) {
 		interuptable = false;
 		action = ACTION_NEUTRAL_AERIAL;
-		activeFrames = 20;
+		activeFrames = 22;
 		currentFrame = 1;
 	}
 	if (action == ACTION_NEUTRAL_AERIAL && currentFrame <= activeFrames) {
@@ -752,7 +804,7 @@ mat4 Character::nAir()
 		///Will be changed in the future
 
 		if (currentFrame == 5) {
-			float _kb = 2.5f + (4.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			float _kb = 3.5f + (4.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(vec3(0.0f, 1.4f, 0.05f)*2.0f, 2.1f, _kb, 80, 9, 0, vec3((-0.5f + (int)facingRight)*0.01f, 0, 0.0f));//top
 			activeHitboxes.push_back(newAtk);
 			Hitbox *newAtk2 = new Hitbox(vec3(0.0f, 0.0f, 0.05f)*2.0f, 2.1f, _kb, 80, 9, 0,vec3((-0.5f + (int)facingRight)*0.01f, 0, 0.0f));//bottom
@@ -780,15 +832,15 @@ mat4 Character::sAir()
 	if (action != ACTION_SIDE_AERIAL || interuptable == true) {
 		interuptable = false;
 		action = ACTION_SIDE_AERIAL;
-		activeFrames = 20;
+		activeFrames = 28;
 		currentFrame = 1;
 	}
 	if (action == ACTION_SIDE_AERIAL && currentFrame <= activeFrames) {
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
 		if (currentFrame == 5) {
-			float _kb = 5.0f + (5.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3(0, 2.2f, 0.05f), 2.2f, _kb, 65, 6, 0, vec3((-0.5f + (int)facingRight)*0.7f, 0, 0.0f));
+			float _kb = 6.0f + (5.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			Hitbox *newAtk = new Hitbox(vec3(0, 2.2f, 0.05f), 2.2f, _kb, 65, 7, 0, vec3((-0.5f + (int)facingRight)*0.7f, 0, 0.0f));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -813,14 +865,14 @@ mat4 Character::dAir()
 	if (action != ACTION_DOWN_AERIAL || interuptable == true) {
 		interuptable = false;
 		action = ACTION_DOWN_AERIAL;
-		activeFrames = 25;
+		activeFrames = 27;
 		currentFrame = 1;
 	}
 	if (action == ACTION_DOWN_AERIAL && currentFrame <= activeFrames) {
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
 		if (currentFrame == 10) {
-			float _kb = 5.0f + (4.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			float _kb = 6.0f + (4.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(vec3(0.0f, 0.2f, 0.05f), 2.5f, _kb, 270, 5, 0, vec3(0, -0.2f, 0.0f));
 			activeHitboxes.push_back(newAtk);
 		}
@@ -842,15 +894,15 @@ mat4 Character::uAir()
 	if (action != ACTION_UP_AERIAL || interuptable == true) {
 		interuptable = false;
 		action = ACTION_UP_AERIAL;
-		activeFrames = 20;
+		activeFrames = 30;
 		currentFrame = 1;
 	}
 	if (action == ACTION_UP_AERIAL && currentFrame <= activeFrames) {
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
-		if (currentFrame == 6) {
-			float _kb = 4.3f + (5.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*2.5f, 0.55f, 0.05f), 2.9f, _kb, 91, 6, 0, vec3((-0.5f + (int)facingRight)*0.01f, 1.66f, 0.0f));
+		if (currentFrame == 7) {
+			float _kb = 5.3f + (5.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*2.5f, 0.55f, 0.05f), 2.9f, _kb, 91, 7, 0, vec3((-0.5f + (int)facingRight)*-0.7f, 1.66f, 0.0f));
 			newAtk->acceleration = vec3(0, -0.46, 0);
 
 			
@@ -864,6 +916,51 @@ mat4 Character::uAir()
 		}
 
 		//result.GetScale()->y = 1.0f + (7 - abs(currentFrame - 6.0f))*0.02f;
+		currentFrame++;
+	}
+	return result;
+}
+
+mat4 Character::block(bool held)
+{
+	int endlag = 8;//endlag after a successful block is this, on failed attempt its doubled
+	int startLag = 5;
+
+	mat4 result;
+	if (interuptable == true && action != ACTION_BLOCK) {//called on first frame of move press
+		interuptable = false;
+		action = ACTION_BLOCK;
+		activeFrames = 30;
+		currentFrame = 1;
+
+	}
+	if (action == ACTION_BLOCK) {
+
+		//if released
+		if (!held && currentFrame > startLag && (activeFrames != endlag && activeFrames != endlag*2)) {
+			//start endlag
+			activeFrames = endlag;
+			if (!blockSuccessful)
+				activeFrames *= 2;
+			currentFrame = 1;
+		}
+		//held
+		else if (held && currentFrame <= activeFrames && currentFrame > startLag) {
+
+			interuptable = false;
+			currentFrame = startLag + 2;
+			//std::cout << " blocking" << std::endl;
+			blocking = true;
+		}
+		//release
+		else if ((activeFrames == endlag || activeFrames == endlag * 2) && currentFrame >= activeFrames) {//actually done endlag
+			//if action over, goto idle
+			blocking = false;
+			blockSuccessful = false;
+			interuptable = true;
+			action = ACTION_PLACEHOLDER;
+			return idle();
+		}
 		currentFrame++;
 	}
 	return result;
@@ -940,14 +1037,14 @@ mat4 Character::sSpecial()
 {
 	//SIDE SPECIAL 1Press
 	mat4 result;
-	if (interuptable == true && action != ACTION_SIDE_SPECIAL && comboMeter >= 20) {
+	if (interuptable == true && action != ACTION_SIDE_SPECIAL && comboMeter >= 15) {
 		interuptable = false;
 		action = ACTION_SIDE_SPECIAL;
 		activeFrames = 40;
 		currentFrame = 1;
 
 		//MeterCost
-		comboMeter -= 20;
+		comboMeter -= 15;
 	}
 	if (action == ACTION_SIDE_SPECIAL && currentFrame <= activeFrames) {
 		//Testing Code for Spawning Hitboxes
@@ -989,14 +1086,14 @@ mat4 Character::dSpecial()
 {
 	//SIDE SPECIAL 1Press
 	mat4 result;
-	if (interuptable == true && action != ACTION_DOWN_SPECIAL && comboMeter >= 20) {
+	if (interuptable == true && action != ACTION_DOWN_SPECIAL && comboMeter >= 15) {
 		interuptable = false;
 		action = ACTION_DOWN_SPECIAL;
 		activeFrames = 35;
 		currentFrame = 1;
 
 		//MeterCost
-		comboMeter -= 20;
+		comboMeter -= 15;
 	}
 	if (action == ACTION_DOWN_SPECIAL && currentFrame <= activeFrames) {
 		//Testing Code for Spawning Hitboxes
@@ -1027,14 +1124,14 @@ mat4 Character::uSpecial()
 {
 	//SIDE SPECIAL 1Press
 	mat4 result;
-	if (interuptable == true && action != ACTION_UP_SPECIAL && comboMeter >= 20) {
+	if (interuptable == true && action != ACTION_UP_SPECIAL && comboMeter >= 10) {
 		interuptable = false;
 		action = ACTION_UP_SPECIAL;
 		activeFrames = 20;
 		currentFrame = 1;
 
 		//MeterCost
-		comboMeter -= 20;
+		comboMeter -= 10;
 	}
 	if (action == ACTION_UP_SPECIAL && currentFrame <= activeFrames) {
 		//Testing Code for Spawning Hitboxes
@@ -1043,7 +1140,7 @@ mat4 Character::uSpecial()
 			velocity.y = jumpForce * 1.1;
 		}
 		if (currentFrame == 8) {
-			float _kb = 5.5f + (2.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			float _kb = 7.5f + (2.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.7f, 0.1f), 2.5f, _kb, 88, 7, 0, vec3((-0.5f + (int)facingRight)*1.85f, 0.45f, 0.0f));
 			newAtk->acceleration = vec3((-0.5f + (int)facingRight)*-0.5f, 0, 0);
 			activeHitboxes.push_back(newAtk);

@@ -18,7 +18,7 @@
 #define ACTION_IDLE				0
 #define ACTION_WALK				1
 #define ACTION_RUN				2
-#define ACTION_DASH				3
+#define ACTION_INTIAL_DASH			3
 #define ACTION_PREJUMP			4
 #define ACTION_JUMP				5
 #define ACTION_JUMP2			6
@@ -40,6 +40,9 @@
 #define ACTION_DOWN_AERIAL		22
 #define ACTION_UP_AERIAL		23
 
+#define ACTION_BLOCK			30
+#define ACTION_DASH				31
+
 
 //Will be the parent class for all other charcaters
 ///Has all basic functions/data that charcaters need but lacks the unique passives and thas virtual functions for each attack type
@@ -57,11 +60,15 @@ public:
 	std::vector<Hitbox*> getHitboxes();
 	mat4 atkInputHandler(std::vector<bool> inputs);
 
+	bool facingRight;
+	bool blocking;
+	bool blockSuccessful;
+
 	//Actions
 	mat4 idle();
 	mat4 walk(bool held);
 	mat4 run(bool held);
-	mat4 dash();
+	mat4 initialDash(bool left, bool right);
 	mat4 prejump();
 	mat4 jump();
 	mat4 jump2();
@@ -79,6 +86,7 @@ public:
 	mat4 sAir();
 	mat4 dAir();
 	mat4 uAir();
+	mat4 block(bool held);
 
 	//----------------------------------------------------------
 	void comboAdd() {
@@ -108,7 +116,9 @@ public:
 		comboMeter = 0;
 		position = vec3(0, 15, 0);
 		velocity = vec3(0, 0, 0);
-		action = 1;
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		fall();
 	}
 
 	mat4 transform;
@@ -123,7 +133,6 @@ protected:
 	vec3 acceleration;
 	vec3 force;
 	vec3 hitForce;
-	bool facingRight;
 
 	//Attributes
 	float mass;
@@ -167,6 +176,7 @@ protected:
 	//debug hitbox
 	Mesh boxMesh;
 	Texture boxTexture;
+	Texture shieldTexture;
 
 private:
 
