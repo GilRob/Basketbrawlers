@@ -111,6 +111,7 @@
     <None Include="Assets\Shaders\Particles\BillBoard.vert" />
     <None Include="Assets\Shaders\PassThrough.vert" />
     <None Include="Assets\Shaders\Phong.frag" />
+    <None Include="Assets\Shaders\shaderAni.vert" />
     <None Include="Assets\Shaders\StaticGeometry.vert" />
     <None Include="Assets\Shaders\Toon\Sobel.frag" />
   </ItemGroup>

@@ -2,19 +2,34 @@
 
 Character::Character(const std::string& bodyName, const std::string& textureName){
 
+<<<<<<< HEAD
 	//Load Model Texture
 	if (!(body.LoadFromFile(bodyName)))//"./Assets/Models/Sphere.obj"))
+=======
+	/*if (!(body.LoadFromFile(bodyName)))//"./Assets/Models/Sphere.obj"))
+>>>>>>> master
 	{
 		std::cout << "Character Model failed to load.\n";
 		system("pause");
 		exit(0);
+	}*/
+	std::vector<std::string> knightFiles;
+	for (int c = 0; c < 2; ++c)
+	{
+		knightFiles.push_back("./Assets/Models/Pose" + std::to_string(c) + ".obj");
+		//marioFiles.push_back("../assets/models/Mario_Export" + std::to_string(c) + ".bin");
 	}
+<<<<<<< HEAD
+=======
+	body.LoadFromFile(knightFiles);
+
+>>>>>>> master
 	if (!(texture.Load(textureName)))//"./Assets/Textures/Sword.png"))
 	{
 		std::cout << "Character Texture failed to load.\n";
 		system("pause");
 		exit(0);
-	}
+	}	
 
 	//Set Physics
 	position = vec3(0, 0, 0);
@@ -70,6 +85,7 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	comboTimer = 0;
 	comboMaxTime = 120;//1 seconds times 60fps
 
+<<<<<<< HEAD
 	//Set Starting Action
 	action = ACTION_FALL;//0 idle, 1 jumping
 	idle();
@@ -82,9 +98,29 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 		system("pause");
 		exit(0);
 	}
+=======
+	action = 0;//0 idle, 1 jumping
+	activeFrames = 0;
+	currentFrame = 0;
+	interuptable = true;
+
+	//debug hitbox
+	//boxMesh = new Mesh("./res/transparentsphere.obj");
+	//boxShader = new Shader("./res/blueclear");
+	//boxTexture = new Texture("./res/redclear.png");
+	std::vector<std::string> hitBox;
+	hitBox.push_back("./Assets/Models/Hitbox.obj");
+	boxMesh.LoadFromFile(hitBox);
+	/*{
+		std::cout << "Character Model failed to load.\n";
+		system("pause");
+		exit(0);
+	}*/
+
+>>>>>>> master
 	if (!(boxTexture.Load("./Assets/Textures/redclear.png")))
 	{
-		std::cout << "Character Texture failed to load.\n";
+		std::cout << "Hitbox Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
@@ -214,8 +250,11 @@ void Character::draw(ShaderProgram GBufferPass) {
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
 		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+
+		boxTexture.UnBind();
 	}
 
+<<<<<<< HEAD
 	if (blocking) {
 		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
 		mat4 shield;
@@ -233,6 +272,9 @@ void Character::draw(ShaderProgram GBufferPass) {
 		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
 	}
 
+=======
+	texture.UnBind();
+>>>>>>> master
 }
 
 void Character::drawShadow(ShaderProgram GBufferPass)
