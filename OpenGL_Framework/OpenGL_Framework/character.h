@@ -18,7 +18,7 @@
 #define ACTION_IDLE				0
 #define ACTION_WALK				1
 #define ACTION_RUN				2
-#define ACTION_INTIAL_DASH			3
+#define ACTION_INTIAL_DASH		3
 #define ACTION_PREJUMP			4
 #define ACTION_JUMP				5
 #define ACTION_JUMP2			6
@@ -63,6 +63,13 @@ public:
 	bool facingRight;
 	bool blocking;
 	bool blockSuccessful;
+
+	//actions
+	unsigned int action;
+	unsigned int activeFrames;
+	unsigned int currentFrame;
+	bool interuptable;
+
 
 	//Actions
 	mat4 idle();
@@ -165,12 +172,6 @@ protected:
 
 	//attacks
 	std::vector<Hitbox*> activeHitboxes;
-
-	//actions
-	unsigned int action;
-	unsigned int activeFrames;
-	unsigned int currentFrame;
-	bool interuptable;
 
 
 	//debug hitbox
