@@ -40,16 +40,16 @@ public:
 	void SendUniform(const std::string &name, const vec4 &vector);
 	void SendUniformMat3(const std::string &name, float *matrix, bool transpose);
 	void SendUniformMat4(const std::string &name, float *matrix, bool transpose);
-
+	
 
 	GLuint getProgram();
 
 private:
 	bool _IsInit = false;
-	GLuint _VertexShader = 0;
-	GLuint _GeomShader = 0;
-	GLuint _FragShader = 0;
-	GLuint _Program = 0;
+	GLuint _VertexShader	= 0;
+	GLuint _GeomShader		= 0;
+	GLuint _FragShader		= 0;
+	GLuint _Program			= 0;
 
 	std::string ReadFile(const std::string &fileName) const;
 	//Take one of the two shaders in the class and compile them, if there is an error it will output those errors
@@ -57,7 +57,7 @@ private:
 	//Will output the error list of the shader in the event that the shader did not compile properly **super useful for workflow**
 	void OutputShaderLog(GLuint shader) const;
 	//Outputs debug information relative to the entire program
-	void OutputProgramLog() const;
+	void OutputProgramLog() const; 
 
 
 };

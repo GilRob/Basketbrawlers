@@ -18,7 +18,7 @@
 #define ACTION_IDLE				0
 #define ACTION_WALK				1
 #define ACTION_RUN				2
-#define ACTION_INTIAL_DASH		3
+#define ACTION_INTIAL_DASH			3
 #define ACTION_PREJUMP			4
 #define ACTION_JUMP				5
 #define ACTION_JUMP2			6
@@ -54,7 +54,6 @@ public:
 
 	void update(int t, std::vector<bool> inputs);
 	void draw(ShaderProgram GBufferPass);
-	void drawBoxes(ShaderProgram GBufferPass);
 	void drawShadow(ShaderProgram GBufferPass);
 	vec3 getPosition();
 	void setPosition(vec3 pos);
@@ -64,7 +63,6 @@ public:
 	bool facingRight;
 	bool blocking;
 	bool blockSuccessful;
-
 
 	//Actions
 	mat4 idle();
@@ -152,11 +150,6 @@ protected:
 	int hitstun;
 	int hitframes;
 
-	//actions
-	unsigned int action;
-	unsigned int activeFrames;
-	unsigned int currentFrame;
-	bool interuptable;
 
 	//combo stuff
 	unsigned int comboCount;//counts hits in a row, resets after x time
@@ -172,6 +165,12 @@ protected:
 
 	//attacks
 	std::vector<Hitbox*> activeHitboxes;
+
+	//actions
+	unsigned int action;
+	unsigned int activeFrames;
+	unsigned int currentFrame;
+	bool interuptable;
 
 
 	//debug hitbox

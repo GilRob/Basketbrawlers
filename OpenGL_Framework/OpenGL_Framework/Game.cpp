@@ -20,7 +20,6 @@ Game::~Game()
 	BloomComposite.UnLoad();
 	GBufferPass.UnLoad();
 	DeferredLighting.UnLoad();
-	AniShader.UnLoad();
 	/*SobelPass.UnLoad();
 	Sword.Unload();
 	SwordTexture.Unload();
@@ -105,13 +104,6 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	if (!AniShader.Load("./Assets/Shaders/shaderAni.vert", "./Assets/Shaders/GBufferPass.frag"))
-	{
-		std::cout << "AS Shaders failed to initialize.\n";
-		system("pause");
-		exit(0);
-	}
-
 	/*if (!SobelPass.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Toon/Sobel.frag"))
 	{
 		std::cout << "SP Shaders failed to initialize.\n";
@@ -190,14 +182,12 @@ void Game::initializeGame()
 	}
 	//My Cel-Shade is looking funky...
 	StepTexture.SetNearestFilter();*/
-	std::vector<std::string> court;
-	court.push_back("./Assets/Models/Court.obj");
-	Court.LoadFromFile(court);
-	/*{
+	if (!Court.LoadFromFile("./Assets/Models/Court.obj"))
+	{
 		std::cout << "Sword Model failed to load.\n";
 		system("pause");
 		exit(0);
-	}*/
+	}
 
 	if (!CourtTexture.Load("./Assets/Textures/CourtTexture.png"))
 	{
@@ -488,8 +478,8 @@ void Game::draw()
 	glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
 	glActiveTexture(GL_TEXTURE0);
 
-	///playerOne->draw(GBufferPass);
-	///playerTwo->draw(GBufferPass);
+	playerOne->draw(GBufferPass);
+	playerTwo->draw(GBufferPass);
 	
 	/*SwordTexture.Bind();
 	glBindVertexArray(Sword.VAO);
@@ -536,43 +526,13 @@ void Game::draw()
 
 	glBindVertexArray(0);
 
-	//GBuffer.UnBind();
-
-	CourtTexture.UnBind();
-
-
-	playerOne->drawBoxes(GBufferPass);
-	playerTwo->drawBoxes(GBufferPass);
-
-	///Ani Shader///
-	AniShader.Bind();
-	static float aniTimer = 0.f;
-	static int index = 0;
-	aniTimer += updateTimer->getElapsedTimeSeconds();
-	if (aniTimer > 1.0f)
-	{
-		aniTimer = 0.0f;
-		index = (index + 1) % 2;
-	}
-	// Ask for the handles identfying the uniform variables in our shader.
-	AniShader.SendUniformMat4("uModel", playerOne->transform.data, true);
-	AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
-	AniShader.SendUniform("interp", aniTimer);
-	AniShader.SendUniform("index", index);
-
-	playerOne->draw(AniShader);
-	playerTwo->draw(AniShader);
-
-	AniShader.UnBind();
 	GBuffer.UnBind();
 	GBufferPass.UnBind();
-
 	/*SwordTexture.UnBind();
 	StoneTexture.UnBind();
 	HouseTexture.UnBind();
 	GroundTexture.UnBind();*/
-	//CourtTexture.UnBind();
+	CourtTexture.UnBind();
 	//StaticGeometry.UnBind(); //Why no longer unbind this?
 
 	/// Detect Edges ///
