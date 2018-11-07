@@ -155,7 +155,7 @@ protected:
 	unsigned int airJumps;
 	int jumpsLeft;
 	int hitstun;
-	int hitframes
+	int hitframes;
 
 	//combo stuff
 	unsigned int comboCount;//counts hits in a row, resets after x time
