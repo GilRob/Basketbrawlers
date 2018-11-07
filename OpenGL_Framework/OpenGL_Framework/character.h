@@ -65,6 +65,11 @@ public:
 	bool blocking;
 	bool blockSuccessful;
 
+	//actions
+	unsigned int action;
+	unsigned int activeFrames;
+	unsigned int currentFrame;
+	bool interuptable;
 
 	//Actions
 	mat4 idle();
@@ -150,13 +155,7 @@ protected:
 	unsigned int airJumps;
 	int jumpsLeft;
 	int hitstun;
-	int hitframes;
-
-	//actions
-	unsigned int action;
-	unsigned int activeFrames;
-	unsigned int currentFrame;
-	bool interuptable;
+	int hitframes
 
 	//combo stuff
 	unsigned int comboCount;//counts hits in a row, resets after x time
