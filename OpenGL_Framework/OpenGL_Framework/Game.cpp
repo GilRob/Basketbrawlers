@@ -191,7 +191,7 @@ void Game::initializeGame()
 	//My Cel-Shade is looking funky...
 	StepTexture.SetNearestFilter();*/
 	std::vector<std::string> court;
-	court.push_back("./Assets/Models/Court.obj");
+	court.push_back("./Assets/Models/KnightCourt.obj");
 	Court.LoadFromFile(court);
 	/*{
 		std::cout << "Sword Model failed to load.\n";
@@ -199,13 +199,13 @@ void Game::initializeGame()
 		exit(0);
 	}*/
 
-	if (!CourtTexture.Load("./Assets/Textures/CourtTexture.png"))
+	if (!CourtTexture.Load("./Assets/Textures/GameCastleTexture.png"))
 	{
 		std::cout << "Court Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
-
+	
 	/*if (!NormalSword.Load("./Assets/Textures/SwordNormal.png"))
 	{
 		std::cout << "Sword Normal Texture failed to load.\n";
@@ -365,6 +365,7 @@ void Game::update()
 		std::cout << std::endl << "Player 1 Scored" << std::endl;
 	}
 
+	
 	//inputs = { false, false, false, false, false, false }; //up, left, down, right, A, B
 
 	//DYNAMIC CAM
@@ -543,9 +544,11 @@ void Game::draw()
 
 	playerOne->drawBoxes(GBufferPass);
 	playerTwo->drawBoxes(GBufferPass);
+	//playerOne->draw(GBufferPass);
+	//playerTwo->draw(GBufferPass);
 
 	///Ani Shader///
-	AniShader.Bind();
+	/*AniShader.Bind();
 	static float aniTimer = 0.f;
 	static int index = 0;
 	aniTimer += updateTimer->getElapsedTimeSeconds();
@@ -561,8 +564,57 @@ void Game::draw()
 	AniShader.SendUniform("interp", aniTimer);
 	AniShader.SendUniform("index", index);
 
+
 	playerOne->draw(AniShader);
 	playerTwo->draw(AniShader);
+
+	AniShader.UnBind();*/
+
+	if (playerOne->action == ACTION_IDLE)
+	{
+		AniShader.Bind();
+		static float aniTimer = 0.f;
+		static int index = 0;
+		aniTimer += updateTimer->getElapsedTimeSeconds();
+		if (aniTimer > 1.0f)
+		{
+			aniTimer = 0.0f;
+			index = (index + 1) % 2;
+		}
+		// Ask for the handles identfying the uniform variables in our shader.
+		AniShader.SendUniformMat4("uModel", playerOne->transform.data, true);
+		AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+		AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
+		AniShader.SendUniform("interp", aniTimer);
+		AniShader.SendUniform("index", index);
+
+		playerOne->draw(AniShader);
+	}
+	else
+		playerOne->draw(GBufferPass);
+
+	if (playerTwo->action == ACTION_IDLE)
+	{
+		AniShader.Bind();
+		static float aniTimer = 0.f;
+		static int index = 0;
+		aniTimer += updateTimer->getElapsedTimeSeconds();
+		if (aniTimer > 1.0f)
+		{
+			aniTimer = 0.0f;
+			index = (index + 1) % 2;
+		}
+		// Ask for the handles identfying the uniform variables in our shader.
+		AniShader.SendUniformMat4("uModel", playerTwo->transform.data, true);
+		AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+		AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
+		AniShader.SendUniform("interp", aniTimer);
+		AniShader.SendUniform("index", index);
+
+		playerTwo->draw(AniShader);
+	}
+	else
+		playerTwo->draw(GBufferPass);
 
 	AniShader.UnBind();
 	GBuffer.UnBind();
