@@ -590,8 +590,13 @@ void Game::draw()
 
 		playerOne->draw(AniShader);
 	}
-	else
+	else {
+		GBufferPass.Bind();
+		GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
+		GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+		GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
 		playerOne->draw(GBufferPass);
+	}
 
 	if (playerTwo->action == ACTION_IDLE)
 	{
@@ -613,8 +618,13 @@ void Game::draw()
 
 		playerTwo->draw(AniShader);
 	}
-	else
+	else {
+		GBufferPass.Bind();
+		GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
+		GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+		GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
 		playerTwo->draw(GBufferPass);
+	}
 
 	AniShader.UnBind();
 	GBuffer.UnBind();

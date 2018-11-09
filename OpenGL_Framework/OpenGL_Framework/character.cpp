@@ -138,11 +138,11 @@ void Character::update(int t, std::vector<bool> inputs) {
 		velocity.x = (0 - runSpeed);
 
 	//friction
-	if (position.y <= 1.2f && (((int)inputs[1] - (int)inputs[3]) == 0 || (action != ACTION_WALK && action != ACTION_RUN && action != ACTION_INTIAL_DASH))) {
-		velocity.x = velocity.x * 0.9f;
+	if (position.y <= 0.0f && (((int)inputs[1] - (int)inputs[3]) == 0 || (action != ACTION_WALK && action != ACTION_RUN && action != ACTION_INTIAL_DASH && action != ACTION_PREJUMP))) {
+		velocity.x = velocity.x * 0.7f;
 	}
-	if (position.y > 1.2f && !inputs[1] && !inputs[3]) {
-		velocity.x = velocity.x * 0.99f;
+	if (position.y > 0.0f && !inputs[1] && !inputs[3]) {
+		velocity.x = velocity.x * 0.9f;
 	}
 
 	//Update Position
@@ -157,9 +157,9 @@ void Character::update(int t, std::vector<bool> inputs) {
 
 	//Fake Floor Code
 	///Will be changed later
-	if (position.y < 1.2f) {
+	if (position.y < 0.0f) {
 		//called on landing
-		position.y = 1.2f;
+		position.y = 0.0f;
 		jumpsLeft = airJumps;
 		if (action == ACTION_HIT) {
 			velocity.y *= -0.75f;
