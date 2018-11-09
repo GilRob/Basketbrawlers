@@ -79,6 +79,8 @@ public:
 	//Texture NormalStone;
 	Mesh Court;
 	Texture CourtTexture;
+	Mesh Background;
+	Texture BackgroundTexture;
 
 	/// FRAMEBUFFERS ///
 	FrameBuffer GBuffer; //Utility buffer to hold positions and normals

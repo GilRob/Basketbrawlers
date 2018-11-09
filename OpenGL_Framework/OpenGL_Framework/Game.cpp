@@ -34,6 +34,8 @@ Game::~Game()
 	StepTexture.Unload();*/
 	Court.Unload();
 	CourtTexture.Unload();
+	Background.Unload();
+	BackgroundTexture.Unload();
 	//NormalSword.Unload();
 	//NormalStone.Unload();
 }
@@ -193,15 +195,21 @@ void Game::initializeGame()
 	std::vector<std::string> court;
 	court.push_back("./Assets/Models/KnightCourt.obj");
 	Court.LoadFromFile(court);
-	/*{
-		std::cout << "Sword Model failed to load.\n";
-		system("pause");
-		exit(0);
-	}*/
 
 	if (!CourtTexture.Load("./Assets/Textures/GameCastleTexture.png"))
 	{
 		std::cout << "Court Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+
+	std::vector<std::string> bkg;
+	bkg.push_back("./Assets/Models/Background.obj");
+	Background.LoadFromFile(bkg);
+
+	if (!BackgroundTexture.Load("./Assets/Textures/BackgroundTexture.jpg"))
+	{
+		std::cout << "BKG Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
@@ -386,9 +394,9 @@ void Game::update()
 	CameraTransform.RotateY(0.0f);
 
 	ShadowTransform = mat4::Identity;
-	ShadowTransform.RotateX(-60.0f);
+	ShadowTransform.RotateX(-45.0f);
 	ShadowTransform.Translate(vec3(0.0f, 8.0f, 25.0f));
-	ShadowTransform.RotateY(-20.0f);
+	ShadowTransform.RotateY(-200.0f);
 	
 	mat4 bias = mat4(0.5f, 0.0f, 0.0f, 0.5f,
 					 0.0f, 0.5f, 0.0f, 0.5f,
@@ -446,6 +454,10 @@ void Game::draw()
 
 	glBindVertexArray(Court.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, Court.GetNumVertices());
+
+	glBindVertexArray(Background.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
+
 	GBufferPass.SendUniformMat4("uModel",playerOne->transform.data, true);
 	playerOne->drawShadow(GBufferPass);
 	GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
@@ -529,6 +541,10 @@ void Game::draw()
 	CourtTexture.Bind();
 	glBindVertexArray(Court.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, Court.GetNumVertices());
+
+	BackgroundTexture.Bind();
+	glBindVertexArray(Background.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
 	
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);

@@ -99,6 +99,7 @@
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Shaders\AnimationShader.vert" />
     <None Include="Assets\Shaders\Bloom\BloomComposite.frag" />
     <None Include="Assets\Shaders\Bloom\BloomHighPass.frag" />
     <None Include="Assets\Shaders\Bloom\BlurHorizontal.frag" />

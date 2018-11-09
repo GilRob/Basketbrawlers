@@ -12,7 +12,7 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	std::vector<std::string> knightFiles;
 	for (int c = 0; c < 2; ++c)
 	{
-		knightFiles.push_back("./Assets/Models/Pose" + std::to_string(c) + ".obj");
+		knightFiles.push_back("./Assets/Models/KnightIdle" + std::to_string(c) + ".obj");
 		//marioFiles.push_back("../assets/models/Mario_Export" + std::to_string(c) + ".bin");
 	}
 	body.LoadFromFile(knightFiles);
@@ -151,9 +151,9 @@ void Character::update(int t, std::vector<bool> inputs) {
 
 	///Rotate the player to the correct way they should look
 	if (facingRight == true)
-		transform.RotateY(90);
+		transform.RotateY(0);
 	else
-		transform.RotateY(270);
+		transform.RotateY(180);
 
 	//Fake Floor Code
 	///Will be changed later

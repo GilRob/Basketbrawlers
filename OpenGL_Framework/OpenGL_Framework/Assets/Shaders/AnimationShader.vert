@@ -13,9 +13,9 @@ layout(location = 5) in vec4 in_normal2;
 layout(location = 6) in vec4 in_vert3;
 layout(location = 7) in vec4 in_uv3;
 layout(location = 8) in vec4 in_normal3;
-layout(location = 9) in vec4 in_vert4;
+/*layout(location = 9) in vec4 in_vert4;
 layout(location = 10) in vec4 in_uv4;
-layout(location = 11) in vec4 in_normal4;
+layout(location = 11) in vec4 in_normal4;*/
 
 uniform float interp = 0.5;
 uniform int index = 0; 
@@ -75,7 +75,7 @@ void main()
 	else if (index == 1)
 		cat = mix(in_vert2, in_vert, interp);
 	/*else if (index == 2)
-		cat = mix(in_vert3, in_vert4, interp);
+		cat = mix(in_vert3, in_vert, interp);
 	else if (index == 3)
 		cat = mix(in_vert4, in_vert, interp);*/
 	else cat = in_vert;
