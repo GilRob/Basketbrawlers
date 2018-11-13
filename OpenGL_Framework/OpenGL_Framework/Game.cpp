@@ -213,7 +213,8 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}
-	
+	BGTransform.SetTranslation(vec3(0, 3, -40));
+
 	/*if (!NormalSword.Load("./Assets/Textures/SwordNormal.png"))
 	{
 		std::cout << "Sword Normal Texture failed to load.\n";
@@ -318,7 +319,7 @@ void Game::update()
 		else {
 			float diffHx = playerOne->getPosition().x - playerTwo->getHitboxes()[i]->getPosition().x;//difference between characters x
 			float diffHy = playerOne->getPosition().y - playerTwo->getHitboxes()[i]->getPosition().y;//difference between characters y
-			if (abs(diffHx) < 0.3f + (playerTwo->getHitboxes()[i]->getSize() *0.1f) && (diffHy > -3.0f - (playerTwo->getHitboxes()[i]->getSize() *0.1f) && diffHy < 0.2f + +(playerTwo->getHitboxes()[i]->getSize() *0.1f))) {
+			if (abs(diffHx) < 0.65f + (playerTwo->getHitboxes()[i]->getSize() *0.1f) && (diffHy > -5.0f - (playerTwo->getHitboxes()[i]->getSize() *0.1f) && diffHy < 0.2f +(playerTwo->getHitboxes()[i]->getSize() *0.1f))) {
 				if (playerOne->blocking && (playerOne->facingRight != playerTwo->facingRight)) {//add only in front condition
 					playerOne->blockSuccessful = true;
 					playerTwo->getHitboxes()[i]->setDone();
@@ -343,7 +344,7 @@ void Game::update()
 		else {
 			float diffHx = playerTwo->getPosition().x - playerOne->getHitboxes()[i]->getPosition().x;//difference between characters x
 			float diffHy = playerTwo->getPosition().y - playerOne->getHitboxes()[i]->getPosition().y;//difference between characters y
-			if (abs(diffHx) < 0.3f + (playerOne->getHitboxes()[i]->getSize() *0.1f) && (diffHy > -3.0f - (playerOne->getHitboxes()[i]->getSize() *0.1f) && diffHy < 0.2f + +(playerOne->getHitboxes()[i]->getSize() *0.1f))) {
+			if (abs(diffHx) < 0.65f + (playerOne->getHitboxes()[i]->getSize() *0.1f) && (diffHy > -5.0f - (playerOne->getHitboxes()[i]->getSize() *0.1f) && diffHy < 0.2f +(playerOne->getHitboxes()[i]->getSize() *0.1f))) {
 				if (playerTwo->blocking && (playerOne->facingRight != playerTwo->facingRight)) {//add only in front condition
 					playerTwo->blockSuccessful = true;
 					playerOne->getHitboxes()[i]->setDone();
@@ -364,11 +365,11 @@ void Game::update()
 	playerTwo->update(deltaTime, inputs);
 
 	//score
-	if (abs(abs(playerOne->getPosition().x) - 14) < 1 && abs(playerOne->getPosition().y - 8) < 1) {
+	if (abs(abs(playerOne->getPosition().x) - 26) < 1.3f && abs(playerOne->getPosition().y - 10) < 1.3f) {
 		playerOne->respawn();
 		std::cout << std::endl << "Player 2 Scored" << std::endl;
 	}
-	if (abs(abs(playerTwo->getPosition().x) - 14) < 1 && abs(playerTwo->getPosition().y - 8) < 1) {
+	if (abs(abs(playerTwo->getPosition().x) - 26) < 1.3f && abs(playerTwo->getPosition().y - 10) < 1.3f) {
 		playerTwo->respawn();
 		std::cout << std::endl << "Player 1 Scored" << std::endl;
 	}
@@ -388,14 +389,14 @@ void Game::update()
 
 	//Make sure to do the reverse of the transform orders due to the change from row-major to column-major, it reverses all mathematic operations
 	CameraTransform = mat4::Identity;
-	CameraTransform.RotateX(-20.0f);
+	CameraTransform.RotateX(-20.0f - abs(sqrtf(dist*0.01f)*10.0f));
 	//CameraTransform.Translate(vec3(0.0f, 7.5f, 11.0f));
-	CameraTransform.Translate(vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, abs(sqrtf(dist*0.01f)*5.0f) + 7.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), dist+5));
+	CameraTransform.Translate(vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, abs(sqrtf(dist*0.01f)*20.0f) + 10.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), dist+10));
 	CameraTransform.RotateY(0.0f);
 
 	ShadowTransform = mat4::Identity;
 	ShadowTransform.RotateX(-45.0f);
-	ShadowTransform.Translate(vec3(0.0f, 8.0f, 25.0f));
+	ShadowTransform.Translate(vec3(0.0f, 6.0f, 10.0f));
 	ShadowTransform.RotateY(-200.0f);
 	
 	mat4 bias = mat4(0.5f, 0.0f, 0.0f, 0.5f,
@@ -455,8 +456,8 @@ void Game::draw()
 	glBindVertexArray(Court.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, Court.GetNumVertices());
 
-	glBindVertexArray(Background.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
+	//glBindVertexArray(Background.VAO);
+	//glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
 
 	GBufferPass.SendUniformMat4("uModel",playerOne->transform.data, true);
 	playerOne->drawShadow(GBufferPass);
@@ -544,6 +545,9 @@ void Game::draw()
 
 	BackgroundTexture.Bind();
 	glBindVertexArray(Background.VAO);
+	GBufferPass.SendUniformMat4("uModel", BGTransform.data, true);
+	GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+	GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
 	glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
 	
 	glActiveTexture(GL_TEXTURE1);

@@ -81,6 +81,7 @@ public:
 	Texture CourtTexture;
 	Mesh Background;
 	Texture BackgroundTexture;
+	mat4 BGTransform;
 
 	/// FRAMEBUFFERS ///
 	FrameBuffer GBuffer; //Utility buffer to hold positions and normals
