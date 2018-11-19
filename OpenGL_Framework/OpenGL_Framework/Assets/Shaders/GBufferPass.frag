@@ -13,8 +13,9 @@ layout(location = 2) out vec3 outPosition;
 void main()
 {
 	//Standard color output
-	outColor.rgb = texture(uTex, texcoord).rgb;
-	outColor.a = 1.0;
+	//outColor.rgb = texture(uTex, texcoord).rgb;
+	//outColor.a = 1.0;
+	outColor = texture(uTex, texcoord);
 
 	//Pack normals
 	//in -> [-1, 1]

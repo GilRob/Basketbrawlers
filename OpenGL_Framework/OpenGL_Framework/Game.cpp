@@ -2,7 +2,7 @@
 #include "Utilities.h"
 
 Game::Game()
-	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1)
+	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(4)
 	//This constructor in the initializer list is to solve the issue of creating a frame buffer object without no default constructor
 	//This will occur before the brackets of the constructor starts (Reference at Week #6 video Time: 47:00)
 	//The number is the number of color textures
@@ -114,84 +114,6 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	/*if (!SobelPass.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Toon/Sobel.frag"))
-	{
-		std::cout << "SP Shaders failed to initialize.\n";
-		system("pause");
-		exit(0);
-	}
-
-	if (!Sword.LoadFromFile("./Assets/Models/Sword.obj"))
-	{
-		std::cout << "Sword Model failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-
-	if (!Stone.LoadFromFile("./Assets/Models/Stone.obj"))
-	{
-		std::cout << "Stone Model failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-
-	if (!House.LoadFromFile("./Assets/Models/House.obj"))
-	{
-		std::cout << "House Model failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-
-	if (!Ground.LoadFromFile("./Assets/Models/Ground.obj"))
-	{
-		std::cout << "Ground Model failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-
-	if (!Sphere.LoadFromFile("./Assets/Models/Sphere.obj"))
-	{
-		std::cout << "Sphere Model failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-
-	if (!SwordTexture.Load("./Assets/Textures/Sword.png"))
-	{
-		std::cout << "Sword Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-
-	if (!StoneTexture.Load("./Assets/Textures/Stone.png"))
-	{
-		std::cout << "Stone Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-
-	if (!HouseTexture.Load("./Assets/Textures/House.png"))
-	{
-		std::cout << "House Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-	
-	if (!GroundTexture.Load("./Assets/Textures/Ground1.png"))
-	{
-		std::cout << "Ground Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-
-	if (!StepTexture.Load("./Assets/Textures/StepTexture.png"))
-	{
-		std::cout << "Step Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-	//My Cel-Shade is looking funky...
-	StepTexture.SetNearestFilter();*/
 	std::vector<std::string> court;
 	court.push_back("./Assets/Models/KnightCourt.obj");
 	Court.LoadFromFile(court);
@@ -215,19 +137,18 @@ void Game::initializeGame()
 	}
 	BGTransform.SetTranslation(vec3(0, 3, -40));
 
-	/*if (!NormalSword.Load("./Assets/Textures/SwordNormal.png"))
+	if (!P1Hud.Load("./Assets/Textures/PlayerOneHud.png"))
 	{
-		std::cout << "Sword Normal Texture failed to load.\n";
+		std::cout << "BKG Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
-
-	if (!NormalStone.Load("./Assets/Textures/StoneNormal.png"))
+	if (!P1Bar.Load("./Assets/Textures/PlayerOneBar.png"))
 	{
-		std::cout << "Stone Normal Texture failed to load.\n";
+		std::cout << "BKG Texture failed to load.\n";
 		system("pause");
 		exit(0);
-	}*/
+	}
 
 	GBuffer.InitDepthTexture(WINDOW_WIDTH, WINDOW_HEIGHT);
 	//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
@@ -283,12 +204,28 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}
+	HudMap.InitDepthTexture(WINDOW_WIDTH, WINDOW_HEIGHT);
+	//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
+	//These parameters can be changed to whatever you want
+	HudMap.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE); //Flat color
+	HudMap.InitColorTexture(1, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB16, GL_NEAREST, GL_CLAMP_TO_EDGE); //Normals (xyz)
+	//Buffer explained at Week 10 time: 5:30 - 7:45
+	HudMap.InitColorTexture(2, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE); //View Space Positions (xyz)
+	HudMap.InitColorTexture(3, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	if (!HudMap.CheckFBO())
+	{
+		std::cout << "HudMap FBO failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
+
 
 	/*CameraTransform.Translate(vec3(0.0f, 7.5f, 20.0f));
 	CameraTransform.RotateX(-15.0f);*/
 	CameraProjection = mat4::PerspectiveProjection(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 1.0f, 10000.0f);
 	//ShadowProjection.OrthographicProjection(35.0f, -35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
 	ShadowProjection = mat4::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
+	hudProjection = mat4::OrthographicProjection(-640.0f, 640.0f, 360.0f, -360.0f, 1.0f, 100.0f);
 }
 
 void Game::update()
@@ -406,6 +343,7 @@ void Game::update()
 
 	ViewToShadowMap = mat4::Identity;
 	ViewToShadowMap = bias * ShadowProjection * ShadowTransform.GetInverse() * CameraTransform;
+	//ShadowTransform.Translate(vec3(0.0f, 0.0f, 0.0f));
 }
 /*
 ***Always remember to ask the three questions***
@@ -424,6 +362,7 @@ void Game::draw()
 	glClearColor(0.0f, 0.0f, 0.0f, 0);
 	GBuffer.Clear();
 	ShadowMap.Clear();
+	HudMap.Clear();
 	WorkBuffer1.Clear();
 	WorkBuffer2.Clear();
 
@@ -437,21 +376,6 @@ void Game::draw()
 	GBufferPass.SendUniformMat4("uProj", ShadowProjection.data, true);
 
 	ShadowMap.Bind();
-
-	/*glBindVertexArray(Sword.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, Sword.GetNumVertices());
-
-	glBindVertexArray(Stone.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, Stone.GetNumVertices());
-
-	glBindVertexArray(House.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, House.GetNumVertices());
-
-	glBindVertexArray(Ground.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, Ground.GetNumVertices());
-
-	glBindVertexArray(Sphere.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, Sphere.GetNumVertices());*/
 
 	glBindVertexArray(Court.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, Court.GetNumVertices());
@@ -646,16 +570,11 @@ void Game::draw()
 		playerTwo->draw(GBufferPass);
 	}
 
+
 	AniShader.UnBind();
 	GBuffer.UnBind();
 	GBufferPass.UnBind();
 
-	/*SwordTexture.UnBind();
-	StoneTexture.UnBind();
-	HouseTexture.UnBind();
-	GroundTexture.UnBind();*/
-	//CourtTexture.UnBind();
-	//StaticGeometry.UnBind(); //Why no longer unbind this?
 
 	/// Detect Edges ///
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -779,6 +698,8 @@ void Game::draw()
 		BlurVertical.UnBind();
 	}
 
+	drawHUD();
+
 	/// Composite To Back Buffer ///
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -795,10 +716,69 @@ void Game::draw()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
+
 	BloomComposite.UnBind();
+
 
 	glutSwapBuffers();
 }
+
+void Game::drawHUD()
+{
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	hudTransform = mat4::Identity;
+
+	DeferredComposite.Bind();
+	GBufferPass.Bind();
+	mat4 hudLoc;
+	hudLoc.Scale(2.0f);
+	hudLoc.Translate(vec3(-500,-200,1));
+	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+	//The reason of the inverse is because it is easier to do transformations
+	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+
+	glDepthMask(GL_FALSE);  // disable writes to Z-Buffer
+	glDisable(GL_DEPTH_TEST);  // disable depth-testing
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_LIGHTING);
+	
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();//save old state
+	glLoadIdentity();//reset
+	//gluOrtho2D(0.0, 1.0, 0.0, 1.0);//create ortho
+	gluOrtho2D(0.0, WINDOW_WIDTH, 0.0, WINDOW_HEIGHT);//create ortho
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();//save old state
+	glLoadIdentity();//reset
+
+	//now ready to draw 2d
+
+	///draw quad
+	//glBindTexture(GL_TEXTURE_2D, P1Hud.TextObj);
+	P1Hud.Bind();
+	glBindVertexArray(Background.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
+
+	P1Hud.UnBind();
+	//restore projection matrix
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();//restore state
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();//restore state
+
+	DeferredComposite.UnBind();
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_LIGHTING);
+	glDisable(GL_BLEND);
+
+	GBufferPass.UnBind();
+}
+
+
 
 void Game::keyboardDown(unsigned char key, int mouseX, int mouseY)
 {

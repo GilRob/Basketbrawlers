@@ -35,6 +35,7 @@ public:
 	void initializeGame();
 	void update();
 	void draw();
+	void drawHUD();
 
 	/* input callback functions */
 	void keyboardDown(unsigned char key, int mouseX, int mouseY);
@@ -82,6 +83,8 @@ public:
 	Mesh Background;
 	Texture BackgroundTexture;
 	mat4 BGTransform;
+	Texture P1Hud;
+	Texture P1Bar;
 
 	/// FRAMEBUFFERS ///
 	FrameBuffer GBuffer; //Utility buffer to hold positions and normals
@@ -91,6 +94,7 @@ public:
 	//Bloom work buffers
 	FrameBuffer WorkBuffer1;
 	FrameBuffer WorkBuffer2;
+	FrameBuffer HudMap;
 
 
 	mat4 StoneTransform;
@@ -99,6 +103,8 @@ public:
 	mat4 CameraProjection;
 	mat4 ShadowTransform;
 	mat4 ShadowProjection;
+	mat4 hudTransform;
+	mat4 hudProjection;
 
 	mat4 ViewToShadowMap;
 
@@ -115,6 +121,7 @@ public:
 
 	float lTrig, rTrig;
 	float lTrig2, rTrig2;
+
 
 private:
 
