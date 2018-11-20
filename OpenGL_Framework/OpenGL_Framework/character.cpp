@@ -2,6 +2,9 @@
 
 Character::Character(const std::string& bodyName, const std::string& textureName){
 
+	aniTimer = 0.f;
+	index = 0;
+
 	/*//Load Model Texture
 	if (!(body.LoadFromFile(bodyName)))//"./Assets/Models/Sphere.obj"))
 	{
@@ -9,13 +12,81 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 		system("pause");
 		exit(0);
 	}*/
-	std::vector<std::string> knightFiles;
-	for (int c = 0; c < 9; ++c)
+	int length = 9;
+	for (int c = 0; c < length; ++c)//9
 	{
-		knightFiles.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string(c) + ".obj");
-		//marioFiles.push_back("../assets/models/Mario_Export" + std::to_string(c) + ".bin");
+		std::vector<std::string> frame;
+		frame.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string(c) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string((int)((c+1) % length)) + ".obj");
+
+		Mesh* idle = new Mesh();
+		idle->LoadFromFile(frame);
+		idleFrames.push_back(idle);
 	}
-	body.LoadFromFile(knightFiles);
+
+	length = 14;
+	for (int c = 0; c < length; ++c)//14
+	{
+		std::vector<std::string> frame;
+		frame.push_back("./Assets/Models/KnightAnimations/WalkPoses/Walk" + std::to_string(c) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/WalkPoses/Walk" + std::to_string((int)((c + 1) % length)) + ".obj");
+
+		Mesh* walk = new Mesh();
+		walk->LoadFromFile(frame);
+		walkFrames.push_back(walk);
+	}
+
+	length = 9;
+	for (int c = 0; c < length; ++c)//14
+	{
+		std::vector<std::string> frame;
+		frame.push_back("./Assets/Models/KnightAnimations/JabPoses/Jab" + std::to_string(c) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/JabPoses/Jab" + std::to_string((int)((c + 1) % length)) + ".obj");
+
+		Mesh* jab = new Mesh();
+		jab->LoadFromFile(frame);
+		jabFrames.push_back(jab);
+	}
+
+	length = 10;
+	for (int c = 0; c < length; ++c)//14
+	{
+		std::vector<std::string> frame;
+		frame.push_back("./Assets/Models/KnightAnimations/SideAttackPoses/SideAttack" + std::to_string(c) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/SideAttackPoses/SideAttack" + std::to_string((int)((c + 1) % length)) + ".obj");
+
+		Mesh* jab = new Mesh();
+		jab->LoadFromFile(frame);
+		sAtkFrames.push_back(jab);
+	}
+
+	length = 15;
+	for (int c = 0; c < length; ++c)//14
+	{
+		std::vector<std::string> frame;
+		frame.push_back("./Assets/Models/KnightAnimations/UpAttackPoses/UpAttack" + std::to_string(c) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/UpAttackPoses/UpAttack" + std::to_string((int)((c + 1) % length)) + ".obj");
+
+		Mesh* jab = new Mesh();
+		jab->LoadFromFile(frame);
+		uAtkFrames.push_back(jab);
+	}
+
+	length = 9;
+	for (int c = 0; c < length; ++c)//14
+	{
+		std::vector<std::string> frame;
+		frame.push_back("./Assets/Models/KnightAnimations/DownAttackPoses/DownAttack" + std::to_string(c) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/DownAttackPoses/DownAttack" + std::to_string((int)((c + 1) % length)) + ".obj");
+
+		Mesh* jab = new Mesh();
+		jab->LoadFromFile(frame);
+		dAtkFrames.push_back(jab);
+	}
+
+	std::vector<std::string> file;
+	file.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string(0) + ".obj");
+	body.LoadFromFile(file);
 
 	if (!(texture.Load(textureName)))//"./Assets/Textures/Sword.png"))
 	{
@@ -54,7 +125,7 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	///max run speed
 	runSpeed = 0.33f;
 	///force applied for running
-	runAccel = 0.48f;
+	runAccel = 0.52f;
 	///force appplied for directional movement in air
 	airAccel = 0.18f;//15
 	///upwards force for jump
@@ -62,7 +133,7 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	///amount of frames jump last for
 	jumpFrames = 12;
 	///Dash length (in frames)
-	dashLength = 20;
+	dashLength = 8;
 	///number of frames before character leaves ground after jump input
 	prejumpLength =3;
 	///total number of air/double jumps
@@ -205,18 +276,159 @@ vec3 Character::getPosition()
 	return position;
 }
 
-void Character::draw(ShaderProgram GBufferPass) {
+void Character::draw(ShaderProgram shader, float dt) {
+	if (action == ACTION_IDLE) {
+		aniTimer += dt / 6.0f;
+		if (aniTimer > 1.0f)
+		{
+			aniTimer = 0.0f;
+			index = (index + 1) % (idleFrames.size());//9 total frames
+		}
+		if (index >= idleFrames.size())
+			index = 0;
+		// Ask for the handles identfying the uniform variables in our shader.
+		shader.SendUniformMat4("uModel", transform.data, true);
+		shader.SendUniform("interp", aniTimer);
 
-	int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
-	glUniformMatrix4fv(modelLoc, 1, false, transform.data);
+		int modelLoc = glGetUniformLocation(shader.getProgram(), "uModel");
+		glUniformMatrix4fv(modelLoc, 1, false, transform.data);
 
-	texture.Bind();
-	glBindVertexArray(body.VAO);
+		texture.Bind();
+		glBindVertexArray(idleFrames[index]->VAO);
 
-	// Adjust model matrix for next object's location
-	glDrawArrays(GL_TRIANGLES, 0, body.GetNumVertices());
-	glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+		// Adjust model matrix for next object's location
+		glDrawArrays(GL_TRIANGLES, 0, idleFrames[index]->GetNumVertices());
+		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+	}
+	else if (action == ACTION_WALK || action == ACTION_RUN) {
+		aniTimer += dt / 6.0f;
+		if (aniTimer > 1.0f)
+		{
+			aniTimer = 0.0f;
+			index = (index + 1) % (walkFrames.size());//14 total frames
+		}
+		if (index >= walkFrames.size())
+			index = 0;
+		// Ask for the handles identfying the uniform variables in our shader.
+		shader.SendUniformMat4("uModel", transform.data, true);
+		shader.SendUniform("interp", aniTimer);
 
+		int modelLoc = glGetUniformLocation(shader.getProgram(), "uModel");
+		glUniformMatrix4fv(modelLoc, 1, false, transform.data);
+
+		texture.Bind();
+		glBindVertexArray(walkFrames[index]->VAO);
+
+		// Adjust model matrix for next object's location
+		glDrawArrays(GL_TRIANGLES, 0, walkFrames[index]->GetNumVertices());
+		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+	}
+	else if (action == ACTION_JAB) {
+		aniTimer += dt / 4.0f;
+		if (aniTimer > 1.0f)
+		{
+			aniTimer = 0.0f;
+			index = (index + 1) % (jabFrames.size());//14 total frames
+		}
+		if (index >= jabFrames.size())
+			index = 0;
+		// Ask for the handles identfying the uniform variables in our shader.
+		shader.SendUniformMat4("uModel", transform.data, true);
+		shader.SendUniform("interp", aniTimer);
+
+		int modelLoc = glGetUniformLocation(shader.getProgram(), "uModel");
+		glUniformMatrix4fv(modelLoc, 1, false, transform.data);
+
+		texture.Bind();
+		glBindVertexArray(jabFrames[index]->VAO);
+
+		// Adjust model matrix for next object's location
+		glDrawArrays(GL_TRIANGLES, 0, jabFrames[index]->GetNumVertices());
+		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+	}
+	else if (action == ACTION_SIDE_ATTACK) {
+		aniTimer += dt / 4.0f;
+		if (aniTimer > 1.0f)
+		{
+			aniTimer = 0.0f;
+			index = (index + 1) % (sAtkFrames.size());//14 total frames
+		}
+		if (index >= sAtkFrames.size())
+			index = 0;
+		// Ask for the handles identfying the uniform variables in our shader.
+		shader.SendUniformMat4("uModel", transform.data, true);
+		shader.SendUniform("interp", aniTimer);
+
+		int modelLoc = glGetUniformLocation(shader.getProgram(), "uModel");
+		glUniformMatrix4fv(modelLoc, 1, false, transform.data);
+
+		texture.Bind();
+		glBindVertexArray(sAtkFrames[index]->VAO);
+
+		// Adjust model matrix for next object's location
+		glDrawArrays(GL_TRIANGLES, 0, sAtkFrames[index]->GetNumVertices());
+		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+	}
+	else if (action == ACTION_UP_ATTACK) {
+		aniTimer += dt / 3.0f;
+		if (aniTimer > 1.0f)
+		{
+			aniTimer = 0.0f;
+			index = (index + 1) % (uAtkFrames.size());//14 total frames
+		}
+		if (index >= uAtkFrames.size()) {
+			index = 0;
+		}
+		// Ask for the handles identfying the uniform variables in our shader.
+		shader.SendUniformMat4("uModel", transform.data, true);
+		shader.SendUniform("interp", aniTimer);
+
+		int modelLoc = glGetUniformLocation(shader.getProgram(), "uModel");
+		glUniformMatrix4fv(modelLoc, 1, false, transform.data);
+
+		texture.Bind();
+		glBindVertexArray(uAtkFrames[index]->VAO);
+
+		// Adjust model matrix for next object's location
+		glDrawArrays(GL_TRIANGLES, 0, uAtkFrames[index]->GetNumVertices());
+		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+	}
+	else if (action == ACTION_DOWN_ATTACK) {
+		aniTimer += dt / 4.0f;
+		if (aniTimer > 1.0f)
+		{
+			aniTimer = 0.0f;
+			index = (index + 1) % (dAtkFrames.size());//14 total frames
+		}
+		if (index >= dAtkFrames.size())
+			index = 0;
+		// Ask for the handles identfying the uniform variables in our shader.
+		shader.SendUniformMat4("uModel", transform.data, true);
+		shader.SendUniform("interp", aniTimer);
+
+		int modelLoc = glGetUniformLocation(shader.getProgram(), "uModel");
+		glUniformMatrix4fv(modelLoc, 1, false, transform.data);
+
+		texture.Bind();
+		glBindVertexArray(dAtkFrames[index]->VAO);
+
+		// Adjust model matrix for next object's location
+		glDrawArrays(GL_TRIANGLES, 0, dAtkFrames[index]->GetNumVertices());
+		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+	}
+	else {
+		index = 0;
+		shader.SendUniformMat4("uModel", transform.data, true);
+
+		int modelLoc = glGetUniformLocation(shader.getProgram(), "uModel");
+		glUniformMatrix4fv(modelLoc, 1, false, transform.data);
+
+		texture.Bind();
+		glBindVertexArray(idleFrames[index]->VAO);
+
+		glDrawArrays(GL_TRIANGLES, 0, idleFrames[index]->GetNumVertices());
+		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+	}
 }
 
 
@@ -681,8 +893,10 @@ mat4 Character::jab()
 	if (interuptable == true && action != ACTION_JAB) {
 		interuptable = false;
 		action = ACTION_JAB;
-		activeFrames = 17;
+		activeFrames = 43;
 		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
 	}
 	if (action == ACTION_JAB && currentFrame <= activeFrames) {
 		//Testing Code for Spawning Hitboxes
@@ -700,7 +914,7 @@ mat4 Character::jab()
 			return idle();
 		
 		}
-		result.RotateX((5 - abs(currentFrame - 4.0f))*1.5f);
+		//result.RotateX((5 - abs(currentFrame - 4.0f))*1.5f);
 		currentFrame++;
 	}
 	return result;
@@ -712,8 +926,10 @@ mat4 Character::sAttack()
 	if (interuptable == true && action != ACTION_SIDE_ATTACK) {
 		interuptable = false;
 		action = ACTION_SIDE_ATTACK;
-		activeFrames = 24;
+		activeFrames = 48;
 		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
 	}
 	if (action == ACTION_SIDE_ATTACK && currentFrame <= activeFrames) {
 		//Testing Code for Spawning Hitboxes
@@ -731,7 +947,7 @@ mat4 Character::sAttack()
 			action = ACTION_PLACEHOLDER;
 			return idle();
 		}
-		result.RotateX((8 - abs(currentFrame - 7.0f))*1.5f);
+		//result.RotateX((8 - abs(currentFrame - 7.0f))*1.5f);
 		//if (facingRight == true)
 			//result.GetRot()->y = 1.57f;
 		//else
@@ -747,8 +963,10 @@ mat4 Character::dAttack()
 	if (interuptable == true && action != ACTION_DOWN_ATTACK) {
 		interuptable = false;
 		action = ACTION_DOWN_ATTACK;
-		activeFrames = 23;
+		activeFrames = 43;
 		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
 	}
 	if (action == ACTION_DOWN_ATTACK && currentFrame <= activeFrames) {
 		//Testing Code for Spawning Hitboxes
@@ -766,7 +984,7 @@ mat4 Character::dAttack()
 			return idle();
 
 		}
-		result.Scale(vec3(1.0f, 1.0f - (7 - abs(currentFrame - 6.0f))*0.03f,1.0f));
+		//result.Scale(vec3(1.0f, 1.0f - (7 - abs(currentFrame - 6.0f))*0.03f,1.0f));
 		currentFrame++;
 	}
 	return result;
@@ -778,8 +996,10 @@ mat4 Character::uAttack()
 	if (interuptable == true && action != ACTION_UP_ATTACK) {
 		interuptable = false;
 		action = ACTION_UP_ATTACK;
-		activeFrames = 30;
+		activeFrames = 60;
 		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
 	}
 	if (action == ACTION_UP_ATTACK && currentFrame <= activeFrames) {
 		//Testing Code for Spawning Hitboxes
@@ -798,8 +1018,8 @@ mat4 Character::uAttack()
 			return idle();
 
 		}
-		result.Scale(vec3(1.0f, 1.0f - (15 - abs(currentFrame - 13.0f))*0.03f, 1.0f));
-		result.RotateY(currentFrame * 2);
+		//result.Scale(vec3(1.0f, 1.0f - (15 - abs(currentFrame - 13.0f))*0.03f, 1.0f));
+		//result.RotateY(currentFrame * 2);
 		currentFrame++;
 	}
 	return result;

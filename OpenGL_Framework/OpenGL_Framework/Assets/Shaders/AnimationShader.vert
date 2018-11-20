@@ -18,7 +18,7 @@ layout(location = 10) in vec4 in_uv4;
 layout(location = 11) in vec4 in_normal4;*/
 
 uniform float interp = 0.5;
-uniform int index = 0; 
+//uniform int index = 0; 
 
 out vec2 texcoord;
 out vec3 norm;
@@ -45,41 +45,27 @@ vec4 catmull(vec4 p0, vec4 p1, vec4 p2, vec4 p3, float t)
 void main()
 {
 	texcoord = in_uv.xy;
+	
+	//normals
 	vec4 interpNorm;
-
-	if (index == 0)
+	//if (index == 0)
 		interpNorm = mix(in_normal, in_normal2, interp);
-	else if (index == 1)
-		interpNorm = mix(in_normal2, in_normal, interp);
-	/*else if (index == 2)
-		interpNorm = mix(in_normal2, in_normal3, in_normal4, in_normal, interp);
-	else if (index == 3)
-		interpNorm = mix(in_normal3, in_normal4, in_normal, in_normal2, interp);*/
+	//else if (index == 1)
+	//	interpNorm = mix(in_normal2, in_normal, interp);
+	//else
+	//	interpNorm = in_normal;
 	
 	norm = mat3(uView) * mat3(uModel) * interpNorm.xyz;
-	vec4 cat; 
-	//
+	
+	//vertex
+	vec4 lerp; 
 	//if (index == 0)
-	//	cat = catmull(in_vert4, in_vert, in_vert2, in_vert3, interp);
+		lerp = mix(in_vert, in_vert2, interp);
 	//else if (index == 1)
-	//	cat = catmull(in_vert, in_vert2, in_vert3, in_vert4, interp);
-	//else if (index == 2)
-	//	cat = catmull(in_vert2, in_vert3, in_vert4, in_vert, interp);
-	//else if (index == 3)
-	//	cat = catmull(in_vert3, in_vert4, in_vert, in_vert2, interp);
-
-	//Technically shouldnt have this in vertext shader
-	//This is for LERP
-	if (index == 0)
-		cat = mix(in_vert, in_vert2, interp);
-	else if (index == 1)
-		cat = mix(in_vert2, in_vert, interp);
-	/*else if (index == 2)
-		cat = mix(in_vert3, in_vert, interp);
-	else if (index == 3)
-		cat = mix(in_vert4, in_vert, interp);*/
-	else cat = in_vert;
-	pos = (uView * uModel * vec4(cat)).xyz;
+	//	lerp = mix(in_vert2, in_vert, interp);
+	//else lerp = in_vert;
+	
+	pos = (uView * uModel * vec4(lerp)).xyz;
 
 	gl_Position = uProj * vec4(pos, 1.0);
 }

@@ -53,7 +53,7 @@ public:
 	Character(const std::string& body, const std::string& texture);
 
 	void update(int t, std::vector<bool> inputs);
-	void draw(ShaderProgram GBufferPass);
+	void draw(ShaderProgram GBufferPass, float dt);
 	void drawBoxes(ShaderProgram GBufferPass);
 	void drawShadow(ShaderProgram GBufferPass);
 	vec3 getPosition();
@@ -133,10 +133,18 @@ public:
 	}
 
 	mat4 transform;
+	Mesh body;
+	std::vector<Mesh*> idleFrames;
+	std::vector<Mesh*> walkFrames;
+	std::vector<Mesh*> jabFrames;
+	std::vector<Mesh*> sAtkFrames;
+	std::vector<Mesh*> uAtkFrames;
+	std::vector<Mesh*> dAtkFrames;
+	Texture texture;
+	float aniTimer;
+	unsigned int index;
 protected:
 	//model
-	Mesh body;
-	Texture texture;
 
 	//physics
 	vec3 position;

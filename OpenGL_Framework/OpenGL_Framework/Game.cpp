@@ -533,60 +533,34 @@ void Game::draw()
 
 	AniShader.UnBind();*/
 
-	if (playerOne->action == ACTION_IDLE)
+	if (playerOne->action < 2 || (playerOne->action >= ACTION_JAB && playerOne->action <= ACTION_UP_ATTACK))
 	{
 		AniShader.Bind();
-		static float aniTimer = 0.f;
-		static int index = 0;
-		aniTimer += updateTimer->getElapsedTimeSeconds();
-		if (aniTimer > 1.0f)
-		{
-			aniTimer = 0.0f;
-			index = (index + 1) % 2;
-		}
-		// Ask for the handles identfying the uniform variables in our shader.
-		AniShader.SendUniformMat4("uModel", playerOne->transform.data, true);
 		AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 		AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
-		AniShader.SendUniform("interp", aniTimer);
-		AniShader.SendUniform("index", index);
-
-		playerOne->draw(AniShader);
+		playerOne->draw(AniShader, 1);
 	}
 	else {
 		GBufferPass.Bind();
 		GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
 		GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 		GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
-		playerOne->draw(GBufferPass);
+		playerOne->draw(GBufferPass, 0);
 	}
 
-	if (playerTwo->action == ACTION_IDLE)
+	if (playerTwo->action < 2 || (playerTwo->action >= ACTION_JAB && playerTwo->action <= ACTION_UP_ATTACK))
 	{
 		AniShader.Bind();
-		static float aniTimer = 0.f;
-		static int index = 0;
-		aniTimer += updateTimer->getElapsedTimeSeconds();
-		if (aniTimer > 1.0f)
-		{
-			aniTimer = 0.0f;
-			index = (index + 1) % 2;
-		}
-		// Ask for the handles identfying the uniform variables in our shader.
-		AniShader.SendUniformMat4("uModel", playerTwo->transform.data, true);
 		AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 		AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
-		AniShader.SendUniform("interp", aniTimer);
-		AniShader.SendUniform("index", index);
-
-		playerTwo->draw(AniShader);
+		playerTwo->draw(AniShader, 1);
 	}
 	else {
 		GBufferPass.Bind();
 		GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
 		GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 		GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
-		playerTwo->draw(GBufferPass);
+		playerTwo->draw(GBufferPass, 0);
 	}
 
 
