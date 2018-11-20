@@ -10,10 +10,10 @@ layout(location = 2) in vec4 in_normal;
 layout(location = 3) in vec4 in_vert2;
 layout(location = 4) in vec4 in_uv2;
 layout(location = 5) in vec4 in_normal2;
-layout(location = 6) in vec4 in_vert3;
+/*layout(location = 6) in vec4 in_vert3;
 layout(location = 7) in vec4 in_uv3;
 layout(location = 8) in vec4 in_normal3;
-/*layout(location = 9) in vec4 in_vert4;
+layout(location = 9) in vec4 in_vert4;
 layout(location = 10) in vec4 in_uv4;
 layout(location = 11) in vec4 in_normal4;*/
 

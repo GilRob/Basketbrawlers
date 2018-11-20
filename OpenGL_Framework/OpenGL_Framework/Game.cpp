@@ -2,7 +2,7 @@
 #include "Utilities.h"
 
 Game::Game()
-	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(4)
+	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(1)
 	//This constructor in the initializer list is to solve the issue of creating a frame buffer object without no default constructor
 	//This will occur before the brackets of the constructor starts (Reference at Week #6 video Time: 47:00)
 	//The number is the number of color textures
@@ -35,6 +35,7 @@ Game::~Game()
 	Court.Unload();
 	CourtTexture.Unload();
 	Background.Unload();
+	HudObj.Unload();
 	BackgroundTexture.Unload();
 	//NormalSword.Unload();
 	//NormalStone.Unload();
@@ -57,6 +58,12 @@ void Game::initializeGame()
 
 	playerTwo = new Character("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png");
 
+	if (!HudShader.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/HudShader.frag"))
+	{
+		std::cout << "GBP Shaders failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
 
 	if (!GBufferPass.Load("./Assets/Shaders/StaticGeometry.vert", "./Assets/Shaders/GBufferPass.frag"))
 	{
@@ -107,7 +114,7 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	if (!AniShader.Load("./Assets/Shaders/shaderAni.vert", "./Assets/Shaders/GBufferPass.frag"))
+	if (!AniShader.Load("./Assets/Shaders/AnimationShader.vert", "./Assets/Shaders/GBufferPass.frag"))
 	{
 		std::cout << "AS Shaders failed to initialize.\n";
 		system("pause");
@@ -129,6 +136,10 @@ void Game::initializeGame()
 	bkg.push_back("./Assets/Models/Background.obj");
 	Background.LoadFromFile(bkg);
 
+	std::vector<std::string> hud1;
+	hud1.push_back("./Assets/Models/UI_Object.obj");
+	HudObj.LoadFromFile(hud1);
+
 	if (!BackgroundTexture.Load("./Assets/Textures/BackgroundTexture.jpg"))
 	{
 		std::cout << "BKG Texture failed to load.\n";
@@ -144,6 +155,18 @@ void Game::initializeGame()
 		exit(0);
 	}
 	if (!P1Bar.Load("./Assets/Textures/PlayerOneBar.png"))
+	{
+		std::cout << "BKG Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+	if (!P2Hud.Load("./Assets/Textures/PlayerTwoHud.png"))
+	{
+		std::cout << "BKG Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+	if (!P2Bar.Load("./Assets/Textures/PlayerTwoBar.png"))
 	{
 		std::cout << "BKG Texture failed to load.\n";
 		system("pause");
@@ -204,14 +227,9 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}
-	HudMap.InitDepthTexture(WINDOW_WIDTH, WINDOW_HEIGHT);
 	//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
 	//These parameters can be changed to whatever you want
-	HudMap.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE); //Flat color
-	HudMap.InitColorTexture(1, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB16, GL_NEAREST, GL_CLAMP_TO_EDGE); //Normals (xyz)
-	//Buffer explained at Week 10 time: 5:30 - 7:45
-	HudMap.InitColorTexture(2, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE); //View Space Positions (xyz)
-	HudMap.InitColorTexture(3, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	HudMap.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	if (!HudMap.CheckFBO())
 	{
 		std::cout << "HudMap FBO failed to initialize.\n";
@@ -225,7 +243,8 @@ void Game::initializeGame()
 	CameraProjection = mat4::PerspectiveProjection(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 1.0f, 10000.0f);
 	//ShadowProjection.OrthographicProjection(35.0f, -35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
 	ShadowProjection = mat4::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
-	hudProjection = mat4::OrthographicProjection(-640.0f, 640.0f, 360.0f, -360.0f, 1.0f, 100.0f);
+	hudProjection = mat4::OrthographicProjection((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f, (float)WINDOW_HEIGHT * -0.5f, -10.0f, 100.0f);
+	
 }
 
 void Game::update()
@@ -645,6 +664,8 @@ void Game::draw()
 	DeferredComposite.UnBind();
 	DeferredLighting.UnBind();
 
+	drawHUD();
+
 	/// Compute High Pass ///
 	glViewport(0, 0, WINDOW_WIDTH / BLOOM_DOWNSCALE, WINDOW_HEIGHT / BLOOM_DOWNSCALE);
 
@@ -698,7 +719,8 @@ void Game::draw()
 		BlurVertical.UnBind();
 	}
 
-	drawHUD();
+	//drawHUD();
+
 
 	/// Composite To Back Buffer ///
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -716,7 +738,6 @@ void Game::draw()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
-
 	BloomComposite.UnBind();
 
 
@@ -725,57 +746,101 @@ void Game::draw()
 
 void Game::drawHUD()
 {
+	//DeferredComposite.Bind();
+	DeferredComposite.Bind();
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	hudTransform = mat4::Identity;
-
-	DeferredComposite.Bind();
-	GBufferPass.Bind();
-	mat4 hudLoc;
-	hudLoc.Scale(2.0f);
-	hudLoc.Translate(vec3(-500,-200,1));
-	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
-	//The reason of the inverse is because it is easier to do transformations
-	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
-
 	glDepthMask(GL_FALSE);  // disable writes to Z-Buffer
 	glDisable(GL_DEPTH_TEST);  // disable depth-testing
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_LIGHTING);
 	
+	//new projection
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
 	//gluOrtho2D(0.0, 1.0, 0.0, 1.0);//create ortho
-	gluOrtho2D(0.0, WINDOW_WIDTH, 0.0, WINDOW_HEIGHT);//create ortho
+	gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
 
+	//////////////////////////
 	//now ready to draw 2d
+	//////////////////////////
+	GBufferPass.Bind();
+	hudTransform = mat4::Identity;
+	//hudTransform.Translate(vec3(WINDOW_WIDTH * -0.5f, WINDOW_HEIGHT* -0.5f, 0));
+	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
 
-	///draw quad
-	//glBindTexture(GL_TEXTURE_2D, P1Hud.TextObj);
+	//Draw Player 1 HUD
+	///draw quad for p1 pic
+	mat4 hudLoc;
+	hudLoc.Scale(100.0f);
+	hudLoc.RotateY(90);
+	hudLoc.Translate(vec3(-470, -360, 0));
+	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+
 	P1Hud.Bind();
-	glBindVertexArray(Background.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
+	glBindVertexArray(HudObj.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
-	P1Hud.UnBind();
+	///draw quad for p1 bar
+	hudLoc = mat4();
+	hudLoc.Scale(vec3(100.0f, 100.0f, 100.0f * (playerOne->getMeter() / 200.0f)));
+	hudLoc.RotateY(90);
+	hudLoc.Translate(vec3(-470 - 0.7*(200.0f - playerOne->getMeter()), -360, 0));
+	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+
+	P1Bar.Bind();
+	glBindVertexArray(HudObj.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+
+
+	//Draw Player 2 HUD
+	///draw quad for p2 pic
+	hudLoc = mat4();
+	hudLoc.Scale(100.0f);
+	hudLoc.RotateY(90);
+	hudLoc.Translate(vec3(470, -360, 0));
+	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+
+	P2Hud.Bind();
+	glBindVertexArray(HudObj.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+
+	///draw quad for p2 bar
+	hudLoc = mat4();
+	hudLoc.Scale(vec3(100.0f, 100.0f, 100.0f * (playerTwo->getMeter() / 200.0f)));
+	hudLoc.RotateY(90);
+	hudLoc.Translate(vec3(470 + 0.7*(200.0f - playerTwo->getMeter()), -360, 0));
+	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+
+	P2Bar.Bind();
+	glBindVertexArray(HudObj.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+	P2Bar.UnBind();
+
+
+	GBufferPass.UnBind();
+
 	//restore projection matrix
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();//restore state
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();//restore state
 
+	//DeferredComposite.UnBind();
 	DeferredComposite.UnBind();
+
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
 
-	GBufferPass.UnBind();
 }
 
 

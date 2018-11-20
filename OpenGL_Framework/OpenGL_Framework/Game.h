@@ -48,6 +48,7 @@ public:
 	float TotalGameTime = 0.0f;
 
 	/// PROGRAMS ///
+	ShaderProgram HudShader;
 	ShaderProgram StaticGeometry;
 	ShaderProgram GBufferPass;
 	ShaderProgram BloomHighPass;
@@ -83,8 +84,11 @@ public:
 	Mesh Background;
 	Texture BackgroundTexture;
 	mat4 BGTransform;
+	Mesh HudObj;
 	Texture P1Hud;
 	Texture P1Bar;
+	Texture P2Hud;
+	Texture P2Bar;
 
 	/// FRAMEBUFFERS ///
 	FrameBuffer GBuffer; //Utility buffer to hold positions and normals
