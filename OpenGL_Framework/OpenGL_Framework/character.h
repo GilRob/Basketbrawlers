@@ -128,6 +128,10 @@ public:
 		fall();
 	}
 
+	int getMeter() {
+		return comboMeter;
+	}
+
 	mat4 transform;
 protected:
 	//model

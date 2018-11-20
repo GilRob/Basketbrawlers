@@ -10,9 +10,9 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 		exit(0);
 	}*/
 	std::vector<std::string> knightFiles;
-	for (int c = 0; c < 2; ++c)
+	for (int c = 0; c < 9; ++c)
 	{
-		knightFiles.push_back("./Assets/Models/KnightIdle" + std::to_string(c) + ".obj");
+		knightFiles.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string(c) + ".obj");
 		//marioFiles.push_back("../assets/models/Mario_Export" + std::to_string(c) + ".bin");
 	}
 	body.LoadFromFile(knightFiles);
@@ -106,6 +106,10 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 }
 
 void Character::update(int t, std::vector<bool> inputs) {
+
+	//max meter
+	if (comboMeter > 200)
+		comboMeter = 200;
 
 	//Change Player Facing only during these actinos.
 	if (action <= 7 && action != ACTION_INTIAL_DASH) {
