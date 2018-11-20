@@ -47,15 +47,15 @@ void main()
 	texcoord = in_uv.xy;
 	vec4 interpNorm;
 
-	//if (index == 0)
-	//	interpNorm = catmull(in_normal4, in_normal, in_normal2, in_normal3, interp);
-	//else if (index == 1)
-	//	interpNorm = catmull(in_normal, in_normal2, in_normal3, in_normal4, interp);
-	//else if (index == 2)
-	//	interpNorm = catmull(in_normal2, in_normal3, in_normal4, in_normal, interp);
-	//else if (index == 3)
-	//	interpNorm = catmull(in_normal3, in_normal4, in_normal, in_normal2, interp);
-	//
+	if (index == 0)
+		interpNorm = mix(in_normal, in_normal2, interp);
+	else if (index == 1)
+		interpNorm = mix(in_normal2, in_normal, interp);
+	/*else if (index == 2)
+		interpNorm = mix(in_normal2, in_normal3, in_normal4, in_normal, interp);
+	else if (index == 3)
+		interpNorm = mix(in_normal3, in_normal4, in_normal, in_normal2, interp);*/
+	
 	norm = mat3(uView) * mat3(uModel) * interpNorm.xyz;
 	vec4 cat; 
 	//
