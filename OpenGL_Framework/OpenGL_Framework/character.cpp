@@ -188,7 +188,7 @@ void Character::update(int t, std::vector<bool> inputs) {
 	
 	//Testing Code for Spawning Hitboxes
 	//Check Hitboxes
-	for (int i = 0; i < activeHitboxes.size(); i++) {
+	for (unsigned int i = 0; i < activeHitboxes.size(); i++) {
 		activeHitboxes[i]->update(t, position);
 
 		if (activeHitboxes[i]->isDone())
@@ -222,7 +222,7 @@ void Character::draw(ShaderProgram GBufferPass) {
 
 void Character::drawBoxes(ShaderProgram GBufferPass) {
 
-	for (int i = 0; i < activeHitboxes.size(); i++) {
+	for (unsigned int i = 0; i < activeHitboxes.size(); i++) {
 		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
 		glUniformMatrix4fv(modelLoc, 1, false, activeHitboxes[i]->getTransform().data);
 
@@ -287,7 +287,7 @@ void Character::hit(Hitbox* hitBy) {
 		hitForce = add;
 		action = ACTION_HIT;
 		interuptable = false;
-		activeFrames = hitframes + hitstun + hitBy->getKnockback();//
+		activeFrames = (unsigned int)(hitframes + hitstun + hitBy->getKnockback());//
 		currentFrame = 1;
 }
 
@@ -302,7 +302,7 @@ mat4 Character::atkInputHandler(std::vector<bool> inputs)
 		//todo
 		//If in Hitstun reduce directional influence
 		force.x = (inputs[1] - inputs[3]) *  diMultiplier;
-		if (currentFrame < (hitframes))//only launched for hitframes, character will just be stunned for the remaining frames (hitstun + moves kb)
+		if (currentFrame < (unsigned int)(hitframes))//only launched for hitframes, character will just be stunned for the remaining frames (hitstun + moves kb)
 			velocity = hitForce;
 		currentFrame++;
 	}
@@ -799,7 +799,7 @@ mat4 Character::uAttack()
 
 		}
 		result.Scale(vec3(1.0f, 1.0f - (15 - abs(currentFrame - 13.0f))*0.03f, 1.0f));
-		result.RotateY(currentFrame * 2);
+		result.RotateY((float)currentFrame * 2);
 		currentFrame++;
 	}
 	return result;
@@ -838,7 +838,7 @@ mat4 Character::nAir()
 			return fall();
 		}
 		currentFrame++;
-		result.RotateY(currentFrame * 10);
+		result.RotateY((float)currentFrame * 10);
 	}
 	return result;
 }

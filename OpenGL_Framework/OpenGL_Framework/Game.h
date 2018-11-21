@@ -58,6 +58,7 @@ public:
 	ShaderProgram BloomComposite;
 	ShaderProgram DeferredLighting;
 	ShaderProgram AniShader;
+	ShaderProgram SpotLight;
 
 	Character* playerOne;
 	std::vector<bool> inputs2;
@@ -83,7 +84,6 @@ public:
 	Texture CourtTexture;
 	Mesh Background;
 	Texture BackgroundTexture;
-	mat4 BGTransform;
 	Mesh HudObj;
 	Texture P1Hud;
 	Texture P1Bar;
@@ -109,6 +109,7 @@ public:
 	mat4 ShadowProjection;
 	mat4 hudTransform;
 	mat4 hudProjection;
+	mat4 BGTransform;
 
 	mat4 ViewToShadowMap;
 

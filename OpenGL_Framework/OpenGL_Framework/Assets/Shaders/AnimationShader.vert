@@ -57,7 +57,7 @@ void main()
 		interpNorm = mix(in_normal3, in_normal4, in_normal, in_normal2, interp);*/
 	
 	norm = mat3(uView) * mat3(uModel) * interpNorm.xyz;
-	vec4 cat; 
+	vec4 lerp; 
 	//
 	//if (index == 0)
 	//	cat = catmull(in_vert4, in_vert, in_vert2, in_vert3, interp);
@@ -71,15 +71,15 @@ void main()
 	//Technically shouldnt have this in vertext shader
 	//This is for LERP
 	if (index == 0)
-		cat = mix(in_vert, in_vert2, interp);
+		lerp = mix(in_vert, in_vert2, interp);
 	else if (index == 1)
-		cat = mix(in_vert2, in_vert, interp);
+		lerp = mix(in_vert2, in_vert, interp);
 	/*else if (index == 2)
-		cat = mix(in_vert3, in_vert, interp);
+		lerp = mix(in_vert3, in_vert, interp);
 	else if (index == 3)
-		cat = mix(in_vert4, in_vert, interp);*/
-	else cat = in_vert;
-	pos = (uView * uModel * vec4(cat)).xyz;
+		lerp = mix(in_vert4, in_vert, interp);*/
+	else lerp = in_vert;
+	pos = (uView * uModel * vec4(lerp)).xyz;
 
 	gl_Position = uProj * vec4(pos, 1.0);
 }

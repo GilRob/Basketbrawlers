@@ -21,6 +21,8 @@ Game::~Game()
 	GBufferPass.UnLoad();
 	DeferredLighting.UnLoad();
 	AniShader.UnLoad();
+	HudShader.UnLoad();
+	SpotLight.UnLoad();
 	/*SobelPass.UnLoad();
 	Sword.Unload();
 	SwordTexture.Unload();
@@ -36,6 +38,11 @@ Game::~Game()
 	CourtTexture.Unload();
 	Background.Unload();
 	HudObj.Unload();
+	P1Hud.Unload();
+	P1Bar.Unload();
+	P2Hud.Unload();
+	P2Bar.Unload();
+	Background.Unload();
 	BackgroundTexture.Unload();
 	//NormalSword.Unload();
 	//NormalStone.Unload();
@@ -117,6 +124,13 @@ void Game::initializeGame()
 	if (!AniShader.Load("./Assets/Shaders/AnimationShader.vert", "./Assets/Shaders/GBufferPass.frag"))
 	{
 		std::cout << "AS Shaders failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
+
+	if (!SpotLight.Load("./Assets/Shaders/StaticGeometry.vert", "./Assets/Shaders/SpotLight.frag"))
+	{
+		std::cout << "SL Shaders failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
@@ -327,6 +341,12 @@ void Game::update()
 	}
 	if (abs(abs(playerTwo->getPosition().x) - 26) < 1.3f && abs(playerTwo->getPosition().y - 10) < 1.3f) {
 		playerTwo->respawn();
+		/*SpotLight.Bind();
+		SpotLight.SendUniformMat4("uModel", playerTwo->transform.data, true);
+		SpotLight.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+		SpotLight.SendUniformMat4("uProj", CameraProjection.data, true);
+		SpotLight.SendUniform("uLightPosition", playerTwo->getPosition());
+		SpotLight.UnBind();*/
 		std::cout << std::endl << "Player 1 Scored" << std::endl;
 	}
 
@@ -595,8 +615,15 @@ void Game::draw()
 	GBufferPass.UnBind();
 
 
+	SpotLight.Bind();
+	SpotLight.SendUniformMat4("uModel", playerTwo->transform.data, true);
+	SpotLight.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+	SpotLight.SendUniformMat4("uProj", CameraProjection.data, true);
+	SpotLight.SendUniform("uLightPosition", playerTwo->getPosition());
+	SpotLight.UnBind();
+
 	/// Detect Edges ///
-	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	//Rednering it with the shader
 	/*SobelPass.Bind();
