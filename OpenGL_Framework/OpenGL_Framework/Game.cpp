@@ -243,7 +243,7 @@ void Game::initializeGame()
 	CameraTransform.RotateX(-15.0f);*/
 	CameraProjection = mat4::PerspectiveProjection(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 1.0f, 10000.0f);
 	//ShadowProjection.OrthographicProjection(35.0f, -35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
-	ShadowProjection = mat4::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
+	ShadowProjection = mat4::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -25.0f, 100.0f);
 	hudProjection = mat4::OrthographicProjection((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f, (float)WINDOW_HEIGHT * -0.5f, -10.0f, 100.0f);
 
 	updateTimer = new Timer();
@@ -256,7 +256,6 @@ void Game::update()
 
 	float deltaTime = updateTimer->getElapsedTimeSeconds();
 	TotalGameTime += deltaTime;
-
 	//character collisions
 		///Allow Player to pass through one another, but will disallow them to stand in the same spot, will slowly push eachother awayy
 	float diffx = (playerOne->getPosition().x) - (playerTwo->getPosition().x);//difference between characters x
@@ -404,18 +403,63 @@ void Game::draw()
 	//glBindVertexArray(Background.VAO);
 	//glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
 
-	GBufferPass.SendUniformMat4("uModel",playerOne->transform.data, true);
-	playerOne->drawShadow(GBufferPass);
-	GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
-	playerTwo->drawShadow(GBufferPass);
+	//GBufferPass.SendUniformMat4("uModel",playerOne->transform.data, true);
+	//playerOne->drawShadow(GBufferPass, 1);
+	//GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
+	//playerTwo->drawShadow(GBufferPass, 1);
 
 	GBufferPass.SendUniformMat4("uModel", mat4().data, true);
 	GBufferPass.SendUniformMat4("uModel", mat4().data, true);
 
+	GBufferPass.UnBind();
+	//draw p1 shadow
+	if (playerOne->action < 2 || (playerOne->action >= ACTION_JAB && playerOne->action <= ACTION_UP_ATTACK))
+	{
+		AniShader.Bind();
+		AniShader.SendUniformMat4("uModel", mat4().data, true);
+		AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
+		AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
+
+		AniShader.SendUniformMat4("uModel", playerOne->transform.data, true);
+		playerOne->draw(AniShader, 0);
+
+		AniShader.SendUniformMat4("uModel", mat4().data, true);
+	}
+	else {
+		GBufferPass.Bind();
+		GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+		GBufferPass.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
+		GBufferPass.SendUniformMat4("uProj", ShadowProjection.data, true);
+		GBufferPass.SendUniformMat4("uModel", playerOne->transform.data, true);
+		playerOne->draw(GBufferPass, 0);
+		GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+	}
+	//draw p2 shadow
+	if (playerTwo->action < 2 || (playerTwo->action >= ACTION_JAB && playerTwo->action <= ACTION_UP_ATTACK))
+	{
+		AniShader.Bind();
+		AniShader.SendUniformMat4("uModel", mat4().data, true);
+		AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
+		AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
+
+		AniShader.SendUniformMat4("uModel", playerTwo->transform.data, true);
+		playerTwo->draw(AniShader, 0);
+
+		AniShader.SendUniformMat4("uModel", mat4().data, true);
+	}
+	else {
+		GBufferPass.Bind();
+		GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+		GBufferPass.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
+		GBufferPass.SendUniformMat4("uProj", ShadowProjection.data, true);
+		GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
+		playerTwo->draw(GBufferPass, 0);
+		GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+	}
 	glBindVertexArray(0);
 
 	ShadowMap.UnBind();
-	GBufferPass.UnBind();
+	AniShader.UnBind();
 
 	/// Generate The Scene ///
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);

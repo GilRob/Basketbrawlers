@@ -464,13 +464,35 @@ void Character::drawBoxes(ShaderProgram GBufferPass) {
 	}
 }
 
-void Character::drawShadow(ShaderProgram GBufferPass)
+void Character::drawShadow(ShaderProgram shader, float dt)
 {
-	//GBufferPass.SendUniformMat4("uProj", transform.data, true);
+	if (action == ACTION_IDLE) {
+		aniTimer += dt / 6.0f;
+		if (aniTimer > 1.0f)
+		{
+			aniTimer = 0.0f;
+			index = (index + 1) % (idleFrames.size());//9 total frames
+		}
+		if (index >= idleFrames.size())
+			index = 0;
+		// Ask for the handles identfying the uniform variables in our shader.
+		shader.SendUniformMat4("uModel", transform.data, true);
+		shader.SendUniform("interp", aniTimer);
 
-	glBindVertexArray(body.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, body.GetNumVertices());
-	//glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+		int modelLoc = glGetUniformLocation(shader.getProgram(), "uModel");
+		glUniformMatrix4fv(modelLoc, 1, false, transform.data);
+
+		texture.Bind();
+		glBindVertexArray(idleFrames[index]->VAO);
+
+		// Adjust model matrix for next object's location
+		glDrawArrays(GL_TRIANGLES, 0, idleFrames[index]->GetNumVertices());
+		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+	}
+	else {
+		glBindVertexArray(body.VAO);
+		glDrawArrays(GL_TRIANGLES, 0, body.GetNumVertices());
+	}
 }
 
 //Sets player position

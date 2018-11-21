@@ -55,7 +55,7 @@ public:
 	void update(int t, std::vector<bool> inputs);
 	void draw(ShaderProgram GBufferPass, float dt);
 	void drawBoxes(ShaderProgram GBufferPass);
-	void drawShadow(ShaderProgram GBufferPass);
+	void drawShadow(ShaderProgram GBufferPass, float dt);
 	vec3 getPosition();
 	void setPosition(vec3 pos);
 	std::vector<Hitbox*> getHitboxes();
