@@ -1,9 +1,10 @@
 #version 420
 
-uniform vec3 uSceneAmbient = vec3(1.0, 1.0, 1.0);
+uniform vec3 uSceneAmbient = vec3(0.0, 1.0, 0.0);
 uniform vec3 uLightPosition = vec3(3.0, 0.0, 0.0);
-uniform vec3 uLightColor = vec3(0.0, 1.0, 0.0);
+uniform vec3 uLightColor = vec3(1.0, 1.0, 1.0);
 uniform float uLightSpecularExponent = 16.0;
+
 
 in vec2 texcoord;
 in vec3 norm;
@@ -13,7 +14,8 @@ out vec4 outColor;
 
 void main()
 {
-	outColor.rgb = uSceneAmbient; 
+	outColor.rgb = uSceneAmbient;
+	outColor.a = 0.5;
 
 	// Fix length after rasterizer interpolates
 	vec3 normal = normalize(norm);
@@ -45,6 +47,7 @@ void main()
 		// Calculate the specular contribution
 		outColor.rgb += uLightColor * pow(specularStrength, uLightSpecularExponent) * attenuation;
 	}
-
+	//outColor.rgb *= 0.001;
+	//outColor.rgb += vec3(1,0,0);
 	//outColor = max(attenuation * diffuse + specular, uSceneAmbient);
 }

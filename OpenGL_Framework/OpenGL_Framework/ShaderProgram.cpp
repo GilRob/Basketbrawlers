@@ -18,6 +18,9 @@ ShaderProgram::~ShaderProgram()
 
 bool ShaderProgram::Load(const std::string &vertFile, const std::string &fragFile)
 {
+	vertexFileName = vertFile;
+	fragFileName = fragFile;
+
 	//Create shader and program objects
 	_VertexShader = glCreateShader(GL_VERTEX_SHADER);
 	_FragShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -180,6 +183,11 @@ bool ShaderProgram::LinkProgram()
 	glGetProgramiv(_Program, GL_LINK_STATUS, &success);
 
 	return success == GL_TRUE;
+}
+
+bool ShaderProgram::ReloadShader()
+{
+	return Load(vertexFileName, fragFileName);
 }
 
 

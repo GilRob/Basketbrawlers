@@ -127,6 +127,9 @@ public:
 	float lTrig, rTrig;
 	float lTrig2, rTrig2;
 
+	bool p1Score = false;
+	bool p2Score = false;
+
 
 private:
 

@@ -19,6 +19,8 @@ public:
 	void UnLoad();
 	bool LinkProgram();
 
+	bool ReloadShader();
+
 	//- Use / detach the shader from use
 	void Bind() const;
 	void UnBind();
@@ -50,6 +52,9 @@ private:
 	GLuint _GeomShader = 0;
 	GLuint _FragShader = 0;
 	GLuint _Program = 0;
+
+	std::string vertexFileName;
+	std::string fragFileName;
 
 	std::string ReadFile(const std::string &fileName) const;
 	//Take one of the two shaders in the class and compile them, if there is an error it will output those errors

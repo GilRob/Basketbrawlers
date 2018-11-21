@@ -256,7 +256,7 @@ void Game::initializeGame()
 	CameraTransform.RotateX(-15.0f);*/
 	CameraProjection = mat4::PerspectiveProjection(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 1.0f, 10000.0f);
 	//ShadowProjection.OrthographicProjection(35.0f, -35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
-	ShadowProjection = mat4::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
+	ShadowProjection = mat4::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -25.0f, 100.0f);
 	hudProjection = mat4::OrthographicProjection((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f, (float)WINDOW_HEIGHT * -0.5f, -10.0f, 100.0f);
 	
 }
@@ -337,16 +337,12 @@ void Game::update()
 	//score
 	if (abs(abs(playerOne->getPosition().x) - 26) < 1.3f && abs(playerOne->getPosition().y - 10) < 1.3f) {
 		playerOne->respawn();
+		p2Score = true;
 		std::cout << std::endl << "Player 2 Scored" << std::endl;
 	}
 	if (abs(abs(playerTwo->getPosition().x) - 26) < 1.3f && abs(playerTwo->getPosition().y - 10) < 1.3f) {
 		playerTwo->respawn();
-		/*SpotLight.Bind();
-		SpotLight.SendUniformMat4("uModel", playerTwo->transform.data, true);
-		SpotLight.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-		SpotLight.SendUniformMat4("uProj", CameraProjection.data, true);
-		SpotLight.SendUniform("uLightPosition", playerTwo->getPosition());
-		SpotLight.UnBind();*/
+		p1Score = true;
 		std::cout << std::endl << "Player 1 Scored" << std::endl;
 	}
 
@@ -611,16 +607,20 @@ void Game::draw()
 
 
 	AniShader.UnBind();
-	GBuffer.UnBind();
-	GBufferPass.UnBind();
-
 
 	SpotLight.Bind();
 	SpotLight.SendUniformMat4("uModel", playerTwo->transform.data, true);
 	SpotLight.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 	SpotLight.SendUniformMat4("uProj", CameraProjection.data, true);
-	SpotLight.SendUniform("uLightPosition", playerTwo->getPosition());
+	vec4 lightPos = CameraTransform.GetInverse() * vec4(playerTwo->getPosition(), 1.0f);
+	SpotLight.SendUniform("uLightPosition", vec3(lightPos));
+
+	playerOne->draw(SpotLight);
+
 	SpotLight.UnBind();
+
+	GBuffer.UnBind();
+	GBufferPass.UnBind();
 
 	/// Detect Edges ///
 	//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -687,6 +687,52 @@ void Game::draw()
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
+
+
+	if (p1Score == true)
+	{
+		SpotLight.Bind();
+		SpotLight.SendUniformMat4("uModel", playerOne->transform.data, true);
+		SpotLight.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+		SpotLight.SendUniformMat4("uProj", CameraProjection.data, true);
+		vec4 lightPos = CameraTransform.GetInverse() * vec4(playerOne->getPosition(), 1.0f);
+		SpotLight.SendUniform("uLightPosition", vec3(lightPos));
+
+		playerOne->draw(SpotLight);
+
+		SpotLight.UnBind();
+		
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+		std::cout << timer << std::endl;
+		if (timer >= 2)
+		{
+			timer = 0;
+			p1Score = false;
+		}
+	}
+
+	if (p2Score == true)
+	{
+		SpotLight.Bind();
+		SpotLight.SendUniformMat4("uModel", playerTwo->transform.data, true);
+		SpotLight.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+		SpotLight.SendUniformMat4("uProj", CameraProjection.data, true);
+		vec4 lightPos = CameraTransform.GetInverse() * vec4(playerTwo->getPosition(), 1.0f);
+		SpotLight.SendUniform("uLightPosition", vec3(lightPos));
+
+		playerOne->draw(SpotLight);
+
+		SpotLight.UnBind();
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+		std::cout << timer << std::endl;
+		if (timer >= 2)
+		{
+			timer = 0;
+			p2Score = false;
+		}
+	}
 
 	DeferredComposite.UnBind();
 	DeferredLighting.UnBind();
@@ -957,7 +1003,8 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		//inputs2[3] = false;
 		break;
 	case '.': //a
-		//inputs2[4] = false;
+		DeferredLighting.ReloadShader();
+		SpotLight.ReloadShader();
 		break;
 	case '/': //b
 		//inputs2[5] = false;
