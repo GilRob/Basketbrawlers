@@ -22,9 +22,9 @@
 #define WINDOW_HEIGHT			720
 #define FRAMES_PER_SECOND		60
 #define BLOOM_THRESHOLD			0.33f
-#define BLOOM_DOWNSCALE			2.0f
+#define BLOOM_DOWNSCALE			3.0f
 #define BLOOM_BLUR_PASSES		8	//How many times to repeat the blur process?
-#define SHADOW_RESOLUTION		8192
+#define SHADOW_RESOLUTION		4096
 
 class Game
 {
@@ -36,6 +36,8 @@ public:
 	void update();
 	void draw();
 	void drawHUD();
+	void loadTime();
+	void drawTime();
 
 	/* input callback functions */
 	void keyboardDown(unsigned char key, int mouseX, int mouseY);
@@ -89,6 +91,7 @@ public:
 	Texture P1Bar;
 	Texture P2Hud;
 	Texture P2Bar;
+	std::vector<Texture*> time;
 
 	/// FRAMEBUFFERS ///
 	FrameBuffer GBuffer; //Utility buffer to hold positions and normals

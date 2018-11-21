@@ -43,11 +43,10 @@ Game::~Game()
 
 void Game::initializeGame()
 {
-	updateTimer = new Timer();
 
 	//Only needs to be done once
 	glEnable(GL_DEPTH_TEST);
-
+	//glutFullScreen();
 	InitFullScreenQuad();
 
 	inputs2 = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A
@@ -173,6 +172,8 @@ void Game::initializeGame()
 		exit(0);
 	}
 
+	loadTime();
+
 	GBuffer.InitDepthTexture(WINDOW_WIDTH, WINDOW_HEIGHT);
 	//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
 	//These parameters can be changed to whatever you want
@@ -244,7 +245,8 @@ void Game::initializeGame()
 	//ShadowProjection.OrthographicProjection(35.0f, -35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
 	ShadowProjection = mat4::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
 	hudProjection = mat4::OrthographicProjection((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f, (float)WINDOW_HEIGHT * -0.5f, -10.0f, 100.0f);
-	
+
+	updateTimer = new Timer();
 }
 
 void Game::update()
@@ -317,8 +319,8 @@ void Game::update()
 		i++;
 	}
 	updateInputs();
-	playerOne->update(deltaTime, inputs2);
-	playerTwo->update(deltaTime, inputs);
+	playerOne->update(deltaTime, inputs);
+	playerTwo->update(deltaTime, inputs2);
 
 	//score
 	if (abs(abs(playerOne->getPosition().x) - 26) < 1.3f && abs(playerOne->getPosition().y - 10) < 1.3f) {
@@ -639,6 +641,7 @@ void Game::draw()
 	DeferredLighting.UnBind();
 
 	drawHUD();
+	drawTime();
 
 	/// Compute High Pass ///
 	glViewport(0, 0, WINDOW_WIDTH / BLOOM_DOWNSCALE, WINDOW_HEIGHT / BLOOM_DOWNSCALE);
@@ -778,7 +781,7 @@ void Game::drawHUD()
 	hudLoc = mat4();
 	hudLoc.Scale(100.0f);
 	hudLoc.RotateY(90);
-	hudLoc.Translate(vec3(470, -360, 0));
+	hudLoc.Translate(vec3(470, -360 , 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P2Hud.Bind();
@@ -815,6 +818,116 @@ void Game::drawHUD()
 	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
 
+}
+
+void Game::drawTime()
+{
+	//DeferredComposite.Bind();
+	DeferredComposite.Bind();
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask(GL_FALSE);  // disable writes to Z-Buffer
+	glDisable(GL_DEPTH_TEST);  // disable depth-testing
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_LIGHTING);
+
+	//new projection
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();//save old state
+	glLoadIdentity();//reset
+	//gluOrtho2D(0.0, 1.0, 0.0, 1.0);//create ortho
+	gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();//save old state
+	glLoadIdentity();//reset
+
+	//////////////////////////
+	//now ready to draw 2d
+	//////////////////////////
+	GBufferPass.Bind();
+	hudTransform = mat4::Identity;
+	//hudTransform.Translate(vec3(WINDOW_WIDTH * -0.5f, WINDOW_HEIGHT* -0.5f, 0));
+	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+
+	int timer = 300 - TotalGameTime;
+	if (timer < 0) timer = 0;
+	int min = (int)timer / 60;
+	int secT = ((int)timer % 60) / 10;
+	int secO = ((int)timer % 60) % 10;
+	if (min > 10) min = 10;
+	if (secT >= 6) min = 10;
+	if (secO > 10) min = 10;
+
+	//Draw Time
+	///min
+	mat4 hudLoc;
+	hudLoc.Scale(40.0f);
+	hudLoc.RotateY(90);
+	hudLoc.RotateZ(90);
+	hudLoc.Translate(vec3(-50, 280, 0));
+	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+
+	time[min]->Bind();
+	glBindVertexArray(HudObj.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+
+	///speerate
+	hudLoc = mat4();
+	hudLoc.Scale(40.0f);
+	hudLoc.RotateY(90);
+	hudLoc.RotateZ(90);
+	hudLoc.Translate(vec3(0, 280, 0));
+	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+
+	time[10]->Bind();
+	glBindVertexArray(HudObj.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+
+	///sec tens
+	hudLoc = mat4();
+	hudLoc.Scale(40.0f);
+	hudLoc.RotateY(90);
+	hudLoc.RotateZ(90);
+	hudLoc.Translate(vec3(50, 280, 0));
+	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+
+	time[secT]->Bind();
+	glBindVertexArray(HudObj.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+
+	///sec ones
+	hudLoc = mat4();
+	hudLoc.Scale(40.0f);
+	hudLoc.RotateY(90);
+	hudLoc.RotateZ(90);
+	hudLoc.Translate(vec3(120 , 280, 0));
+	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+
+	time[secO]->Bind();
+	glBindVertexArray(HudObj.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+
+	//unbind last used texture
+	time[secO]->UnBind();
+
+
+	GBufferPass.UnBind();
+
+	//restore projection matrix
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();//restore state
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();//restore state
+
+	DeferredComposite.UnBind();
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_LIGHTING);
+	glDisable(GL_BLEND);
 }
 
 
@@ -1204,5 +1317,20 @@ void Game::updateInputs()
 
 
 		inputs2 = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A
+	}
+}
+
+void Game::loadTime() {
+	
+	for (int i = 0; i <= 10; i++)
+	{
+		Texture * temp = new Texture();
+		if (!temp->Load("./Assets/Textures/" + std::to_string(i) + ".png"))
+		{
+			std::cout << "Time Texture failed to load.\n";
+			system("pause");
+			exit(0);
+		}
+		time.push_back(temp);
 	}
 }
