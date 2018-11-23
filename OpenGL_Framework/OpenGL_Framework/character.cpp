@@ -959,8 +959,12 @@ mat4 Character::sAttack()
 
 		if (currentFrame == 7) {
 			float _kb = 6.0f + (9.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.6f, 0.1f), 2.8f, _kb, 45, 7, 0, vec3((-0.5f + (int)facingRight)*1.95f, 0.7f, 0.0f));
-			newAtk->acceleration = vec3((-0.5f + (int)facingRight)*-0.45f, 0, 0);
+			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.6f, 0.1f), 2.8f, _kb, 45, 7, 0, vec3(0,0,0));
+			newAtk->spline = true;
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -10, 0.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 5, 0.9f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 5, 3.1f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -10, 4.0f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -1027,10 +1031,14 @@ mat4 Character::uAttack()
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
 
-		if (currentFrame == 6) {
+		if (currentFrame == 26) {
 			float _kb = 7.0f + (7.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*2.3f, 1.25f, 0.05f), 3.2f, _kb, 89, 6, 0, vec3((-0.5f + (int)facingRight)*-0.8f, 2.0f, 0.0f));
-			newAtk->acceleration = vec3(0, -0.49,0);
+			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*2.3f, 1.25f, 0.05f), 3.2f, _kb, 89, 8, 0, vec3((-0.5f + (int)facingRight)*-0.8f, 2.0f, 0.0f));
+			newAtk->spline = true;
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 4.9f, -45.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 5.9f, 1.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -5.9f, 1.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -4.9f, -45.0f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {

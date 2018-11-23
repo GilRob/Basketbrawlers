@@ -13,6 +13,7 @@ Hitbox::Hitbox(vec3 _position, float _size, float _knockback, float _angleDeg, u
 	owner = _owner;
 	acceleration = vec3(0, 0, 0);
 	projectile = false;
+	spline = false;
 
 }
 
@@ -37,16 +38,37 @@ void Hitbox::update(int t, vec3 parent = { 0,0,0 })
 {
 	if (currentFrame <= activeFrames) {
 		//update position
-		
-		velocity = velocity + (acceleration);
-		position = position + (velocity);
-		currentFrame++;
-		if (projectile) {
-			globalPosition = position;
+		if (spline) {
+			if (curve.size() <= 4)
+				position = catmull(curve[0], curve[1], curve[2], curve[3], (float)currentFrame / activeFrames);
+			else if(curve.size() == 5){
+				float percent = (float)currentFrame / activeFrames;
+				if (percent < 0.5f)
+					position = catmull(curve[0], curve[1], curve[2], curve[3], percent - 0.25);
+				else
+					position = catmull(curve[1], curve[2], curve[3], curve[4], percent - 0.75f);
+
+
+			}
+
+			if (projectile) {
+				globalPosition = position;
+			}
+			else {
+				globalPosition = position + parent;
+			}
 		}
 		else {
-			globalPosition = position + parent;
+			velocity = velocity + (acceleration);
+			position = position + (velocity);
+			if (projectile) {
+				globalPosition = position;
+			}
+			else {
+				globalPosition = position + parent;
+			}
 		}
+		currentFrame++;
 	}
 }
 

@@ -8,6 +8,7 @@
 //#include "camera.h"
 #include "MiniMath/Core.h"
 
+
 class Hitbox {
 
 public:
@@ -25,9 +26,31 @@ public:
 	float getKnockback();
 	void setDone();
 	mat4 getTransform();
-
+	bool spline;
 	bool projectile;
 	vec3 acceleration;
+	std::vector<vec3> curve;
+
+
+	vec3 catmull(vec3 p0, vec3 p1, vec3 p2, vec3 p3, float t)
+	{
+		return 0.5f * (
+			t * t * t * (-p0 + 3.0f * p1 - 3.0f * p2 + p3) +
+			t * t * (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3) +
+			t * (-p0 + p2) +
+			(2.0f * p1));
+	}
+
+	vec4 catmull(vec4 p0, vec4 p1, vec4 p2, vec4 p3, float t)
+	{
+		return 0.5f * (
+			t * t * t * (-p0 + 3.0f * p1 - 3.0f * p2 + p3) +
+			t * t * (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3) +
+			t * (-p0 + p2) +
+			(2.0f * p1));
+	}
+
+
 
 private:
 	//physics
