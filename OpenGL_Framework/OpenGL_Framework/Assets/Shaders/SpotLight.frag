@@ -1,24 +1,33 @@
 #version 420
 
-uniform vec3 uSceneAmbient = vec3(0.0, 1.0, 0.0);
+uniform sampler2D uSceneAlbedo;
+//uniform sampler2D uShadowMap;
+uniform sampler2D uNormalMap;
+uniform sampler2D uPositionMap;
+
+//uniform vec3 uSceneDiffuse = vec3(0.0, 1.0, 0.0);
 uniform vec3 uLightPosition = vec3(3.0, 0.0, 0.0);
 uniform vec3 uLightColor = vec3(1.0, 1.0, 1.0);
 uniform float uLightSpecularExponent = 16.0;
 
 
 in vec2 texcoord;
-in vec3 norm;
-in vec3 pos;
+//in vec3 norm;
+//in vec3 pos;
 
 out vec4 outColor;
 
 void main()
 {
-	outColor.rgb = uSceneAmbient;
+	vec3 textureColor = texture(uSceneAlbedo, texcoord).rgb;
+	vec3 normal = texture(uNormalMap, texcoord).xyz * 2.0 - 1.0; //Unpack
+	vec3 pos = texture(uPositionMap, texcoord).xyz;
+	
+	outColor.rgb = vec3(0.0);
 	outColor.a = 0.5;
 
 	// Fix length after rasterizer interpolates
-	vec3 normal = normalize(norm);
+	//vec3 normal = normalize(norm);
 
 	vec3 lightVec = uLightPosition - pos;
 	float dist = length(lightVec);

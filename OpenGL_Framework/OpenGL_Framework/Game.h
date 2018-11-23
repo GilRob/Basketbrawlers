@@ -59,6 +59,7 @@ public:
 	ShaderProgram DeferredLighting;
 	ShaderProgram AniShader;
 	ShaderProgram SpotLight;
+	ShaderProgram ParticleProgram;
 
 	Character* playerOne;
 	std::vector<bool> inputs2;
@@ -89,6 +90,9 @@ public:
 	Texture P1Bar;
 	Texture P2Hud;
 	Texture P2Bar;
+
+	//Particle Effects
+	ParticleEffect ConfettiEffect;
 
 	/// FRAMEBUFFERS ///
 	FrameBuffer GBuffer; //Utility buffer to hold positions and normals

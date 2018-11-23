@@ -105,7 +105,7 @@ void DirectionalLight()
 	if (NdotL < 0.0 || shadowDepth < shadowCoord.z - 0.001f)
 	{
 		//We have shadow!
-		outColor.rgb *= 0.5;
+		outColor.rgb *= 0.7;
 		//You could put an actual colour here?
 	}
 	else if (NdotL > 0.0) //If the normal is facing the light

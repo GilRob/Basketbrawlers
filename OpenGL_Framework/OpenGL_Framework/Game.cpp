@@ -128,9 +128,18 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	if (!SpotLight.Load("./Assets/Shaders/StaticGeometry.vert", "./Assets/Shaders/SpotLight.frag"))
+	if (!SpotLight.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/SpotLight.frag"))
 	{
 		std::cout << "SL Shaders failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	if (!ParticleProgram.Load(
+		"./Assets/Shaders/Particles/BillBoard.vert",
+		"./Assets/Shaders/Particles/BillBoard.frag",
+		"./Assets/Shaders/Particles/BillBoard.geom"))
+	{
+		std::cout << "PP failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
@@ -251,6 +260,21 @@ void Game::initializeGame()
 		exit(0);
 	}
 
+	if (!ConfettiEffect.Init("./Assets/Textures/Fog.png", 1200, 10))
+	{
+		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	//Missing .Set which is what the video uses***
+	ConfettiEffect.LerpAlpha = vec2(0.5f, 0.0f);
+	ConfettiEffect.LerpSize = vec2(0.0f, 5.0f);
+	ConfettiEffect.RangeLifetime = vec2(8.0f, 20.0f);
+	ConfettiEffect.RangeVelocity = vec2(0.33f, 0.4f);
+	ConfettiEffect.RangeX = vec2(-25.0f, 25.0f);
+	ConfettiEffect.RangeY = vec2(0.8f, 0.5f);
+	ConfettiEffect.RangeZ = vec2(-25.0f, 25.0f);
+
 
 	/*CameraTransform.Translate(vec3(0.0f, 7.5f, 20.0f));
 	CameraTransform.RotateX(-15.0f);*/
@@ -358,6 +382,8 @@ void Game::update()
 	if (dist > 40)
 		dist = 40;
 	//camera->setPositionZ(dist);
+
+	ConfettiEffect.Update(deltaTime);
 
 	//Make sure to do the reverse of the transform orders due to the change from row-major to column-major, it reverses all mathematic operations
 	CameraTransform = mat4::Identity;
@@ -608,17 +634,6 @@ void Game::draw()
 
 	AniShader.UnBind();
 
-	SpotLight.Bind();
-	SpotLight.SendUniformMat4("uModel", playerTwo->transform.data, true);
-	SpotLight.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-	SpotLight.SendUniformMat4("uProj", CameraProjection.data, true);
-	vec4 lightPos = CameraTransform.GetInverse() * vec4(playerTwo->getPosition(), 1.0f);
-	SpotLight.SendUniform("uLightPosition", vec3(lightPos));
-
-	playerOne->draw(SpotLight);
-
-	SpotLight.UnBind();
-
 	GBuffer.UnBind();
 	GBufferPass.UnBind();
 
@@ -676,6 +691,17 @@ void Game::draw()
 	//glActiveTexture(GL_TEXTURE5);
 	//StepTexture.Bind();
 		DrawFullScreenQuad();
+	/*glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
+	SpotLight.Bind();
+
+	vec4 lightPos = CameraTransform.GetInverse() * vec4(playerTwo->getPosition(), 1.0f);
+	SpotLight.SendUniform("uLightPosition", vec3(lightPos));
+
+	DrawFullScreenQuad();
+
+	SpotLight.UnBind();*/
+
+	glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
 	//glBindTexture(GL_TEXTURE_2D, GL_NONE); //Could I do StepTexture.UnBInd()?
 	//glActiveTexture(GL_TEXTURE4);
 	//glBindTexture(GL_TEXTURE_2D, GL_NONE);
@@ -691,16 +717,13 @@ void Game::draw()
 
 	if (p1Score == true)
 	{
-		SpotLight.Bind();
-		SpotLight.SendUniformMat4("uModel", playerOne->transform.data, true);
-		SpotLight.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-		SpotLight.SendUniformMat4("uProj", CameraProjection.data, true);
-		vec4 lightPos = CameraTransform.GetInverse() * vec4(playerOne->getPosition(), 1.0f);
-		SpotLight.SendUniform("uLightPosition", vec3(lightPos));
-
-		playerOne->draw(SpotLight);
-
-		SpotLight.UnBind();
+		ParticleProgram.Bind();
+		ParticleProgram.SendUniform("uTex", 0);
+		ParticleProgram.SendUniformMat4("uModel", ConfettiEffect.Transform.data, true);
+		ParticleProgram.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+		ParticleProgram.SendUniformMat4("uProj", CameraProjection.data, true);
+		ConfettiEffect.Render();
+		ParticleProgram.UnBind();
 		
 		static float timer;
 		timer += updateTimer->getElapsedTimeSeconds();
@@ -714,16 +737,13 @@ void Game::draw()
 
 	if (p2Score == true)
 	{
-		SpotLight.Bind();
-		SpotLight.SendUniformMat4("uModel", playerTwo->transform.data, true);
-		SpotLight.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-		SpotLight.SendUniformMat4("uProj", CameraProjection.data, true);
-		vec4 lightPos = CameraTransform.GetInverse() * vec4(playerTwo->getPosition(), 1.0f);
-		SpotLight.SendUniform("uLightPosition", vec3(lightPos));
-
-		playerOne->draw(SpotLight);
-
-		SpotLight.UnBind();
+		ParticleProgram.Bind();
+		ParticleProgram.SendUniform("uTex", 0);
+		ParticleProgram.SendUniformMat4("uModel", ConfettiEffect.Transform.data, true);
+		ParticleProgram.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+		ParticleProgram.SendUniformMat4("uProj", CameraProjection.data, true);
+		ConfettiEffect.Render();
+		ParticleProgram.UnBind();
 		static float timer;
 		timer += updateTimer->getElapsedTimeSeconds();
 		std::cout << timer << std::endl;
