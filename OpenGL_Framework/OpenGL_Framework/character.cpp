@@ -924,9 +924,9 @@ mat4 Character::jab()
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
 
-		if (currentFrame == 5) {
+		if (currentFrame == 6) {
 			float _kb = 5.5f + (6.55f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.05f, 3.5f, 0.1f), 2.5f, _kb, 55, 6, 0, vec3((-0.5f + (int)facingRight)*0.5f, 0.0f, 0.0f));
+			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.1f, 3.1f, 0.1f), 2.5f, _kb, 55, 6, 0, vec3((-0.5f + (int)facingRight)*0.7f, 0.0f, 0.0f));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if(currentFrame == activeFrames){
@@ -961,10 +961,10 @@ mat4 Character::sAttack()
 			float _kb = 6.0f + (9.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.6f, 0.1f), 2.8f, _kb, 45, 7, 0, vec3(0,0,0));
 			newAtk->spline = true;
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -10, 0.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 5, 0.9f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 5, 3.1f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -10, 4.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -30, 0.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 3, 0.5f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 3, 3.5f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -20, 4.0f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -1000,7 +1000,7 @@ mat4 Character::dAttack()
 
 		if (currentFrame == 6) {
 			float _kb = 7.0f + (7.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.7f, 0.1f), 2.8f, _kb, 80, 6, 0, vec3((-0.5f + (int)facingRight)*0.8f, 0.0f, 0.0f));
+			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.7f, 0.1f), 2.8f, _kb, 80, 7, 0, vec3((-0.5f + (int)facingRight)*1.0f, 0.0f, 0.0f));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
