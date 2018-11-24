@@ -508,21 +508,21 @@ std::vector<Hitbox*> Character::getHitboxes()
 
 //called on hit
 void Character::hit(Hitbox* hitBy) {
-		float result = hitBy->getVelocity().x;
-		if (result <= 0)
-			result = 0.06f;
-		else
-			result = -0.06f;
+	float result;
+	if (!hitBy->facingRight)
+		result = 0.06f;
+	else
+		result = -0.06f;
 
-		float xComp = hitBy->getKnockback() * cos((180.0f - hitBy->getAngle()) * 3.14f / 180.0f);//*0.0174772222222222f);
-		float yComp = hitBy->getKnockback() * sin((180.0f - hitBy->getAngle()) * 3.14f / 180.0f);//*0.0174772222222222f);
+	float xComp = hitBy->getKnockback() * cos((180.0f - hitBy->getAngle()) * 3.14f / 180.0f);//*0.0174772222222222f);
+	float yComp = hitBy->getKnockback() * sin((180.0f - hitBy->getAngle()) * 3.14f / 180.0f);//*0.0174772222222222f);
 
-		vec3 add(result * xComp, 0.06f * yComp, 0);
-		hitForce = add;
-		action = ACTION_HIT;
-		interuptable = false;
-		activeFrames = hitframes + hitstun + hitBy->getKnockback();//
-		currentFrame = 1;
+	vec3 add(result * xComp, 0.06f * yComp, 0);
+	hitForce = add;
+	action = ACTION_HIT;
+	interuptable = false;
+	activeFrames = hitframes + hitstun + hitBy->getKnockback();//
+	currentFrame = 1;
 }
 
 ///0-up, 1-left, 2-down, 3-right, 4-A, 5-B, 6-jump
@@ -927,6 +927,7 @@ mat4 Character::jab()
 		if (currentFrame == 6) {
 			float _kb = 5.5f + (6.55f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.1f, 3.1f, 0.1f), 2.5f, _kb, 55, 6, 0, vec3((-0.5f + (int)facingRight)*0.7f, 0.0f, 0.0f));
+			newAtk->facingRight = facingRight;
 			activeHitboxes.push_back(newAtk);
 		}
 		else if(currentFrame == activeFrames){
@@ -961,6 +962,7 @@ mat4 Character::sAttack()
 			float _kb = 6.0f + (9.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.6f, 0.1f), 2.8f, _kb, 45, 7, 0, vec3(0,0,0));
 			newAtk->spline = true;
+			newAtk->facingRight = facingRight;
 			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -30, 0.0f, 0));
 			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 3, 0.5f, 0));
 			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 3, 3.5f, 0));
@@ -1001,6 +1003,7 @@ mat4 Character::dAttack()
 		if (currentFrame == 6) {
 			float _kb = 7.0f + (7.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.7f, 0.1f), 2.8f, _kb, 80, 7, 0, vec3((-0.5f + (int)facingRight)*1.0f, 0.0f, 0.0f));
+			newAtk->facingRight = facingRight;
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -1035,6 +1038,7 @@ mat4 Character::uAttack()
 			float _kb = 7.0f + (7.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*2.3f, 1.25f, 0.05f), 3.2f, _kb, 89, 8, 0, vec3((-0.5f + (int)facingRight)*-0.8f, 2.0f, 0.0f));
 			newAtk->spline = true;
+			newAtk->facingRight = facingRight;
 			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 4.9f, -45.0f, 0));
 			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 5.9f, 1.0f, 0));
 			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -5.9f, 1.0f, 0));
@@ -1072,14 +1076,22 @@ mat4 Character::nAir()
 
 		if (currentFrame == 5) {
 			float _kb = 5.5f + (7.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3(0.0f, 2.2f, 0.05f)*2.0f, 2.7f, _kb, 80, 9, 0, vec3((-0.5f + (int)facingRight)*0.01f, 0, 0.0f));//top
+			//Hitbox *newAtk = new Hitbox(vec3(0.0f, 2.2f, 0.05f)*2.0f, 2.7f, _kb, 80, 9, 0, vec3((-0.5f + (int)facingRight)*0.01f, 0, 0.0f));//top
+			//activeHitboxes.push_back(newAtk);
+			//Hitbox *newAtk2 = new Hitbox(vec3(0.0f, 0.1f, 0.05f)*2.0f, 2.7f, _kb, 80, 9, 0,vec3((-0.5f + (int)facingRight)*0.01f, 0, 0.0f));//bottom
+			//activeHitboxes.push_back(newAtk2);
+			//Hitbox *newAtk3 = new Hitbox(vec3(0.4f, 1.1f, 0.05f)*2.0f, 2.7f, _kb, 80, 9, 0, vec3((-0.5f + (int)facingRight)*0.01f, 0, 0.0f));//right
+			//activeHitboxes.push_back(newAtk3);
+			//Hitbox *newAtk4 = new Hitbox(vec3(-0.4f, 1.1f, 0.05f)*2.0f, 2.7f, _kb, 80, 9, 0, vec3((-0.5f + (int)facingRight)*0.01f, 0, 0.0f));//left
+			//activeHitboxes.push_back(newAtk4);
+			Hitbox *newAtk = new Hitbox(vec3(0, 2.8f, 0.05f), 2.8f, _kb, 75, 7, 0, vec3((-0.5f + (int)facingRight)*0.7f, 0, 0.0f));
+			newAtk->spline = true;
+			newAtk->facingRight = facingRight;
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -25, 10.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 1, 1.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 1, 1.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -25, 10.0f, 0));
 			activeHitboxes.push_back(newAtk);
-			Hitbox *newAtk2 = new Hitbox(vec3(0.0f, 0.1f, 0.05f)*2.0f, 2.7f, _kb, 80, 9, 0,vec3((-0.5f + (int)facingRight)*0.01f, 0, 0.0f));//bottom
-			activeHitboxes.push_back(newAtk2);
-			Hitbox *newAtk3 = new Hitbox(vec3(0.4f, 1.1f, 0.05f)*2.0f, 2.7f, _kb, 80, 9, 0, vec3((-0.5f + (int)facingRight)*0.01f, 0, 0.0f));//right
-			activeHitboxes.push_back(newAtk3);
-			Hitbox *newAtk4 = new Hitbox(vec3(-0.4f, 1.1f, 0.05f)*2.0f, 2.7f, _kb, 80, 9, 0, vec3((-0.5f + (int)facingRight)*0.01f, 0, 0.0f));//left
-			activeHitboxes.push_back(newAtk4);
 		}
 		else if (currentFrame == activeFrames) {
 			//if action over, goto fall
@@ -1107,7 +1119,13 @@ mat4 Character::sAir()
 		///Will be changed in the future
 		if (currentFrame == 5) {
 			float _kb = 8.0f + (8.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3(0, 2.8f, 0.05f), 2.8f, _kb, 65, 7, 0, vec3((-0.5f + (int)facingRight)*0.7f, 0, 0.0f));
+			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.6f, 0.1f), 2.8f, _kb, 60, 7, 0, vec3(0, 0, 0));
+			newAtk->spline = true;
+			newAtk->facingRight = facingRight;
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -20, 4.5f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 2, 4.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 2, 0.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -30, 0.5f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -1140,7 +1158,13 @@ mat4 Character::dAir()
 		///Will be changed in the future
 		if (currentFrame == 10) {
 			float _kb = 8.0f + (7.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3(0.0f, 0.5f, 0.05f), 3.5f, _kb, 270, 5, 0, vec3(0, -0.2f, 0.0f));
+			Hitbox *newAtk = new Hitbox(vec3(0.0f, 0.5f, 0.05f), 3.5f, _kb, 270, 5, 0, vec3(0, 0, 0.0f));
+			newAtk->spline = true;
+			newAtk->facingRight = facingRight;
+			newAtk->curve.push_back(vec3(1.0f, 27.0f, 0));
+			newAtk->curve.push_back(vec3(0.0f, 2.5f, 0));
+			newAtk->curve.push_back(vec3(0.0f, 2.5f, 0));
+			newAtk->curve.push_back(vec3(-1.0f, 27.0f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -1169,10 +1193,13 @@ mat4 Character::uAir()
 		///Will be changed in the future
 		if (currentFrame == 7) {
 			float _kb = 7.3f + (8.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*2.3f, 1.25f, 0.05f), 2.9f, _kb, 91, 7, 0, vec3((-0.5f + (int)facingRight)*-0.8f, 2.0f, 0.0f));
-			newAtk->acceleration = vec3(0, -0.49, 0);
-
-			
+			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*2.3f, 1.25f, 0.05f), 2.9f, _kb, 91, 7, 0, vec3(0,0,0));
+			newAtk->spline = true;
+			newAtk->facingRight = facingRight;
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -5.9f, -35.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -5.9f, 1.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 5.9f, 1.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 5.9f, -35.0f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -1261,7 +1288,12 @@ mat4 Character::nSpecial(bool charging)
 			float _kb = 9.0f + (10.0f * (currentFrame * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			unsigned int angle = 45;
 			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.1f, 2.9f, 0.1f), 3.1f, _kb, angle, 7, 0, vec3((-0.5f + (int)facingRight)*2.0f, -0.22f, 0.0f));
-			newAtk->acceleration = vec3((-0.5f + (int)facingRight)*-0.46f, 0, 0);
+			newAtk->spline = true;
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -20, 4.5f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 2, 4.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 2, 0.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -30, 0.5f, 0));
+			newAtk->facingRight = facingRight;
 			activeHitboxes.push_back(newAtk);
 			//start endlag
 			activeFrames = endlag;
@@ -1277,7 +1309,12 @@ mat4 Character::nSpecial(bool charging)
 			float _kb = 20.5f + (11.0f * (currentFrame * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			unsigned int angle = 45;
 			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 2.2f, 0.1f), 2.6f, _kb, angle, 7, 0, vec3((-0.5f + (int)facingRight)*2.0f, -0.4f, 0.0f));
-			newAtk->acceleration = vec3((-0.5f + (int)facingRight)*-0.42f, 0, 0);
+			newAtk->spline = true;
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -20, 4.5f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 2, 4.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 2, 0.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -30, 0.5f, 0));
+			newAtk->facingRight = facingRight;
 			activeHitboxes.push_back(newAtk);
 			//start endlag
 			activeFrames = endlag;
@@ -1322,7 +1359,8 @@ mat4 Character::sSpecial()
 
 		if (currentFrame == 5) {
 			float _kb = 6.5f + (4.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.09, 1.1f, 0.05f)*2.5f, 4.0f, 2.0f * _kb, 15, 15, 0, vec3((-0.5f + (int)facingRight)*0.01, 0.0f, 0.0f));
+			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.11, 1.1f, 0.05f)*2.5f, 4.0f, 2.0f * _kb, 15, 15, 0, vec3((-0.5f + (int)facingRight)*0.01, 0.0f, 0.0f));
+			newAtk->facingRight = facingRight;
 
 			//Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.6f, 0.1f), 2.1f, _kb, 45, 7, 0, vec3((-0.5f + (int)facingRight)*1.95f, 0.4f, 0.0f));
 			//newAtk->acceleration = vec3((-0.5f + (int)facingRight)*-0.42f, 0, 0);
@@ -1331,7 +1369,12 @@ mat4 Character::sSpecial()
 		else if (currentFrame == 25) {
 			float _kb = 7.5f + (7.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.5f, 0.6f, 0.1f), 2.8f, _kb, 75, 7, 0, vec3((-0.5f + (int)facingRight)*1.95f, 0.5f, 0.0f));
-			newAtk->acceleration = vec3((-0.5f + (int)facingRight)*-0.42f, 0, 0);
+			newAtk->spline = true;
+			newAtk->facingRight = facingRight;
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -20, 0.5f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 4, 0.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 4, 4.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -10, 10.5f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -1369,6 +1412,8 @@ mat4 Character::dSpecial()
 			float _kb = 8.5f + (9.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(vec3(0.05f, 0.5f, 0.1f), 2.7f, _kb, 75, 5, 0, vec3(0.3f, 0.0f, 0.0f));
 			Hitbox *newAtk2 = new Hitbox(vec3(-0.05f, 0.5f, 0.1f), 2.7f, _kb, 75, 5, 0, vec3(-0.3f, 0.0f, 0.0f));
+			newAtk->facingRight = facingRight;
+			newAtk2->facingRight = !facingRight;
 
 			activeHitboxes.push_back(newAtk);
 			activeHitboxes.push_back(newAtk2);
@@ -1409,7 +1454,12 @@ mat4 Character::uSpecial()
 		if (currentFrame == 8) {
 			float _kb = 9.5f + (5.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.7f, 0.1f), 2.9f, _kb, 88, 7, 0, vec3((-0.5f + (int)facingRight)*1.9f, 0.55f, 0.0f));
-			newAtk->acceleration = vec3((-0.5f + (int)facingRight)*-0.5f, 0, 0);
+			newAtk->spline = true;
+			newAtk->facingRight = facingRight;
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -20, 1.5f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 4, 1.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 5, 5.0f, 0));
+			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 0.5f, 10.5f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {

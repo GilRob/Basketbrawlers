@@ -2,6 +2,7 @@
 #include <GL\glew.h>
 
 #include <MiniMath\Core.h>
+//#include <glm/glm.hpp>
 #include <string>
 
 class ShaderProgram

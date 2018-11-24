@@ -14,6 +14,7 @@ Hitbox::Hitbox(vec3 _position, float _size, float _knockback, float _angleDeg, u
 	acceleration = vec3(0, 0, 0);
 	projectile = false;
 	spline = false;
+	facingRight = false;
 
 }
 

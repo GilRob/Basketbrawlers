@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "MiniMath\Core.h"
+//#include <glm/glm.hpp>
 #include "Texture.h"
 
 struct ParticleList

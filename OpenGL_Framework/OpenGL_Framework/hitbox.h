@@ -27,6 +27,7 @@ public:
 	void setDone();
 	mat4 getTransform();
 	bool spline;
+	bool facingRight;
 	bool projectile;
 	vec3 acceleration;
 	std::vector<vec3> curve;
