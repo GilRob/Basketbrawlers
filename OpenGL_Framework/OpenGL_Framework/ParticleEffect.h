@@ -36,6 +36,13 @@ public:
 	vec2 LerpAlpha = vec2(0.5f, 0.0f);
 	vec2 LerpSize = vec2(0.0f, 1.0f);
 
+	bool HaveGravity = false;
+	bool Playing = false;
+	float Mass;
+	float Gravity;
+	vec3 force;
+	vec3 acceleration;
+
 private:
 	ParticleList _Particles;
 	Texture _Texture;

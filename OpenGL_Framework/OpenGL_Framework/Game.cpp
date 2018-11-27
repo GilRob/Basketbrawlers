@@ -260,20 +260,75 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	if (!ConfettiEffect.Init("./Assets/Textures/Fog.png", 1200, 10))
+	if (!ConfettiEffectBlueRight.Init("./Assets/Textures/BlueConfetti.png", 100, 100))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
 		exit(0);
 	}
 	//Missing .Set which is what the video uses***
-	ConfettiEffect.LerpAlpha = vec2(0.5f, 0.0f);
-	ConfettiEffect.LerpSize = vec2(0.0f, 5.0f);
-	ConfettiEffect.RangeLifetime = vec2(8.0f, 20.0f);
-	ConfettiEffect.RangeVelocity = vec2(0.33f, 0.4f);
-	ConfettiEffect.RangeX = vec2(-25.0f, 25.0f);
-	ConfettiEffect.RangeY = vec2(0.8f, 0.5f);
-	ConfettiEffect.RangeZ = vec2(-25.0f, 25.0f);
+	ConfettiEffectBlueRight.LerpAlpha = vec2(0.4f, 0.8f);
+	ConfettiEffectBlueRight.LerpSize = vec2(1.0f, 2.0f);
+	ConfettiEffectBlueRight.RangeLifetime = vec2(5.0f, 5.0f);
+	ConfettiEffectBlueRight.RangeVelocity = vec2(-5.0f, 5.0f);
+	ConfettiEffectBlueRight.RangeX = vec2(7.5f, 7.5f);
+	ConfettiEffectBlueRight.RangeY = vec2(20.0f, 20.0f);
+	ConfettiEffectBlueRight.RangeZ = vec2(-2.5f, -2.5f);
+	ConfettiEffectBlueRight.HaveGravity = true;
+	ConfettiEffectBlueRight.Mass = 2.0f;
+	ConfettiEffectBlueRight.Gravity = 0.2f;
+
+	if (!ConfettiEffectBlueLeft.Init("./Assets/Textures/BlueConfetti.png", 100, 100))
+	{
+		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	ConfettiEffectBlueLeft.LerpAlpha = vec2(0.4f, 0.8f);
+	ConfettiEffectBlueLeft.LerpSize = vec2(1.0f, 2.0f);
+	ConfettiEffectBlueLeft.RangeLifetime = vec2(5.0f, 5.0f);
+	ConfettiEffectBlueLeft.RangeVelocity = vec2(-5.0f, 5.0f);
+	ConfettiEffectBlueLeft.RangeX = vec2(-7.5f, -7.5f);
+	ConfettiEffectBlueLeft.RangeY = vec2(20.0f, 20.0f);
+	ConfettiEffectBlueLeft.RangeZ = vec2(-2.5f, -2.5f);
+	ConfettiEffectBlueLeft.HaveGravity = true;
+	ConfettiEffectBlueLeft.Mass = 2.0f;
+	ConfettiEffectBlueLeft.Gravity = 0.2f;
+
+	if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", 100, 100))
+	{
+		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	//Missing .Set which is what the video uses***
+	ConfettiEffectRedRight.LerpAlpha = vec2(0.4f, 0.8f);
+	ConfettiEffectRedRight.LerpSize = vec2(1.0f, 2.0f);
+	ConfettiEffectRedRight.RangeLifetime = vec2(5.0f, 5.0f);
+	ConfettiEffectRedRight.RangeVelocity = vec2(-5.0f, 5.0f);
+	ConfettiEffectRedRight.RangeX = vec2(7.5f, 7.5f);
+	ConfettiEffectRedRight.RangeY = vec2(20.0f, 20.0f);
+	ConfettiEffectRedRight.RangeZ = vec2(-2.5f, -2.5f);
+	ConfettiEffectRedRight.HaveGravity = true;
+	ConfettiEffectRedRight.Mass = 2.0f;
+	ConfettiEffectRedRight.Gravity = 0.2f;
+	
+	if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", 100, 100))
+	{
+		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	ConfettiEffectRedLeft.LerpAlpha = vec2(0.4f, 0.8f);
+	ConfettiEffectRedLeft.LerpSize = vec2(1.0f, 2.0f);
+	ConfettiEffectRedLeft.RangeLifetime = vec2(5.0f, 5.0f);
+	ConfettiEffectRedLeft.RangeVelocity = vec2(-5.0f, 5.0f);
+	ConfettiEffectRedLeft.RangeX = vec2(-7.5f, -7.5f);
+	ConfettiEffectRedLeft.RangeY = vec2(20.0f, 20.0f);
+	ConfettiEffectRedLeft.RangeZ = vec2(-2.5f, -2.5f);
+	ConfettiEffectRedLeft.HaveGravity = true;
+	ConfettiEffectRedLeft.Mass = 2.0f;
+	ConfettiEffectRedLeft.Gravity = 0.2f;
 
 
 	/*CameraTransform.Translate(vec3(0.0f, 7.5f, 20.0f));
@@ -383,7 +438,24 @@ void Game::update()
 		dist = 40;
 	//camera->setPositionZ(dist);
 
-	ConfettiEffect.Update(deltaTime);
+	///PARTICLE EFFECTS
+	//Update Patricle Effects
+	if (ConfettiEffectBlueRight.Playing == true)
+	{
+		ConfettiEffectBlueRight.Update(deltaTime);
+	}
+	if (ConfettiEffectBlueLeft.Playing == true)
+	{
+		ConfettiEffectBlueLeft.Update(deltaTime);
+	}
+	if (ConfettiEffectRedRight.Playing == true)
+	{
+		ConfettiEffectRedRight.Update(deltaTime);
+	}
+	if (ConfettiEffectRedLeft.Playing == true)
+	{
+		ConfettiEffectRedLeft.Update(deltaTime);
+	}
 
 	//Make sure to do the reverse of the transform orders due to the change from row-major to column-major, it reverses all mathematic operations
 	CameraTransform = mat4::Identity;
@@ -719,17 +791,25 @@ void Game::draw()
 	{
 		ParticleProgram.Bind();
 		ParticleProgram.SendUniform("uTex", 0);
-		ParticleProgram.SendUniformMat4("uModel", ConfettiEffect.Transform.data, true);
+		ParticleProgram.SendUniformMat4("uModel", ConfettiEffectBlueRight.Transform.data, true);
 		ParticleProgram.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 		ParticleProgram.SendUniformMat4("uProj", CameraProjection.data, true);
-		ConfettiEffect.Render();
+
+		ConfettiEffectRedRight.Playing = true;
+		ConfettiEffectRedRight.Render();
+
+		ConfettiEffectRedLeft.Playing = true;
+		ConfettiEffectRedLeft.Render();
+
 		ParticleProgram.UnBind();
 		
 		static float timer;
 		timer += updateTimer->getElapsedTimeSeconds();
 		std::cout << timer << std::endl;
-		if (timer >= 2)
+		if (timer >= 5)
 		{
+			ConfettiEffectRedRight.Playing = false;
+			ConfettiEffectRedLeft.Playing = false;
 			timer = 0;
 			p1Score = false;
 		}
@@ -739,16 +819,25 @@ void Game::draw()
 	{
 		ParticleProgram.Bind();
 		ParticleProgram.SendUniform("uTex", 0);
-		ParticleProgram.SendUniformMat4("uModel", ConfettiEffect.Transform.data, true);
+		ParticleProgram.SendUniformMat4("uModel", ConfettiEffectRedRight.Transform.data, true);
 		ParticleProgram.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 		ParticleProgram.SendUniformMat4("uProj", CameraProjection.data, true);
-		ConfettiEffect.Render();
+		
+		ConfettiEffectBlueRight.Playing = true;
+		ConfettiEffectBlueRight.Render();
+
+		ConfettiEffectBlueLeft.Playing = true;
+		ConfettiEffectBlueLeft.Render();
+
 		ParticleProgram.UnBind();
+
 		static float timer;
 		timer += updateTimer->getElapsedTimeSeconds();
 		std::cout << timer << std::endl;
-		if (timer >= 2)
+		if (timer >= 5)
 		{
+			ConfettiEffectBlueRight.Playing = false;
+			ConfettiEffectBlueLeft.Playing = false;
 			timer = 0;
 			p2Score = false;
 		}

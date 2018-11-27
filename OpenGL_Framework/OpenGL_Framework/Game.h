@@ -92,7 +92,10 @@ public:
 	Texture P2Bar;
 
 	//Particle Effects
-	ParticleEffect ConfettiEffect;
+	ParticleEffect ConfettiEffectBlueRight;
+	ParticleEffect ConfettiEffectBlueLeft;
+	ParticleEffect ConfettiEffectRedRight;
+	ParticleEffect ConfettiEffectRedLeft;
 
 	/// FRAMEBUFFERS ///
 	FrameBuffer GBuffer; //Utility buffer to hold positions and normals
@@ -133,7 +136,6 @@ public:
 
 	bool p1Score = false;
 	bool p2Score = false;
-
 
 private:
 
