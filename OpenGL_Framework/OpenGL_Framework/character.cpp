@@ -96,10 +96,10 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	}
 
 	//Set Physics
-	position = vec3(0, 0, 0);
-	velocity = vec3(0, 0, 0);
-	acceleration = vec3(0, 0, 0);
-	force = vec3(0, 0, 0);
+	position = glm::vec3(0, 0, 0);
+	velocity = glm::vec3(0, 0, 0);
+	acceleration = glm::vec3(0, 0, 0);
+	force = glm::vec3(0, 0, 0);
 	facingRight = true;
 	blocking = false;
 	blockSuccessful = false;
@@ -109,7 +109,9 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	scaleZ = 1.1f;
 
 	//apply Scale && Rotation
-	transform.Scale(vec3(scaleX, scaleY, scaleZ));
+	//glm::scale(transform, glm::vec3(scaleX, scaleY, scaleZ));
+	transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
+	//glm::rotate(transform, 90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	transform.RotateY(90);
 
 ///==============================================================
@@ -176,9 +178,9 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	}
 
 
-	Hitbox *hurt1 = new Hitbox(vec3(0.0f, 3.0f, 0.0f), 3.0f);
+	Hitbox *hurt1 = new Hitbox(glm::vec3(0.0f, 3.0f, 0.0f), 3.0f);
 	hurtbox.push_back(hurt1);
-	Hitbox *hurt2 = new Hitbox(vec3(0.0f, 1.0f, 0.0f), 3.0f);
+	Hitbox *hurt2 = new Hitbox(glm::vec3(0.0f, 1.0f, 0.0f), 3.0f);
 	hurtbox.push_back(hurt2);
 
 }
@@ -208,7 +210,7 @@ void Character::update(int t, std::vector<bool> inputs) {
 	transform = atkInputHandler(inputs);
 
 	//physics update
-	force = vec3(force.x, 0 - gravity, 0);
+	force = glm::vec3(force.x, 0 - gravity, 0);
 	acceleration = force / mass;
 	velocity = velocity + (acceleration);
 
@@ -233,8 +235,10 @@ void Character::update(int t, std::vector<bool> inputs) {
 
 	///Rotate the player to the correct way they should look
 	if (facingRight == true)
+		//glm::rotate(transform, 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 		transform.RotateY(0);
 	else
+		//glm::rotate(transform, 180.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 		transform.RotateY(180);
 
 
@@ -303,7 +307,7 @@ void Character::update(int t, std::vector<bool> inputs) {
 	
 	//Testing Code for Spawning Hitboxes
 	//Check Hitboxes
-	for (int i = 0; i < activeHitboxes.size(); i++) {
+	for (unsigned int i = 0; i < activeHitboxes.size(); i++) {
 		activeHitboxes[i]->update(t, position);
 
 		if (activeHitboxes[i]->isDone())
@@ -311,16 +315,17 @@ void Character::update(int t, std::vector<bool> inputs) {
 	}
 
 	//Check Hurtboxes
-	for (int i = 0; i < hurtbox.size(); i++) {
+	for (unsigned int i = 0; i < hurtbox.size(); i++) {
 		hurtbox[i]->update(t, position);
 	}
 
-	transform.SetTranslation(vec3(position.x, position.y, position.z));
-	transform.Scale(vec3(scaleX, scaleY, scaleZ));
+	transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
+	//glm::scale(transform, glm::vec3(scaleX, scaleY, scaleZ));
+	transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
 }
 
 //Returns the Players Position
-vec3 Character::getPosition()
+glm::vec3 Character::getPosition()
 {
 	return position;
 }
@@ -347,7 +352,7 @@ void Character::draw(ShaderProgram shader, float dt) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, idleFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
 	}
 	else if (action == ACTION_WALK || action == ACTION_RUN) {
 		aniTimer += dt / 6.0f;
@@ -370,7 +375,7 @@ void Character::draw(ShaderProgram shader, float dt) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, walkFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
 	}
 	else if (action == ACTION_JAB) {
 		aniTimer += dt / 4.0f;
@@ -393,7 +398,7 @@ void Character::draw(ShaderProgram shader, float dt) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, jabFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
 	}
 	else if (action == ACTION_SIDE_ATTACK) {
 		aniTimer += dt / 4.0f;
@@ -416,7 +421,7 @@ void Character::draw(ShaderProgram shader, float dt) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, sAtkFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
 	}
 	else if (action == ACTION_UP_ATTACK) {
 		aniTimer += dt / 3.0f;
@@ -440,7 +445,7 @@ void Character::draw(ShaderProgram shader, float dt) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, uAtkFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
 	}
 	else if (action == ACTION_DOWN_ATTACK) {
 		aniTimer += dt / 4.0f;
@@ -463,7 +468,7 @@ void Character::draw(ShaderProgram shader, float dt) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, dAtkFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
 	}
 	else {
 		index = 0;
@@ -476,14 +481,14 @@ void Character::draw(ShaderProgram shader, float dt) {
 		glBindVertexArray(idleFrames[index]->VAO);
 
 		glDrawArrays(GL_TRIANGLES, 0, idleFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
 	}
 }
 
 
 void Character::drawBoxes(ShaderProgram GBufferPass) {
 
-	for (int i = 0; i < hurtbox.size(); i++) {
+	for (unsigned int i = 0; i < hurtbox.size(); i++) {
 		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
 		glUniformMatrix4fv(modelLoc, 1, false, hurtbox[i]->getTransform().data);
 
@@ -492,12 +497,12 @@ void Character::drawBoxes(ShaderProgram GBufferPass) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
 	}
 	shieldTexture.UnBind();
 
 
-	for (int i = 0; i < activeHitboxes.size(); i++) {
+	for (unsigned int i = 0; i < activeHitboxes.size(); i++) {
 		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
 		glUniformMatrix4fv(modelLoc, 1, false, activeHitboxes[i]->getTransform().data);
 
@@ -506,17 +511,18 @@ void Character::drawBoxes(ShaderProgram GBufferPass) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
 	}
 	boxTexture.UnBind();
 
 	if (blocking) {
 		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
-		mat4 shield;
+		glm::mat4 shield;
 		int i = (int)facingRight;
 		if (i == 0) i = -1;
-		shield.SetTranslation(position + vec3(i*0.7f, 2.0f, 0));
-		shield.Scale(vec3(1, 5.5f, 5.5));
+		shield.SetTranslation(position + glm::vec3(i*0.7f, 2.0f, 0));
+		//glm::scale(shield, glm::vec3(1.0f, 5.5f, 5.5f));
+		shield.Scale(glm::vec3(1, 5.5f, 5.5));
 		glUniformMatrix4fv(modelLoc, 1, false, shield.data);
 
 		shieldTexture.Bind();
@@ -524,7 +530,7 @@ void Character::drawBoxes(ShaderProgram GBufferPass) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
 	}
 	shieldTexture.UnBind();
 }
@@ -552,7 +558,7 @@ void Character::drawShadow(ShaderProgram shader, float dt)
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, idleFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
 	}
 	else {
 		glBindVertexArray(body.VAO);
@@ -561,7 +567,7 @@ void Character::drawShadow(ShaderProgram shader, float dt)
 }
 
 //Sets player position
-void Character::setPosition(vec3 pos){
+void Character::setPosition(glm::vec3 pos){
 	position = pos;
 }
 
@@ -587,26 +593,26 @@ void Character::hit(Hitbox* hitBy) {
 	float xComp = hitBy->getKnockback() * cos((180.0f - hitBy->getAngle()) * 3.14f / 180.0f);//*0.0174772222222222f);
 	float yComp = hitBy->getKnockback() * sin((180.0f - hitBy->getAngle()) * 3.14f / 180.0f);//*0.0174772222222222f);
 
-	vec3 add(result * xComp, 0.06f * yComp, 0);
+	glm::vec3 add(result * xComp, 0.06f * yComp, 0);
 	hitForce = add;
 	action = ACTION_HIT;
 	interuptable = false;
-	activeFrames = hitframes + hitstun + hitBy->getKnockback();//
+	activeFrames = unsigned int(hitframes + hitstun + hitBy->getKnockback());//
 	currentFrame = 1;
 }
 
 ///0-up, 1-left, 2-down, 3-right, 4-A, 5-B, 6-jump
 ///7-hardLeft, 8-hardRight
 ///9-shield
-mat4 Character::atkInputHandler(std::vector<bool> inputs)
+glm::mat4 Character::atkInputHandler(std::vector<bool> inputs)
 {
-	mat4 result;
+	glm::mat4 result;
 	///hit
 	if (action == ACTION_HIT) {
 		//todo
 		//If in Hitstun reduce directional influence
 		force.x = (inputs[1] - inputs[3]) *  diMultiplier;
-		if (currentFrame < (hitframes))//only launched for hitframes, character will just be stunned for the remaining frames (hitstun + moves kb)
+		if (currentFrame < (unsigned int)hitframes)//only launched for hitframes, character will just be stunned for the remaining frames (hitstun + moves kb)
 			velocity = hitForce;
 		currentFrame++;
 	}
@@ -718,9 +724,9 @@ mat4 Character::atkInputHandler(std::vector<bool> inputs)
 
 }
 
-mat4 Character::idle()
+glm::mat4 Character::idle()
 {
-	mat4 result = mat4();
+	glm::mat4 result = glm::mat4();
 	if (interuptable == true && action != ACTION_IDLE) {
 		action = ACTION_IDLE;
 		activeFrames = 60;
@@ -745,9 +751,9 @@ mat4 Character::idle()
 	return result;
 }
 
-mat4 Character::walk(bool held)
+glm::mat4 Character::walk(bool held)
 {
-	mat4 result = mat4();
+	glm::mat4 result = glm::mat4();
 	if (interuptable == true && action != ACTION_WALK) {
 		action = ACTION_WALK;
 		activeFrames = 30;
@@ -787,9 +793,9 @@ mat4 Character::walk(bool held)
 	return result;
 }
 
-mat4 Character::run(bool held)
+glm::mat4 Character::run(bool held)
 {
-	mat4 result = mat4();
+	glm::mat4 result = glm::mat4();
 	if (interuptable == true && action != ACTION_RUN) {
 		action = ACTION_RUN;
 		activeFrames = 30;
@@ -823,9 +829,9 @@ mat4 Character::run(bool held)
 	return result;
 }
 
-mat4 Character::initialDash(bool right, bool left)
+glm::mat4 Character::initialDash(bool right, bool left)
 {
-	mat4 result = mat4();
+	glm::mat4 result = glm::mat4();
 	if (interuptable == true && action != ACTION_INTIAL_DASH) {
 		action = ACTION_INTIAL_DASH;
 		activeFrames = dashLength;
@@ -869,9 +875,9 @@ mat4 Character::initialDash(bool right, bool left)
 	return result;
 }
 
-mat4 Character::prejump()
+glm::mat4 Character::prejump()
 {
-	mat4 result = mat4();
+	glm::mat4 result = glm::mat4();
 	if (interuptable == true && action != ACTION_PREJUMP) {
 		action = ACTION_PREJUMP;
 		activeFrames = prejumpLength;
@@ -894,9 +900,9 @@ mat4 Character::prejump()
 	return result;
 }
 
-mat4 Character::jump()
+glm::mat4 Character::jump()
 {
-	mat4 result = mat4();
+	glm::mat4 result = glm::mat4();
 	if (interuptable == true && action != ACTION_JUMP) {
 		action = ACTION_JUMP;
 		activeFrames = jumpFrames;
@@ -921,9 +927,9 @@ mat4 Character::jump()
 	return result;
 }
 
-mat4 Character::jump2()
+glm::mat4 Character::jump2()
 {
-	mat4 result = mat4();
+	glm::mat4 result = glm::mat4();
 	if (interuptable == true && action != ACTION_JUMP2 && jumpsLeft > 0) {
 		action = ACTION_JUMP2;
 		activeFrames = jumpFrames;
@@ -949,9 +955,9 @@ mat4 Character::jump2()
 	return result;
 }
 
-mat4 Character::fall()
+glm::mat4 Character::fall()
 {
-	mat4 result = mat4();
+	glm::mat4 result = glm::mat4();
 	if (interuptable == true && action != ACTION_FALL) {
 		action = ACTION_FALL;
 		activeFrames = 30;
@@ -979,9 +985,9 @@ mat4 Character::fall()
 
 //0 idle, 1 jumping, 2-jab, 3-fTilt, 4-dTilt, 5-uTilt, 10-hit
 
-mat4 Character::jab()
+glm::mat4 Character::jab()
 {
-	mat4 result = mat4();
+	glm::mat4 result = glm::mat4();
 	if (interuptable == true && action != ACTION_JAB) {
 		interuptable = false;
 		action = ACTION_JAB;
@@ -996,7 +1002,7 @@ mat4 Character::jab()
 
 		if (currentFrame == 6) {
 			float _kb = 5.5f + (6.55f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.1f, 3.1f, 0.1f), 2.5f, _kb, 55, 6, 0, vec3((-0.5f + (int)facingRight)*0.7f, 0.0f, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.1f, 3.1f, 0.1f), 2.5f, _kb, 55, 6, 0, glm::vec3((-0.5f + (int)facingRight)*0.7f, 0.0f, 0.0f));
 			newAtk->facingRight = facingRight;
 			activeHitboxes.push_back(newAtk);
 		}
@@ -1013,9 +1019,9 @@ mat4 Character::jab()
 	return result;
 }
 
-mat4 Character::sAttack()
+glm::mat4 Character::sAttack()
 {
-	mat4 result;
+	glm::mat4 result;
 	if (interuptable == true && action != ACTION_SIDE_ATTACK) {
 		interuptable = false;
 		action = ACTION_SIDE_ATTACK;
@@ -1030,13 +1036,13 @@ mat4 Character::sAttack()
 
 		if (currentFrame == 7) {
 			float _kb = 6.0f + (9.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.6f, 0.1f), 2.8f, _kb, 45, 7, 0, vec3(0,0,0));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 0.6f, 0.1f), 2.8f, _kb, 45, 7, 0, glm::vec3(0,0,0));
 			newAtk->spline = true;
 			newAtk->facingRight = facingRight;
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -30, 0.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 3, 0.5f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 3, 3.5f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -20, 4.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -30, 0.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 3, 0.5f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 3, 3.5f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -20, 4.0f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -1055,9 +1061,9 @@ mat4 Character::sAttack()
 	return result;
 }
 
-mat4 Character::dAttack()
+glm::mat4 Character::dAttack()
 {
-	mat4 result;
+	glm::mat4 result;
 	if (interuptable == true && action != ACTION_DOWN_ATTACK) {
 		interuptable = false;
 		action = ACTION_DOWN_ATTACK;
@@ -1072,7 +1078,7 @@ mat4 Character::dAttack()
 
 		if (currentFrame == 6) {
 			float _kb = 7.0f + (7.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.7f, 0.1f), 2.8f, _kb, 80, 7, 0, vec3((-0.5f + (int)facingRight)*1.0f, 0.0f, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 0.7f, 0.1f), 2.8f, _kb, 80, 7, 0, glm::vec3((-0.5f + (int)facingRight)*1.0f, 0.0f, 0.0f));
 			newAtk->facingRight = facingRight;
 			activeHitboxes.push_back(newAtk);
 		}
@@ -1089,9 +1095,9 @@ mat4 Character::dAttack()
 	return result;
 }
 
-mat4 Character::uAttack()
+glm::mat4 Character::uAttack()
 {
-	mat4 result;
+	glm::mat4 result;
 	if (interuptable == true && action != ACTION_UP_ATTACK) {
 		interuptable = false;
 		action = ACTION_UP_ATTACK;
@@ -1106,13 +1112,13 @@ mat4 Character::uAttack()
 
 		if (currentFrame == 26) {
 			float _kb = 7.0f + (7.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*2.3f, 1.25f, 0.05f), 3.2f, _kb, 89, 8, 0, vec3((-0.5f + (int)facingRight)*-0.8f, 2.0f, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*2.3f, 1.25f, 0.05f), 3.2f, _kb, 89, 8, 0, glm::vec3((-0.5f + (int)facingRight)*-0.8f, 2.0f, 0.0f));
 			newAtk->spline = true;
 			newAtk->facingRight = facingRight;
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 4.9f, -45.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 5.9f, 1.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -5.9f, 1.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -4.9f, -45.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 4.9f, -45.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 5.9f, 1.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -5.9f, 1.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -4.9f, -45.0f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -1131,9 +1137,9 @@ mat4 Character::uAttack()
 
 //0 idle, 1 jumping, 6-nAir, 7-fAir, 8-dAir, 9-uAir, 10-hit
 
-mat4 Character::nAir()
+glm::mat4 Character::nAir()
 {
-	mat4 result;
+	glm::mat4 result;
 	if (action != ACTION_NEUTRAL_AERIAL || interuptable == true) {
 		interuptable = false;
 		action = ACTION_NEUTRAL_AERIAL;
@@ -1154,13 +1160,13 @@ mat4 Character::nAir()
 			//activeHitboxes.push_back(newAtk3);
 			//Hitbox *newAtk4 = new Hitbox(vec3(-0.4f, 1.1f, 0.05f)*2.0f, 2.7f, _kb, 80, 9, 0, vec3((-0.5f + (int)facingRight)*0.01f, 0, 0.0f));//left
 			//activeHitboxes.push_back(newAtk4);
-			Hitbox *newAtk = new Hitbox(vec3(0, 2.8f, 0.05f), 2.8f, _kb, 75, 7, 0, vec3((-0.5f + (int)facingRight)*0.7f, 0, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3(0, 2.8f, 0.05f), 2.8f, _kb, 75, 7, 0, glm::vec3((-0.5f + (int)facingRight)*0.7f, 0, 0.0f));
 			newAtk->spline = true;
 			newAtk->facingRight = facingRight;
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -25, 10.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 1, 1.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 1, 1.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -25, 10.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -25, 10.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 1, 1.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 1, 1.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -25, 10.0f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -1170,14 +1176,15 @@ mat4 Character::nAir()
 			return fall();
 		}
 		currentFrame++;
+		//glm::rotate(result, (float)currentFrame * 10, glm::vec3(0.0f, 1.0f, 0.0f));
 		result.RotateY(currentFrame * 10);
 	}
 	return result;
 }
 
-mat4 Character::sAir()
+glm::mat4 Character::sAir()
 {
-	mat4 result;
+	glm::mat4 result;
 	if (action != ACTION_SIDE_AERIAL || interuptable == true) {
 		interuptable = false;
 		action = ACTION_SIDE_AERIAL;
@@ -1189,13 +1196,13 @@ mat4 Character::sAir()
 		///Will be changed in the future
 		if (currentFrame == 5) {
 			float _kb = 8.0f + (8.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.6f, 0.1f), 2.8f, _kb, 60, 7, 0, vec3(0, 0, 0));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 0.6f, 0.1f), 2.8f, _kb, 60, 7, 0, glm::vec3(0, 0, 0));
 			newAtk->spline = true;
 			newAtk->facingRight = facingRight;
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -20, 4.5f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 2, 4.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 2, 0.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -30, 0.5f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -20, 4.5f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2, 4.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2, 0.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -30, 0.5f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -1204,6 +1211,7 @@ mat4 Character::sAir()
 			action = ACTION_PLACEHOLDER;
 			return fall();
 		}
+		//glm::rotate(result, (8.0f - abs(currentFrame - 7.0f)) * 1.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 		result.RotateX((8 - abs(currentFrame - 7.0f))*1.0f);
 		//if (facingRight == true)
 			//result.GetRot()->y = 1.57f;
@@ -1214,9 +1222,9 @@ mat4 Character::sAir()
 	return result;
 }
 
-mat4 Character::dAir()
+glm::mat4 Character::dAir()
 {
-	mat4 result;
+	glm::mat4 result;
 	if (action != ACTION_DOWN_AERIAL || interuptable == true) {
 		interuptable = false;
 		action = ACTION_DOWN_AERIAL;
@@ -1228,13 +1236,13 @@ mat4 Character::dAir()
 		///Will be changed in the future
 		if (currentFrame == 10) {
 			float _kb = 8.0f + (7.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3(0.0f, 0.5f, 0.05f), 3.5f, _kb, 270, 5, 0, vec3(0, 0, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3(0.0f, 0.5f, 0.05f), 3.5f, _kb, 270, 5, 0, glm::vec3(0, 0, 0.0f));
 			newAtk->spline = true;
 			newAtk->facingRight = facingRight;
-			newAtk->curve.push_back(vec3(1.0f, 27.0f, 0));
-			newAtk->curve.push_back(vec3(0.0f, 2.5f, 0));
-			newAtk->curve.push_back(vec3(0.0f, 2.5f, 0));
-			newAtk->curve.push_back(vec3(-1.0f, 27.0f, 0));
+			newAtk->curve.push_back(glm::vec3(1.0f, 27.0f, 0));
+			newAtk->curve.push_back(glm::vec3(0.0f, 2.5f, 0));
+			newAtk->curve.push_back(glm::vec3(0.0f, 2.5f, 0));
+			newAtk->curve.push_back(glm::vec3(-1.0f, 27.0f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -1249,9 +1257,9 @@ mat4 Character::dAir()
 	}
 	return result;
 }
-mat4 Character::uAir()
+glm::mat4 Character::uAir()
 {
-	mat4 result;
+	glm::mat4 result;
 	if (action != ACTION_UP_AERIAL || interuptable == true) {
 		interuptable = false;
 		action = ACTION_UP_AERIAL;
@@ -1263,13 +1271,13 @@ mat4 Character::uAir()
 		///Will be changed in the future
 		if (currentFrame == 7) {
 			float _kb = 7.3f + (8.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*2.3f, 1.25f, 0.05f), 2.9f, _kb, 91, 7, 0, vec3(0,0,0));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*2.3f, 1.25f, 0.05f), 2.9f, _kb, 91, 7, 0, glm::vec3(0,0,0));
 			newAtk->spline = true;
 			newAtk->facingRight = facingRight;
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -5.9f, -35.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -5.9f, 1.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 5.9f, 1.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 5.9f, -35.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -5.9f, -35.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -5.9f, 1.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 5.9f, 1.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 5.9f, -35.0f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -1285,12 +1293,12 @@ mat4 Character::uAir()
 	return result;
 }
 
-mat4 Character::block(bool held)
+glm::mat4 Character::block(bool held)
 {
 	int endlag = 6;//endlag after a successful block is this, on failed attempt its doubled
 	int startLag = 3;
 
-	mat4 result;
+	glm::mat4 result;
 	if (interuptable == true && action != ACTION_BLOCK) {//called on first frame of move press
 		interuptable = false;
 		action = ACTION_BLOCK;
@@ -1301,7 +1309,7 @@ mat4 Character::block(bool held)
 	if (action == ACTION_BLOCK) {
 
 		//if released
-		if (!held && currentFrame > startLag && (activeFrames != endlag && activeFrames != endlag*2)) {
+		if (!held && currentFrame > (unsigned int)startLag && (activeFrames != endlag && activeFrames != endlag*2)) {
 			//start endlag
 			activeFrames = endlag;
 			if (!blockSuccessful)
@@ -1309,7 +1317,7 @@ mat4 Character::block(bool held)
 			currentFrame = 1;
 		}
 		//held
-		else if (held && currentFrame <= activeFrames && currentFrame > startLag) {
+		else if (held && currentFrame <= activeFrames && currentFrame > (unsigned int)startLag) {
 
 			interuptable = false;
 			currentFrame = startLag + 2;
@@ -1333,14 +1341,14 @@ mat4 Character::block(bool held)
 
 //0 idle, 1 jumping, 10-hit, 11-nSpecial, 12-sSpecial, 13-dSpecial, 14-uSpecial
 
-mat4 Character::nSpecial(bool charging)
+glm::mat4 Character::nSpecial(bool charging)
 {
 	//CHARGABLE SPECIAL
 	int maxCharge = 100;
 	int endlag = 20;
 	int startLag = 10;
 
-	mat4 result;
+	glm::mat4 result;
 	if (interuptable == true && action != ACTION_NEUTRAL_SPECIAL && comboMeter >= 5) {//called on first frame of move press
 		interuptable = false;
 		action = ACTION_NEUTRAL_SPECIAL;
@@ -1353,16 +1361,16 @@ mat4 Character::nSpecial(bool charging)
 	if (action == ACTION_NEUTRAL_SPECIAL && currentFrame <= activeFrames) {
 
 		//if charge released early
-		if (!charging && currentFrame > startLag && activeFrames == maxCharge) {
+		if (!charging && currentFrame > (unsigned int)startLag && activeFrames == maxCharge) {
 			//create hitbox
 			float _kb = 9.0f + (10.0f * (currentFrame * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			unsigned int angle = 45;
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.1f, 2.9f, 0.1f), 3.1f, _kb, angle, 7, 0, vec3((-0.5f + (int)facingRight)*2.0f, -0.22f, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.1f, 2.9f, 0.1f), 3.1f, _kb, (float)angle, 7.0f, 0.0f, glm::vec3((-0.5f + (int)facingRight)*2.0f, -0.22f, 0.0f));
 			newAtk->spline = true;
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -20, 4.5f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 2, 4.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 2, 0.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -30, 0.5f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -20, 4.5f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2, 4.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2, 0.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -30, 0.5f, 0));
 			newAtk->facingRight = facingRight;
 			activeHitboxes.push_back(newAtk);
 			//start endlag
@@ -1370,7 +1378,7 @@ mat4 Character::nSpecial(bool charging)
 			currentFrame = 1;
 		}
 		//if still charging
-		else if (charging && currentFrame > startLag && activeFrames < maxCharge) {
+		else if (charging && currentFrame > (unsigned int)startLag && activeFrames < (unsigned int)maxCharge) {
 			comboMeter--;
 		}
 		//max charge move
@@ -1378,12 +1386,12 @@ mat4 Character::nSpecial(bool charging)
 			//create hitbox
 			float _kb = 20.5f + (11.0f * (currentFrame * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			unsigned int angle = 45;
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 2.2f, 0.1f), 2.6f, _kb, angle, 7, 0, vec3((-0.5f + (int)facingRight)*2.0f, -0.4f, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 2.2f, 0.1f), 2.6f, _kb, (float)angle, 7.0f, 0.0f, glm::vec3((-0.5f + (int)facingRight)*2.0f, -0.4f, 0.0f));
 			newAtk->spline = true;
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -20, 4.5f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 2, 4.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 2, 0.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -30, 0.5f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -20, 4.5f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2, 4.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2, 0.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -30, 0.5f, 0));
 			newAtk->facingRight = facingRight;
 			activeHitboxes.push_back(newAtk);
 			//start endlag
@@ -1401,16 +1409,17 @@ mat4 Character::nSpecial(bool charging)
 		}
 
 		//animation every frame
+		//glm::rotate(result, (float)currentFrame * 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 		result.RotateY( currentFrame * 1);
 
 		currentFrame++;
 	}
 	return result;
 }
-mat4 Character::sSpecial()
+glm::mat4 Character::sSpecial()
 {
 	//SIDE SPECIAL 1Press
-	mat4 result;
+	glm::mat4 result;
 	if (interuptable == true && action != ACTION_SIDE_SPECIAL && comboMeter >= 15) {
 		interuptable = false;
 		action = ACTION_SIDE_SPECIAL;
@@ -1429,7 +1438,7 @@ mat4 Character::sSpecial()
 
 		if (currentFrame == 5) {
 			float _kb = 6.5f + (4.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.11, 1.1f, 0.05f)*2.5f, 4.0f, 2.0f * _kb, 15, 15, 0, vec3((-0.5f + (int)facingRight)*0.01, 0.0f, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.11, 1.1f, 0.05f)*2.5f, 4.0f, 2.0f * _kb, 15, 15, 0, glm::vec3((-0.5f + (int)facingRight)*0.01, 0.0f, 0.0f));
 			newAtk->facingRight = facingRight;
 
 			//Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.6f, 0.1f), 2.1f, _kb, 45, 7, 0, vec3((-0.5f + (int)facingRight)*1.95f, 0.4f, 0.0f));
@@ -1438,13 +1447,13 @@ mat4 Character::sSpecial()
 		}
 		else if (currentFrame == 25) {
 			float _kb = 7.5f + (7.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.5f, 0.6f, 0.1f), 2.8f, _kb, 75, 7, 0, vec3((-0.5f + (int)facingRight)*1.95f, 0.5f, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.5f, 0.6f, 0.1f), 2.8f, _kb, 75, 7, 0, glm::vec3((-0.5f + (int)facingRight)*1.95f, 0.5f, 0.0f));
 			newAtk->spline = true;
 			newAtk->facingRight = facingRight;
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -20, 0.5f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 4, 0.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 4, 4.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -10, 10.5f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -20, 0.5f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 4, 0.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 4, 4.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -10, 10.5f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -1454,6 +1463,7 @@ mat4 Character::sSpecial()
 			return idle();
 
 		}
+		//glm::rotate(result, (float)currentFrame * 5.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 		result.RotateY(currentFrame * 5);
 
 
@@ -1462,10 +1472,10 @@ mat4 Character::sSpecial()
 	return result;
 }
 
-mat4 Character::dSpecial()
+glm::mat4 Character::dSpecial()
 {
 	//SIDE SPECIAL 1Press
-	mat4 result;
+	glm::mat4 result;
 	if (interuptable == true && action != ACTION_DOWN_SPECIAL && comboMeter >= 15) {
 		interuptable = false;
 		action = ACTION_DOWN_SPECIAL;
@@ -1480,8 +1490,8 @@ mat4 Character::dSpecial()
 		///Will be changed in the future
 		if (currentFrame == 8) {
 			float _kb = 8.5f + (9.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3(0.05f, 0.5f, 0.1f), 2.7f, _kb, 75, 5, 0, vec3(0.3f, 0.0f, 0.0f));
-			Hitbox *newAtk2 = new Hitbox(vec3(-0.05f, 0.5f, 0.1f), 2.7f, _kb, 75, 5, 0, vec3(-0.3f, 0.0f, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3(0.05f, 0.5f, 0.1f), 2.7f, _kb, 75, 5, 0, glm::vec3(0.3f, 0.0f, 0.0f));
+			Hitbox *newAtk2 = new Hitbox(glm::vec3(-0.05f, 0.5f, 0.1f), 2.7f, _kb, 75, 5, 0, glm::vec3(-0.3f, 0.0f, 0.0f));
 			newAtk->facingRight = facingRight;
 			newAtk2->facingRight = !facingRight;
 
@@ -1495,17 +1505,17 @@ mat4 Character::dSpecial()
 			return idle();
 
 		}
-
+		//glm::rotate(result, (float)currentFrame * 5.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 		result.RotateY(currentFrame * 5);
 		currentFrame++;
 	}
 	return result;
 }
 
-mat4 Character::uSpecial()
+glm::mat4 Character::uSpecial()
 {
 	//SIDE SPECIAL 1Press
-	mat4 result;
+	glm::mat4 result;
 	if (interuptable == true && action != ACTION_UP_SPECIAL && comboMeter >= 10) {
 		interuptable = false;
 		action = ACTION_UP_SPECIAL;
@@ -1519,17 +1529,17 @@ mat4 Character::uSpecial()
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
 		if (currentFrame > 6 && currentFrame < 15) {
-			velocity.y = jumpForce * 1.1;
+			velocity.y = jumpForce * 1.1f;
 		}
 		if (currentFrame == 8) {
 			float _kb = 9.5f + (5.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.7f, 0.1f), 2.9f, _kb, 88, 7, 0, vec3((-0.5f + (int)facingRight)*1.9f, 0.55f, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 0.7f, 0.1f), 2.9f, _kb, 88, 7, 0, glm::vec3((-0.5f + (int)facingRight)*1.9f, 0.55f, 0.0f));
 			newAtk->spline = true;
 			newAtk->facingRight = facingRight;
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * -20, 1.5f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 4, 1.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 5, 5.0f, 0));
-			newAtk->curve.push_back(vec3((-0.5f + (int)facingRight) * 0.5f, 10.5f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -20, 1.5f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 4, 1.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 5, 5.0f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 0.5f, 10.5f, 0));
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -1539,7 +1549,7 @@ mat4 Character::uSpecial()
 			return fall();
 
 		}
-
+		//glm::rotate(result, (float)currentFrame * 5.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 		result.RotateY(currentFrame * 5);
 		currentFrame++;
 	}

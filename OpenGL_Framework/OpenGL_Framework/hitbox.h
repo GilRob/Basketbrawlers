@@ -1,40 +1,41 @@
 //#include <SDL/SDL.h>
-//#include <glm/glm.hpp>
+#include <glm/glm.hpp>
+#include <GLM\gtx\transform.hpp>
 #include "mesh.h"
 //#include "shader.h"
 #include "texture.h"
 //#include "transform.h"
 #include <vector>
 //#include "camera.h"
-#include "MiniMath/Core.h"
+//#include "MiniMath/Core.h"
 
 
 class Hitbox {
 
 public:
 	Hitbox() {}
-	Hitbox(vec3 _position, float _size, float _knockback, float _angleDeg, unsigned int _activeFrames, unsigned int owner, vec3 _velocity);
-	Hitbox(vec3 _position, float _size);
+	Hitbox(glm::vec3 _position, float _size, float _knockback, float _angleDeg, unsigned int _activeFrames, unsigned int owner, glm::vec3 _velocity);
+	Hitbox(glm::vec3 _position, float _size);
 	~Hitbox();
 
-	void update(int t, vec3 parent);
-	vec3 getPosition();
-	vec3 getVelocity();
+	void update(int t, glm::vec3 parent);
+	glm::vec3 getPosition();
+	glm::vec3 getVelocity();
 	float getSize();
-	void setPosition(vec3 pos);
+	void setPosition(glm::vec3 pos);
 	bool isDone();
 	float getAngle();
 	float getKnockback();
 	void setDone();
-	mat4 getTransform();
+	glm::mat4 getTransform();
 	bool spline;
 	bool facingRight;
 	bool projectile;
-	vec3 acceleration;
-	std::vector<vec3> curve;
+	glm::vec3 acceleration;
+	std::vector<glm::vec3> curve;
 
 
-	vec3 catmull(vec3 p0, vec3 p1, vec3 p2, vec3 p3, float t)
+	glm::vec3 catmull(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, float t)
 	{
 		return 0.5f * (
 			t * t * t * (-p0 + 3.0f * p1 - 3.0f * p2 + p3) +
@@ -43,7 +44,7 @@ public:
 			(2.0f * p1));
 	}
 
-	vec4 catmull(vec4 p0, vec4 p1, vec4 p2, vec4 p3, float t)
+	glm::vec4 catmull(glm::vec4 p0, glm::vec4 p1, glm::vec4 p2, glm::vec4 p3, float t)
 	{
 		return 0.5f * (
 			t * t * t * (-p0 + 3.0f * p1 - 3.0f * p2 + p3) +
@@ -56,9 +57,9 @@ public:
 
 private:
 	//physics
-	vec3 position;
-	vec3 velocity;
-	vec3 globalPosition;
+	glm::vec3 position;
+	glm::vec3 velocity;
+	glm::vec3 globalPosition;
 
 	//Hitbox Tings
 	float knockback;

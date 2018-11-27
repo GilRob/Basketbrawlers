@@ -1,14 +1,15 @@
 #pragma once
 
 #include <vector>
-#include "MiniMath\Core.h"
-//#include <glm/glm.hpp>
+//#include "MiniMath\Core.h"
+#include <glm/glm.hpp>
+#include <GLM\gtx\transform.hpp>
 #include "Texture.h"
 
 struct ParticleList
 {
-	vec3 *Positions = nullptr;
-	vec3 *Velocities = nullptr;
+	glm::vec3 *Positions = nullptr;
+	glm::vec3 *Velocities = nullptr;
 	float *Size = nullptr;
 	float *Alpha = nullptr;
 	float *Ages = nullptr;
@@ -26,22 +27,22 @@ public:
 	void Update(float elapsed);
 	void Render();
 
-	mat4 Transform;
+	glm::mat4 Transform;
 
-	vec2 RangeX = vec2(-10.0f, 10.0f);
-	vec2 RangeY = vec2(0.0f, 10.0f);
-	vec2 RangeZ = vec2(-10.0f, 10.0f);
-	vec2 RangeVelocity = vec2(0.1f, 1.0f);
-	vec2 RangeLifetime = vec2(7.0f, 9.5f);
+	glm::vec2 RangeX = glm::vec2(-10.0f, 10.0f);
+	glm::vec2 RangeY = glm::vec2(0.0f, 10.0f);
+	glm::vec2 RangeZ = glm::vec2(-10.0f, 10.0f);
+	glm::vec2 RangeVelocity = glm::vec2(0.1f, 1.0f);
+	glm::vec2 RangeLifetime = glm::vec2(7.0f, 9.5f);
 	//Lerp variables are dynamic based on lifetime of particle
-	vec2 LerpAlpha = vec2(0.5f, 0.0f);
-	vec2 LerpSize = vec2(0.0f, 1.0f);
+	glm::vec2 LerpAlpha = glm::vec2(0.5f, 0.0f);
+	glm::vec2 LerpSize = glm::vec2(0.0f, 1.0f);
 
 private:
 	ParticleList _Particles;
 	Texture _Texture;
 
-	float _Rate = 0.0f;
+	unsigned int _Rate = 0;
 	unsigned int _MaxParticles = 0;
 	unsigned int _NumCurrentParticles = 0;
 

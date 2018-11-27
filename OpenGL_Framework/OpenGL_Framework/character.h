@@ -5,12 +5,13 @@
 //#include <GL/glut.h>
 //#include <GL/glew.h>
 //#include <GL/gl.h>
-//#include <glm/glm.hpp>
+#include <glm/glm.hpp>
+#include <GLM\gtx\transform.hpp>
 #include "Mesh.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
 #include <vector>
-#include "MiniMath/Core.h"
+//#include "MiniMath/Core.h"
 //#include "camera.h"
 #include "hitbox.h"
 #include <iostream>
@@ -57,11 +58,11 @@ public:
 	void draw(ShaderProgram GBufferPass, float dt);
 	void drawBoxes(ShaderProgram GBufferPass);
 	void drawShadow(ShaderProgram GBufferPass, float dt);
-	vec3 getPosition();
-	void setPosition(vec3 pos);
+	glm::vec3 getPosition();
+	void setPosition(glm::vec3 pos);
 	std::vector<Hitbox*> getHitboxes();
 	std::vector<Hitbox*> getHurtboxes();
-	mat4 atkInputHandler(std::vector<bool> inputs);
+	glm::mat4 atkInputHandler(std::vector<bool> inputs);
 
 	bool facingRight;
 	bool blocking;
@@ -74,28 +75,28 @@ public:
 	bool interuptable;
 
 	//Actions
-	mat4 idle();
-	mat4 walk(bool held);
-	mat4 run(bool held);
-	mat4 initialDash(bool left, bool right);
-	mat4 prejump();
-	mat4 jump();
-	mat4 jump2();
-	mat4 fall();
+	glm::mat4 idle();
+	glm::mat4 walk(bool held);
+	glm::mat4 run(bool held);
+	glm::mat4 initialDash(bool left, bool right);
+	glm::mat4 prejump();
+	glm::mat4 jump();
+	glm::mat4 jump2();
+	glm::mat4 fall();
 	void hit(Hitbox* hitBy);
-	mat4 jab();
-	mat4 sAttack();
-	mat4 dAttack();
-	mat4 uAttack();
-	mat4 nSpecial(bool charging);
-	mat4 sSpecial();
-	mat4 dSpecial();
-	mat4 uSpecial();
-	mat4 nAir();
-	mat4 sAir();
-	mat4 dAir();
-	mat4 uAir();
-	mat4 block(bool held);
+	glm::mat4 jab();
+	glm::mat4 sAttack();
+	glm::mat4 dAttack();
+	glm::mat4 uAttack();
+	glm::mat4 nSpecial(bool charging);
+	glm::mat4 sSpecial();
+	glm::mat4 dSpecial();
+	glm::mat4 uSpecial();
+	glm::mat4 nAir();
+	glm::mat4 sAir();
+	glm::mat4 dAir();
+	glm::mat4 uAir();
+	glm::mat4 block(bool held);
 
 	//----------------------------------------------------------
 	void comboAdd() {
@@ -123,8 +124,8 @@ public:
 	void respawn() {
 		comboTimer = 0;
 		comboMeter = 0;
-		position = vec3(0, 15, 0);
-		velocity = vec3(0, 0, 0);
+		position = glm::vec3(0, 15, 0);
+		velocity = glm::vec3(0, 0, 0);
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
 		fall();
@@ -134,7 +135,7 @@ public:
 		return comboMeter;
 	}
 
-	mat4 transform;
+	glm::mat4 transform;
 	Mesh body;
 	std::vector<Mesh*> idleFrames;
 	std::vector<Mesh*> walkFrames;
@@ -149,11 +150,11 @@ protected:
 	//model
 
 	//physics
-	vec3 position;
-	vec3 velocity;
-	vec3 acceleration;
-	vec3 force;
-	vec3 hitForce;
+	glm::vec3 position;
+	glm::vec3 velocity;
+	glm::vec3 acceleration;
+	glm::vec3 force;
+	glm::vec3 hitForce;
 
 	//Attributes
 	float mass;

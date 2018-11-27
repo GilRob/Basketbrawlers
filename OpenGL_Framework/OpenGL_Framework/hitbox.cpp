@@ -1,6 +1,6 @@
 #include "hitbox.h"
 
-Hitbox::Hitbox(vec3 _position, float _size, float _knockback, float _angleDeg, unsigned int _activeFrames, unsigned int _owner, vec3 _velocity)
+Hitbox::Hitbox(glm::vec3 _position, float _size, float _knockback, float _angleDeg, unsigned int _activeFrames, unsigned int _owner, glm::vec3 _velocity)
 {
 	//set all values
 	position = _position;
@@ -11,7 +11,7 @@ Hitbox::Hitbox(vec3 _position, float _size, float _knockback, float _angleDeg, u
 	activeFrames = _activeFrames;
 	currentFrame = 1;
 	owner = _owner;
-	acceleration = vec3(0, 0, 0);
+	acceleration = glm::vec3(0, 0, 0);
 	projectile = false;
 	spline = false;
 	facingRight = false;
@@ -19,18 +19,18 @@ Hitbox::Hitbox(vec3 _position, float _size, float _knockback, float _angleDeg, u
 
 }
 
-Hitbox::Hitbox(vec3 _position, float _size)
+Hitbox::Hitbox(glm::vec3 _position, float _size)
 {
 	//set all values
 	position = _position;
 	size = _size;
 	knockback = 0;
 	angleDeg = 0;
-	velocity = vec3();
+	velocity = glm::vec3();
 	activeFrames = 0;
 	currentFrame = 1;
 	owner = 0;
-	acceleration = vec3(0, 0, 0);
+	acceleration = glm::vec3(0, 0, 0);
 	projectile = false;
 	spline = false;
 	facingRight = false;
@@ -55,7 +55,7 @@ void Hitbox::update(int t)
 }*/
 
 //updates the position
-void Hitbox::update(int t, vec3 parent = { 0,0,0 })
+void Hitbox::update(int t, glm::vec3 parent = { 0,0,0 })
 {
 	if (currentFrame <= activeFrames || hurtbox == true) {
 		//update position
@@ -65,7 +65,7 @@ void Hitbox::update(int t, vec3 parent = { 0,0,0 })
 			else if(curve.size() == 5){
 				float percent = (float)currentFrame / activeFrames;
 				if (percent < 0.5f)
-					position = catmull(curve[0], curve[1], curve[2], curve[3], percent - 0.25);
+					position = catmull(curve[0], curve[1], curve[2], curve[3], percent - 0.25f);
 				else
 					position = catmull(curve[1], curve[2], curve[3], curve[4], percent - 0.75f);
 
@@ -94,23 +94,24 @@ void Hitbox::update(int t, vec3 parent = { 0,0,0 })
 }
 
 //Returns the position of the hitbox
-vec3 Hitbox::getPosition()
+glm::vec3 Hitbox::getPosition()
 {
 	return globalPosition;
 }
 
 //Returns the position of the hitbox
-mat4 Hitbox::getTransform()
+glm::mat4 Hitbox::getTransform()
 {
-	mat4 trans;
+	glm::mat4 trans;
 	trans.SetTranslation(globalPosition);
-	trans.Scale(vec3(size,size,size) * 1.3f);
+	//glm::scale(trans, glm::vec3(size, size, size) * 1.3f);
+	trans.Scale(glm::vec3(size,size,size) * 1.3f);
 	return trans;
 }
 
 
 //Returns the position of the hitbox
-vec3 Hitbox::getVelocity()
+glm::vec3 Hitbox::getVelocity()
 {
 	return velocity;
 }
@@ -122,7 +123,7 @@ float Hitbox::getSize()
 }
 
 //sets position
-void Hitbox::setPosition(vec3 pos)
+void Hitbox::setPosition(glm::vec3 pos)
 {
 	globalPosition = pos;
 }

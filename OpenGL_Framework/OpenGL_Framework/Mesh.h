@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <GL\glew.h>
+#include <glm/glm.hpp>
+#include <GLM\gtx\transform.hpp>
 
 struct MeshFaceFloat;
 

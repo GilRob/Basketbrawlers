@@ -145,7 +145,7 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}
-	BGTransform.SetTranslation(vec3(0, 3, -40));
+	BGTransform.SetTranslation(glm::vec3(0, 3, -40));
 
 	if (!P1Hud.Load("./Assets/Textures/PlayerOneHud.png"))
 	{
@@ -225,7 +225,7 @@ void Game::initializeGame()
 		exit(0);
 	}*/
 
-	WorkBuffer1.InitColorTexture(0, WINDOW_WIDTH / BLOOM_DOWNSCALE, WINDOW_HEIGHT / BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	WorkBuffer1.InitColorTexture((unsigned int)0, WINDOW_WIDTH / BLOOM_DOWNSCALE, WINDOW_HEIGHT / BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
 	if (!WorkBuffer1.CheckFBO())
 	{
 		std::cout << "WB1 FBO failed to initialize.\n";
@@ -233,7 +233,7 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	WorkBuffer2.InitColorTexture(0, WINDOW_WIDTH / BLOOM_DOWNSCALE, WINDOW_HEIGHT / BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	WorkBuffer2.InitColorTexture((unsigned int)0, WINDOW_WIDTH / BLOOM_DOWNSCALE, WINDOW_HEIGHT / BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
 	if (!WorkBuffer2.CheckFBO())
 	{
 		std::cout << "WB2 FBO failed to initialize.\n";
@@ -253,15 +253,15 @@ void Game::initializeGame()
 
 	/*CameraTransform.Translate(vec3(0.0f, 7.5f, 20.0f));
 	CameraTransform.RotateX(-15.0f);*/
-	CameraProjection = mat4::PerspectiveProjection(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 1.0f, 10000.0f);
+	CameraProjection = glm::mat4::PerspectiveProjection(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 1.0f, 10000.0f);
 	//ShadowProjection.OrthographicProjection(35.0f, -35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
-	ShadowProjection = mat4::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -25.0f, 100.0f);
-	hudProjection = mat4::OrthographicProjection((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f, (float)WINDOW_HEIGHT * -0.5f, -10.0f, 100.0f);
+	ShadowProjection = glm::mat4::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -25.0f, 100.0f);
+	hudProjection = glm::mat4::OrthographicProjection((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f, (float)WINDOW_HEIGHT * -0.5f, -10.0f, 100.0f);
 
 
-	Hitbox *hurt1 = new Hitbox(vec3(25.0f, 12.0f, 0.0f), 6.0f);
+	Hitbox *hurt1 = new Hitbox(glm::vec3(25.0f, 12.0f, 0.0f), 6.0f);
 	Netbox.push_back(hurt1);
-	Hitbox *hurt2 = new Hitbox(vec3(-25.0f, 12.0f, 0.0f), 6.0f);
+	Hitbox *hurt2 = new Hitbox(glm::vec3(-25.0f, 12.0f, 0.0f), 6.0f);
 	Netbox.push_back(hurt2);
 
 	score1 = 0;
@@ -283,17 +283,17 @@ void Game::update()
 	float diffy = (playerOne->getPosition().y) - (playerTwo->getPosition().y);//difference between characters y
 	if (abs(diffx) < 0.6f && abs(diffx) != 0 && abs(diffy) < 1.5f) {//if they are touching
 		//push them off
-		playerOne->setPosition(playerOne->getPosition() + vec3(((diffx / abs(diffx))*0.01f), 0, 0));
-		playerTwo->setPosition(playerTwo->getPosition() + vec3(((diffx / abs(diffx))*-0.01f), 0, 0));
+		playerOne->setPosition(playerOne->getPosition() + glm::vec3(((diffx / abs(diffx))*0.01f), 0, 0));
+		playerTwo->setPosition(playerTwo->getPosition() + glm::vec3(((diffx / abs(diffx))*-0.01f), 0, 0));
 	}
 
 	//new hitbox collisions
-	for (int i = 0; i < playerOne->getHitboxes().size(); i++) {
-		for (int j = 0; j < playerTwo->getHurtboxes().size(); j++) {
+	for (unsigned int i = 0; i < playerOne->getHitboxes().size(); i++) {
+		for (unsigned int j = 0; j < playerTwo->getHurtboxes().size(); j++) {
 
-			vec3 diff = playerOne->getHitboxes()[i]->getPosition() - playerTwo->getHurtboxes()[j]->getPosition();
+			glm::vec3 diff = playerOne->getHitboxes()[i]->getPosition() - playerTwo->getHurtboxes()[j]->getPosition();
 			float size = (playerOne->getHitboxes()[i]->getSize() + playerTwo->getHurtboxes()[j]->getSize()) *0.5f;
-			if (diff.Length() < size) {
+			if (/*diff.Length()*/ glm::length(diff) < size) {
 				if (playerTwo->blocking && (playerOne->facingRight != playerTwo->facingRight)) {//add only in front condition
 					playerTwo->blockSuccessful = true;
 					playerOne->getHitboxes()[i]->setDone();
@@ -314,12 +314,12 @@ void Game::update()
 	}
 
 	
-	for (int i = 0; i < playerTwo->getHitboxes().size(); i++) {
-		for (int j = 0; j < playerOne->getHurtboxes().size(); j++) {
+	for (unsigned int i = 0; i < playerTwo->getHitboxes().size(); i++) {
+		for (unsigned int j = 0; j < playerOne->getHurtboxes().size(); j++) {
 
-			vec3 diff = playerTwo->getHitboxes()[i]->getPosition() - playerOne->getHurtboxes()[j]->getPosition();
+			glm::vec3 diff = playerTwo->getHitboxes()[i]->getPosition() - playerOne->getHurtboxes()[j]->getPosition();
 			float size = (playerTwo->getHitboxes()[i]->getSize() + playerOne->getHurtboxes()[j]->getSize()) *0.5f;
-			if (diff.Length() < size) {
+			if (/*diff.Length()*/ glm::length(diff) < size) {
 				if (playerOne->blocking && (playerOne->facingRight != playerTwo->facingRight)) {//add only in front condition
 					playerOne->blockSuccessful = true;
 					playerTwo->getHitboxes()[i]->setDone();
@@ -340,8 +340,8 @@ void Game::update()
 	}
 
 	//Check Hurtboxes
-	for (int i = 0; i < Netbox.size(); i++) {
-		Netbox[i]->update(deltaTime, vec3());
+	for (unsigned int i = 0; i < Netbox.size(); i++) {
+		Netbox[i]->update(deltaTime, glm::vec3());
 	}
 
 	updateInputs();
@@ -359,27 +359,27 @@ void Game::update()
 	//}
 
 	//new score code
-	for (int i = 0; i < Netbox.size(); i++) {
-		for (int j = 0; j < playerTwo->getHurtboxes().size(); j++) {
-			vec3 diff = Netbox[i]->getPosition() - playerTwo->getHurtboxes()[j]->getPosition();
+	for (unsigned int i = 0; i < Netbox.size(); i++) {
+		for (unsigned int j = 0; j < playerTwo->getHurtboxes().size(); j++) {
+			glm::vec3 diff = Netbox[i]->getPosition() - playerTwo->getHurtboxes()[j]->getPosition();
 			float size = (Netbox[i]->getSize() + playerTwo->getHurtboxes()[j]->getSize()) *0.5f;
-			if (diff.Length() < size) {
+			if (/*diff.Length()*/ glm::length(diff) < size) {
 				playerTwo->respawn();
 				std::cout << std::endl << "Player 1 Scored" << std::endl;
 				score1++;
-				i = 100;
+				//i = 100;
 				j = 100;
 
 			}
 		}
-		for (int j = 0; j < playerOne->getHurtboxes().size(); j++) {
-			vec3 diff = Netbox[i]->getPosition() - playerOne->getHurtboxes()[j]->getPosition();
+		for (unsigned int j = 0; j < playerOne->getHurtboxes().size(); j++) {
+			glm::vec3 diff = Netbox[i]->getPosition() - playerOne->getHurtboxes()[j]->getPosition();
 			float size = (Netbox[i]->getSize() + playerOne->getHurtboxes()[j]->getSize()) *0.5f;
-			if (diff.Length() < size) {
+			if (/*diff.Length()*/ glm::length(diff) < size) {
 				playerOne->respawn();
 				std::cout << std::endl << "Player 2 Scored" << std::endl;
 				score2++;
-				i = 100;
+				//i = 100;
 				j = 100;
 
 			}
@@ -400,23 +400,29 @@ void Game::update()
 	//camera->setPositionZ(dist);
 
 	//Make sure to do the reverse of the transform orders due to the change from row-major to column-major, it reverses all mathematic operations
-	CameraTransform = mat4::Identity;
+	CameraTransform = glm::mat4::Identity;
+	//glm::rotate(CameraTransform, (-20.0f - abs(sqrtf(dist*0.01f)*10.0f)), glm::vec3(1.0f, 0.0f, 0.0f));
 	CameraTransform.RotateX(-20.0f - abs(sqrtf(dist*0.01f)*10.0f));
 	//CameraTransform.Translate(vec3(0.0f, 7.5f, 11.0f));
+	/*glm::translate(CameraTransform,
+		glm::vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, 
+			abs(sqrtf(dist*0.01f)*20.0f) + 10.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), 
+			dist + 10));*/
 	CameraTransform.Translate(vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, abs(sqrtf(dist*0.01f)*20.0f) + 10.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), dist+10));
+	//glm::rotate(CameraTransform, 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	CameraTransform.RotateY(0.0f);
 
-	ShadowTransform = mat4::Identity;
+	ShadowTransform = glm::mat4::Identity;
 	ShadowTransform.RotateX(-45.0f);
-	ShadowTransform.Translate(vec3(0.0f, 6.0f, 10.0f));
+	ShadowTransform.Translate(glm::vec3(0.0f, 6.0f, 10.0f));
 	ShadowTransform.RotateY(-200.0f);
 	
-	mat4 bias = mat4(0.5f, 0.0f, 0.0f, 0.5f,
+	glm::mat4 bias = glm::mat4(0.5f, 0.0f, 0.0f, 0.5f,
 					 0.0f, 0.5f, 0.0f, 0.5f,
 					 0.0f, 0.0f, 0.5f, 0.5f,
 					 0.0f, 0.0f, 0.0f, 1.0f);
 
-	ViewToShadowMap = mat4::Identity;
+	ViewToShadowMap = glm::mat4::Identity;
 	ViewToShadowMap = bias * ShadowProjection * ShadowTransform.GetInverse() * CameraTransform;
 	//ShadowTransform.Translate(vec3(0.0f, 0.0f, 0.0f));
 }
@@ -445,7 +451,7 @@ void Game::draw()
 	glViewport(0, 0, SHADOW_RESOLUTION, SHADOW_RESOLUTION);
 
 	GBufferPass.Bind();
-	GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+	GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
 	//The reason of the inverse is because it is easier to do transformations
 	GBufferPass.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 	GBufferPass.SendUniformMat4("uProj", ShadowProjection.data, true);
@@ -463,53 +469,53 @@ void Game::draw()
 	//GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
 	//playerTwo->drawShadow(GBufferPass, 1);
 
-	GBufferPass.SendUniformMat4("uModel", mat4().data, true);
-	GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+	GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
+	GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
 
 	GBufferPass.UnBind();
 	//draw p1 shadow
 	if (playerOne->action < 2 || (playerOne->action >= ACTION_JAB && playerOne->action <= ACTION_UP_ATTACK))
 	{
 		AniShader.Bind();
-		AniShader.SendUniformMat4("uModel", mat4().data, true);
+		AniShader.SendUniformMat4("uModel", glm::mat4().data, true);
 		AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 		AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
 
 		AniShader.SendUniformMat4("uModel", playerOne->transform.data, true);
 		playerOne->draw(AniShader, 0);
 
-		AniShader.SendUniformMat4("uModel", mat4().data, true);
+		AniShader.SendUniformMat4("uModel", glm::mat4().data, true);
 	}
 	else {
 		GBufferPass.Bind();
-		GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+		GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
 		GBufferPass.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 		GBufferPass.SendUniformMat4("uProj", ShadowProjection.data, true);
 		GBufferPass.SendUniformMat4("uModel", playerOne->transform.data, true);
 		playerOne->draw(GBufferPass, 0);
-		GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+		GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
 	}
 	//draw p2 shadow
 	if (playerTwo->action < 2 || (playerTwo->action >= ACTION_JAB && playerTwo->action <= ACTION_UP_ATTACK))
 	{
 		AniShader.Bind();
-		AniShader.SendUniformMat4("uModel", mat4().data, true);
+		AniShader.SendUniformMat4("uModel", glm::mat4().data, true);
 		AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 		AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
 
 		AniShader.SendUniformMat4("uModel", playerTwo->transform.data, true);
 		playerTwo->draw(AniShader, 0);
 
-		AniShader.SendUniformMat4("uModel", mat4().data, true);
+		AniShader.SendUniformMat4("uModel", glm::mat4().data, true);
 	}
 	else {
 		GBufferPass.Bind();
-		GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+		GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
 		GBufferPass.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 		GBufferPass.SendUniformMat4("uProj", ShadowProjection.data, true);
 		GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
 		playerTwo->draw(GBufferPass, 0);
-		GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+		GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
 	}
 	glBindVertexArray(0);
 
@@ -520,7 +526,7 @@ void Game::draw()
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	GBufferPass.Bind();
-	GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+	GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
 	//The reason of the inverse is because it is easier to do transformations
 	GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 	GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
@@ -605,7 +611,7 @@ void Game::draw()
 
 	CourtTexture.UnBind();
 
-	for (int i = 0; i < Netbox.size(); i++) {
+	for (unsigned int i = 0; i < Netbox.size(); i++) {
 		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
 		glUniformMatrix4fv(modelLoc, 1, false, Netbox[i]->getTransform().data);
 
@@ -614,7 +620,7 @@ void Game::draw()
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
 	}
 	boxTexture.UnBind();
 
@@ -718,10 +724,10 @@ void Game::draw()
 	DeferredLighting.SendUniform("uPositionMap", 3);
 	//DeferredLighting.SendUniform("uEdgeMap", 4);
 	//DeferredLighting.SendUniform("uStepTexture", 4);
-	DeferredLighting.SendUniform("LightDirection", mat3(CameraTransform.GetInverse()) * ShadowTransform.GetForward());
-	DeferredLighting.SendUniform("LightAmbient", vec3(0.8f, 0.8f, 0.8f)); //You can LERP through colours to make night to day cycles
-	DeferredLighting.SendUniform("LightDiffuse", vec3(0.8f, 0.8f, 0.8f));
-	DeferredLighting.SendUniform("LightSpecular", vec3(0.8f, 0.8f, 0.8f));
+	DeferredLighting.SendUniform("LightDirection", glm::mat3(CameraTransform.GetInverse()) * ShadowTransform.GetForward());
+	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.8f, 0.8f, 0.8f)); //You can LERP through colours to make night to day cycles
+	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.8f, 0.8f, 0.8f));
 	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
 
 	DeferredComposite.Bind();
@@ -860,17 +866,17 @@ void Game::drawHUD()
 	//now ready to draw 2d
 	//////////////////////////
 	GBufferPass.Bind();
-	hudTransform = mat4::Identity;
+	hudTransform = glm::mat4::Identity;
 	//hudTransform.Translate(vec3(WINDOW_WIDTH * -0.5f, WINDOW_HEIGHT* -0.5f, 0));
 	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
 	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
 
 	//Draw Player 1 HUD
 	///draw quad for p1 pic
-	mat4 hudLoc;
+	glm::mat4 hudLoc;
 	hudLoc.Scale(100.0f);
 	hudLoc.RotateY(90);
-	hudLoc.Translate(vec3(-450, -360, 0));
+	hudLoc.Translate(glm::vec3(-450, -360, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P1Hud.Bind();
@@ -878,10 +884,10 @@ void Game::drawHUD()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	///draw quad for p1 bar
-	hudLoc = mat4();
-	hudLoc.Scale(vec3(100.0f, 100.0f, 100.0f * (playerOne->getMeter() / 200.0f)));
+	hudLoc = glm::mat4();
+	hudLoc.Scale(glm::vec3(100.0f, 100.0f, 100.0f * (playerOne->getMeter() / 200.0f)));
 	hudLoc.RotateY(90);
-	hudLoc.Translate(vec3(-450 - 0.7*(200.0f - playerOne->getMeter()), -360, 0));
+	hudLoc.Translate(glm::vec3(-450 - 0.7*(200.0f - playerOne->getMeter()), -360, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P1Bar.Bind();
@@ -890,10 +896,10 @@ void Game::drawHUD()
 
 	//Draw Player 2 HUD
 	///draw quad for p2 pic
-	hudLoc = mat4();
+	hudLoc = glm::mat4();
 	hudLoc.Scale(100.0f);
 	hudLoc.RotateY(90);
-	hudLoc.Translate(vec3(450, -360 , 0));
+	hudLoc.Translate(glm::vec3(450, -360 , 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P2Hud.Bind();
@@ -901,10 +907,10 @@ void Game::drawHUD()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	///draw quad for p2 bar
-	hudLoc = mat4();
-	hudLoc.Scale(vec3(100.0f, 100.0f, 100.0f * (playerTwo->getMeter() / 200.0f)));
+	hudLoc = glm::mat4();
+	hudLoc.Scale(glm::vec3(100.0f, 100.0f, 100.0f * (playerTwo->getMeter() / 200.0f)));
 	hudLoc.RotateY(90);
-	hudLoc.Translate(vec3(450 + 0.7*(200.0f - playerTwo->getMeter()), -360, 0));
+	hudLoc.Translate(glm::vec3(450 + 0.7*(200.0f - playerTwo->getMeter()), -360, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P2Bar.Bind();
@@ -948,31 +954,31 @@ void Game::drawScore() {
 	GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 	GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
 	///score
-	mat4 hudLoc;
+	glm::mat4 hudLoc;
 	hudLoc.Scale(2.0f);
 	hudLoc.RotateY(90);
 	hudLoc.RotateZ(90);
-	hudLoc.Translate(vec3(-1, 7, -7));
+	hudLoc.Translate(glm::vec3(-1, 7, -7));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[score1 % 10]->Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 	///score
-	hudLoc = mat4();
+	hudLoc = glm::mat4();
 	hudLoc.Scale(2.0f);
 	hudLoc.RotateY(90);
 	hudLoc.RotateZ(90);
-	hudLoc.Translate(vec3(2, 7, -7));
+	hudLoc.Translate(glm::vec3(2, 7, -7));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[10]->Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 	///score
-	hudLoc = mat4();
+	hudLoc = glm::mat4();
 	hudLoc.Scale(2.0f);
 	hudLoc.RotateY(90);
 	hudLoc.RotateZ(90);
-	hudLoc.Translate(vec3(5, 7, -7));
+	hudLoc.Translate(glm::vec3(5, 7, -7));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[score2 % 10]->Bind();
 	glBindVertexArray(HudObj.VAO);
@@ -1015,7 +1021,7 @@ void Game::drawTime()
 	//now ready to draw 2d
 	//////////////////////////
 	GBufferPass.Bind();
-	hudTransform = mat4::Identity;
+	hudTransform = glm::mat4::Identity;
 	//hudTransform.Translate(vec3(WINDOW_WIDTH * -0.5f, WINDOW_HEIGHT* -0.5f, 0));
 	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
 	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
@@ -1031,11 +1037,11 @@ void Game::drawTime()
 
 	//Draw Time
 	///min
-	mat4 hudLoc;
+	glm::mat4 hudLoc;
 	hudLoc.Scale(40.0f);
 	hudLoc.RotateY(90);
 	hudLoc.RotateZ(90);
-	hudLoc.Translate(vec3(-50, 280, 0));
+	hudLoc.Translate(glm::vec3(-50, 280, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[min]->Bind();
@@ -1043,11 +1049,11 @@ void Game::drawTime()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	///speerate
-	hudLoc = mat4();
+	hudLoc = glm::mat4();
 	hudLoc.Scale(40.0f);
 	hudLoc.RotateY(90);
 	hudLoc.RotateZ(90);
-	hudLoc.Translate(vec3(0, 280, 0));
+	hudLoc.Translate(glm::vec3(0, 280, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[10]->Bind();
@@ -1055,11 +1061,11 @@ void Game::drawTime()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	///sec tens
-	hudLoc = mat4();
+	hudLoc = glm::mat4();
 	hudLoc.Scale(40.0f);
 	hudLoc.RotateY(90);
 	hudLoc.RotateZ(90);
-	hudLoc.Translate(vec3(50, 280, 0));
+	hudLoc.Translate(glm::vec3(50, 280, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[secT]->Bind();
@@ -1067,11 +1073,11 @@ void Game::drawTime()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	///sec ones
-	hudLoc = mat4();
+	hudLoc = glm::mat4();
 	hudLoc.Scale(40.0f);
 	hudLoc.RotateY(90);
 	hudLoc.RotateZ(90);
-	hudLoc.Translate(vec3(120 , 280, 0));
+	hudLoc.Translate(glm::vec3(120 , 280, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[secO]->Bind();
