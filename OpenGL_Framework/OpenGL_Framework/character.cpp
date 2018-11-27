@@ -174,6 +174,13 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 		system("pause");
 		exit(0);
 	}
+
+
+	Hitbox *hurt1 = new Hitbox(vec3(0.0f, 3.0f, 0.0f), 3.0f);
+	hurtbox.push_back(hurt1);
+	Hitbox *hurt2 = new Hitbox(vec3(0.0f, 1.0f, 0.0f), 3.0f);
+	hurtbox.push_back(hurt2);
+
 }
 
 void Character::update(int t, std::vector<bool> inputs) {
@@ -230,6 +237,43 @@ void Character::update(int t, std::vector<bool> inputs) {
 	else
 		transform.RotateY(180);
 
+
+	//Fake Wall
+	///Will be changed later
+	if (abs(position.x) > 25.1f) {
+		//called on bounce
+		position.x = (position.x / abs(position.x)) * 25.1f;
+		if (action == ACTION_HIT) {
+			velocity.y *= 0.5f;
+			velocity.x *= -0.75f;
+			hitForce.x *= -0.9f;
+		}
+		else if ((currentFrame >= activeFrames || interuptable == true) && (action == ACTION_FALL)) {
+			//interuptable = true;
+			//action = ACTION_PLACEHOLDER;
+			//idle();
+			velocity.x *= 0.1f;
+		}
+	}
+
+	//Fake Floor Code
+	///Will be changed later
+	if (position.y > 24.0f) {
+		//called on landing
+		position.y = 24.0f;
+		if (action == ACTION_HIT) {
+			velocity.y *= -0.75f;
+			velocity.x *= 0.5f;
+			hitForce.y *= -0.9f;
+		}
+		else {
+			interuptable = true;
+			action = ACTION_PLACEHOLDER;
+			fall();
+			velocity.y *= -0.5f;
+		}
+	}
+
 	//Fake Floor Code
 	///Will be changed later
 	if (position.y < 0.0f) {
@@ -264,6 +308,11 @@ void Character::update(int t, std::vector<bool> inputs) {
 
 		if (activeHitboxes[i]->isDone())
 			activeHitboxes.erase(activeHitboxes.begin() + i);
+	}
+
+	//Check Hurtboxes
+	for (int i = 0; i < hurtbox.size(); i++) {
+		hurtbox[i]->update(t, position);
 	}
 
 	transform.SetTranslation(vec3(position.x, position.y, position.z));
@@ -434,6 +483,20 @@ void Character::draw(ShaderProgram shader, float dt) {
 
 void Character::drawBoxes(ShaderProgram GBufferPass) {
 
+	for (int i = 0; i < hurtbox.size(); i++) {
+		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
+		glUniformMatrix4fv(modelLoc, 1, false, hurtbox[i]->getTransform().data);
+
+		shieldTexture.Bind();
+		glBindVertexArray(boxMesh.VAO);
+
+		// Adjust model matrix for next object's location
+		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
+		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+	}
+	shieldTexture.UnBind();
+
+
 	for (int i = 0; i < activeHitboxes.size(); i++) {
 		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
 		glUniformMatrix4fv(modelLoc, 1, false, activeHitboxes[i]->getTransform().data);
@@ -445,6 +508,7 @@ void Character::drawBoxes(ShaderProgram GBufferPass) {
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
 		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
 	}
+	boxTexture.UnBind();
 
 	if (blocking) {
 		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
@@ -462,6 +526,7 @@ void Character::drawBoxes(ShaderProgram GBufferPass) {
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
 		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
 	}
+	shieldTexture.UnBind();
 }
 
 void Character::drawShadow(ShaderProgram shader, float dt)
@@ -504,6 +569,11 @@ void Character::setPosition(vec3 pos){
 std::vector<Hitbox*> Character::getHitboxes()
 {
 	return activeHitboxes;
+}
+
+std::vector<Hitbox*> Character::getHurtboxes()
+{
+	return hurtbox;
 }
 
 //called on hit

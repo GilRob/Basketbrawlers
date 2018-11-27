@@ -15,6 +15,26 @@ Hitbox::Hitbox(vec3 _position, float _size, float _knockback, float _angleDeg, u
 	projectile = false;
 	spline = false;
 	facingRight = false;
+	hurtbox = false;
+
+}
+
+Hitbox::Hitbox(vec3 _position, float _size)
+{
+	//set all values
+	position = _position;
+	size = _size;
+	knockback = 0;
+	angleDeg = 0;
+	velocity = vec3();
+	activeFrames = 0;
+	currentFrame = 1;
+	owner = 0;
+	acceleration = vec3(0, 0, 0);
+	projectile = false;
+	spline = false;
+	facingRight = false;
+	hurtbox = true;
 
 }
 
@@ -37,7 +57,7 @@ void Hitbox::update(int t)
 //updates the position
 void Hitbox::update(int t, vec3 parent = { 0,0,0 })
 {
-	if (currentFrame <= activeFrames) {
+	if (currentFrame <= activeFrames || hurtbox == true) {
 		//update position
 		if (spline) {
 			if (curve.size() <= 4)
@@ -84,7 +104,7 @@ mat4 Hitbox::getTransform()
 {
 	mat4 trans;
 	trans.SetTranslation(globalPosition);
-	trans.Scale(vec3(size,size,size));
+	trans.Scale(vec3(size,size,size) * 1.3f);
 	return trans;
 }
 

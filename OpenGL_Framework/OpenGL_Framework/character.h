@@ -60,6 +60,7 @@ public:
 	vec3 getPosition();
 	void setPosition(vec3 pos);
 	std::vector<Hitbox*> getHitboxes();
+	std::vector<Hitbox*> getHurtboxes();
 	mat4 atkInputHandler(std::vector<bool> inputs);
 
 	bool facingRight;
@@ -184,6 +185,7 @@ protected:
 
 	//attacks
 	std::vector<Hitbox*> activeHitboxes;
+	std::vector<Hitbox*> hurtbox;//2
 
 
 	//debug hitbox

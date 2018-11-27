@@ -172,6 +172,18 @@ void Game::initializeGame()
 		exit(0);
 	}
 
+
+	std::vector<std::string> hitBox;
+	hitBox.push_back("./Assets/Models/Hitbox.obj");
+	boxMesh.LoadFromFile(hitBox);
+
+	if (!(boxTexture.Load("./Assets/Textures/redclear.png")))
+	{
+		std::cout << "Character Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+
 	loadTime();
 
 	GBuffer.InitDepthTexture(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -246,6 +258,15 @@ void Game::initializeGame()
 	ShadowProjection = mat4::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -25.0f, 100.0f);
 	hudProjection = mat4::OrthographicProjection((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f, (float)WINDOW_HEIGHT * -0.5f, -10.0f, 100.0f);
 
+
+	Hitbox *hurt1 = new Hitbox(vec3(25.0f, 12.0f, 0.0f), 6.0f);
+	Netbox.push_back(hurt1);
+	Hitbox *hurt2 = new Hitbox(vec3(-25.0f, 12.0f, 0.0f), 6.0f);
+	Netbox.push_back(hurt2);
+
+	score1 = 0;
+	score2 = 0;
+
 	updateTimer = new Timer();
 }
 
@@ -266,69 +287,103 @@ void Game::update()
 		playerTwo->setPosition(playerTwo->getPosition() + vec3(((diffx / abs(diffx))*-0.01f), 0, 0));
 	}
 
-	//hitbox collisions placeholder
-	int i = 0;
-	bool done = false;
-	while (done == false) {
-		if (i >= playerTwo->getHitboxes().size()) {
-			done = true;
-		}
-		else {
-			float diffHx = playerOne->getPosition().x - playerTwo->getHitboxes()[i]->getPosition().x;//difference between characters x
-			float diffHy = playerOne->getPosition().y - playerTwo->getHitboxes()[i]->getPosition().y;//difference between characters y
-			if (abs(diffHx) < 0.65f + (playerTwo->getHitboxes()[i]->getSize() *0.1f) && (diffHy > -5.0f - (playerTwo->getHitboxes()[i]->getSize() *0.1f) && diffHy < 0.2f +(playerTwo->getHitboxes()[i]->getSize() *0.1f))) {
-				if (playerOne->blocking && (playerOne->facingRight != playerTwo->facingRight)) {//add only in front condition
-					playerOne->blockSuccessful = true;
-					playerTwo->getHitboxes()[i]->setDone();
-					done = true;
-				}
-				else {
-					playerOne->hit(playerTwo->getHitboxes()[i]);
-					playerTwo->comboAdd();
-					playerTwo->getHitboxes()[i]->setDone();
-					done = true;
-				}
-			}
-		}
-		i++;
-	}
-	i = 0;
-	done = false;
-	while (done == false) {
-		if (i >= playerOne->getHitboxes().size()) {
-			done = true;
-		}
-		else {
-			float diffHx = playerTwo->getPosition().x - playerOne->getHitboxes()[i]->getPosition().x;//difference between characters x
-			float diffHy = playerTwo->getPosition().y - playerOne->getHitboxes()[i]->getPosition().y;//difference between characters y
-			if (abs(diffHx) < 0.65f + (playerOne->getHitboxes()[i]->getSize() *0.1f) && (diffHy > -5.0f - (playerOne->getHitboxes()[i]->getSize() *0.1f) && diffHy < 0.2f +(playerOne->getHitboxes()[i]->getSize() *0.1f))) {
+	//new hitbox collisions
+	for (int i = 0; i < playerOne->getHitboxes().size(); i++) {
+		for (int j = 0; j < playerTwo->getHurtboxes().size(); j++) {
+
+			vec3 diff = playerOne->getHitboxes()[i]->getPosition() - playerTwo->getHurtboxes()[j]->getPosition();
+			float size = (playerOne->getHitboxes()[i]->getSize() + playerTwo->getHurtboxes()[j]->getSize()) *0.5f;
+			if (diff.Length() < size) {
 				if (playerTwo->blocking && (playerOne->facingRight != playerTwo->facingRight)) {//add only in front condition
 					playerTwo->blockSuccessful = true;
 					playerOne->getHitboxes()[i]->setDone();
-					done = true;
+					i = 100;
+					j = 100;
 				}
 				else {
 					playerTwo->hit(playerOne->getHitboxes()[i]);
 					playerOne->comboAdd();
 					playerOne->getHitboxes()[i]->setDone();
-					done = true;
+					i = 100;
+					j = 100;
 				}
 			}
+
 		}
-		i++;
+
 	}
+
+	
+	for (int i = 0; i < playerTwo->getHitboxes().size(); i++) {
+		for (int j = 0; j < playerOne->getHurtboxes().size(); j++) {
+
+			vec3 diff = playerTwo->getHitboxes()[i]->getPosition() - playerOne->getHurtboxes()[j]->getPosition();
+			float size = (playerTwo->getHitboxes()[i]->getSize() + playerOne->getHurtboxes()[j]->getSize()) *0.5f;
+			if (diff.Length() < size) {
+				if (playerOne->blocking && (playerOne->facingRight != playerTwo->facingRight)) {//add only in front condition
+					playerOne->blockSuccessful = true;
+					playerTwo->getHitboxes()[i]->setDone();
+					i = 100;
+					j = 100;
+				}
+				else {
+					playerOne->hit(playerTwo->getHitboxes()[i]);
+					playerTwo->comboAdd();
+					playerTwo->getHitboxes()[i]->setDone();
+					i = 100;
+					j = 100;
+				}
+			}
+
+		}
+
+	}
+
+	//Check Hurtboxes
+	for (int i = 0; i < Netbox.size(); i++) {
+		Netbox[i]->update(deltaTime, vec3());
+	}
+
 	updateInputs();
 	playerOne->update(deltaTime, inputs);
 	playerTwo->update(deltaTime, inputs2);
 
-	//score
-	if (abs(abs(playerOne->getPosition().x) - 26) < 1.3f && abs(playerOne->getPosition().y - 10) < 1.3f) {
-		playerOne->respawn();
-		std::cout << std::endl << "Player 2 Scored" << std::endl;
-	}
-	if (abs(abs(playerTwo->getPosition().x) - 26) < 1.3f && abs(playerTwo->getPosition().y - 10) < 1.3f) {
-		playerTwo->respawn();
-		std::cout << std::endl << "Player 1 Scored" << std::endl;
+	////score
+	//if (abs(abs(playerOne->getPosition().x) - 26) < 1.3f && abs(playerOne->getPosition().y - 10) < 1.3f) {
+	//	playerOne->respawn();
+	//	std::cout << std::endl << "Player 2 Scored" << std::endl;
+	//}
+	//if (abs(abs(playerTwo->getPosition().x) - 26) < 1.3f && abs(playerTwo->getPosition().y - 10) < 1.3f) {
+	//	playerTwo->respawn();
+	//	std::cout << std::endl << "Player 1 Scored" << std::endl;
+	//}
+
+	//new score code
+	for (int i = 0; i < Netbox.size(); i++) {
+		for (int j = 0; j < playerTwo->getHurtboxes().size(); j++) {
+			vec3 diff = Netbox[i]->getPosition() - playerTwo->getHurtboxes()[j]->getPosition();
+			float size = (Netbox[i]->getSize() + playerTwo->getHurtboxes()[j]->getSize()) *0.5f;
+			if (diff.Length() < size) {
+				playerTwo->respawn();
+				std::cout << std::endl << "Player 1 Scored" << std::endl;
+				score1++;
+				i = 100;
+				j = 100;
+
+			}
+		}
+		for (int j = 0; j < playerOne->getHurtboxes().size(); j++) {
+			vec3 diff = Netbox[i]->getPosition() - playerOne->getHurtboxes()[j]->getPosition();
+			float size = (Netbox[i]->getSize() + playerOne->getHurtboxes()[j]->getSize()) *0.5f;
+			if (diff.Length() < size) {
+				playerOne->respawn();
+				std::cout << std::endl << "Player 2 Scored" << std::endl;
+				score2++;
+				i = 100;
+				j = 100;
+
+			}
+		}
 	}
 
 	
@@ -550,6 +605,18 @@ void Game::draw()
 
 	CourtTexture.UnBind();
 
+	for (int i = 0; i < Netbox.size(); i++) {
+		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
+		glUniformMatrix4fv(modelLoc, 1, false, Netbox[i]->getTransform().data);
+
+		boxTexture.Bind();
+		glBindVertexArray(boxMesh.VAO);
+
+		// Adjust model matrix for next object's location
+		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
+		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+	}
+	boxTexture.UnBind();
 
 	playerOne->drawBoxes(GBufferPass);
 	playerTwo->drawBoxes(GBufferPass);
@@ -610,6 +677,8 @@ void Game::draw()
 	}
 
 
+	drawScore();
+
 	AniShader.UnBind();
 	GBuffer.UnBind();
 	GBufferPass.UnBind();
@@ -653,7 +722,7 @@ void Game::draw()
 	DeferredLighting.SendUniform("LightAmbient", vec3(0.8f, 0.8f, 0.8f)); //You can LERP through colours to make night to day cycles
 	DeferredLighting.SendUniform("LightDiffuse", vec3(0.8f, 0.8f, 0.8f));
 	DeferredLighting.SendUniform("LightSpecular", vec3(0.8f, 0.8f, 0.8f));
-	DeferredLighting.SendUniform("LightSpecularExponent", 200.0f);
+	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
 
 	DeferredComposite.Bind();
 
@@ -801,7 +870,7 @@ void Game::drawHUD()
 	mat4 hudLoc;
 	hudLoc.Scale(100.0f);
 	hudLoc.RotateY(90);
-	hudLoc.Translate(vec3(-470, -360, 0));
+	hudLoc.Translate(vec3(-450, -360, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P1Hud.Bind();
@@ -812,20 +881,19 @@ void Game::drawHUD()
 	hudLoc = mat4();
 	hudLoc.Scale(vec3(100.0f, 100.0f, 100.0f * (playerOne->getMeter() / 200.0f)));
 	hudLoc.RotateY(90);
-	hudLoc.Translate(vec3(-470 - 0.7*(200.0f - playerOne->getMeter()), -360, 0));
+	hudLoc.Translate(vec3(-450 - 0.7*(200.0f - playerOne->getMeter()), -360, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P1Bar.Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
-
 	//Draw Player 2 HUD
 	///draw quad for p2 pic
 	hudLoc = mat4();
 	hudLoc.Scale(100.0f);
 	hudLoc.RotateY(90);
-	hudLoc.Translate(vec3(470, -360 , 0));
+	hudLoc.Translate(vec3(450, -360 , 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P2Hud.Bind();
@@ -836,7 +904,7 @@ void Game::drawHUD()
 	hudLoc = mat4();
 	hudLoc.Scale(vec3(100.0f, 100.0f, 100.0f * (playerTwo->getMeter() / 200.0f)));
 	hudLoc.RotateY(90);
-	hudLoc.Translate(vec3(470 + 0.7*(200.0f - playerTwo->getMeter()), -360, 0));
+	hudLoc.Translate(vec3(450 + 0.7*(200.0f - playerTwo->getMeter()), -360, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P2Bar.Bind();
@@ -862,6 +930,63 @@ void Game::drawHUD()
 	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
 
+	
+
+}
+
+void Game::drawScore() {
+
+	GBuffer.Bind();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glDepthMask(GL_FALSE);  // disable writes to Z-Buffer
+	//glDisable(GL_DEPTH_TEST);  // disable depth-testing
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_LIGHTING);
+
+	GBufferPass.Bind();
+	GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+	GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
+	///score
+	mat4 hudLoc;
+	hudLoc.Scale(2.0f);
+	hudLoc.RotateY(90);
+	hudLoc.RotateZ(90);
+	hudLoc.Translate(vec3(-1, 7, -7));
+	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+	time[score1 % 10]->Bind();
+	glBindVertexArray(HudObj.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+	///score
+	hudLoc = mat4();
+	hudLoc.Scale(2.0f);
+	hudLoc.RotateY(90);
+	hudLoc.RotateZ(90);
+	hudLoc.Translate(vec3(2, 7, -7));
+	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+	time[10]->Bind();
+	glBindVertexArray(HudObj.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+	///score
+	hudLoc = mat4();
+	hudLoc.Scale(2.0f);
+	hudLoc.RotateY(90);
+	hudLoc.RotateZ(90);
+	hudLoc.Translate(vec3(5, 7, -7));
+	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+	time[score2 % 10]->Bind();
+	glBindVertexArray(HudObj.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+
+
+	//glEnable(GL_DEPTH_TEST);
+	//glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_LIGHTING);
+	glDisable(GL_BLEND);
+
+	GBufferPass.UnBind();
+	GBuffer.UnBind();
 }
 
 void Game::drawTime()

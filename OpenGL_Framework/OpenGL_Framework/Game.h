@@ -38,7 +38,7 @@ public:
 	void drawHUD();
 	void loadTime();
 	void drawTime();
-
+	void drawScore();
 	/* input callback functions */
 	void keyboardDown(unsigned char key, int mouseX, int mouseY);
 	void keyboardUp(unsigned char key, int mouseX, int mouseY);
@@ -60,6 +60,9 @@ public:
 	ShaderProgram BloomComposite;
 	ShaderProgram DeferredLighting;
 	ShaderProgram AniShader;
+
+	Mesh boxMesh;
+	Texture boxTexture;
 
 	Character* playerOne;
 	std::vector<bool> inputs2;
@@ -92,6 +95,7 @@ public:
 	Texture P2Hud;
 	Texture P2Bar;
 	std::vector<Texture*> time;
+	std::vector<Hitbox*>Netbox;//2
 
 	/// FRAMEBUFFERS ///
 	FrameBuffer GBuffer; //Utility buffer to hold positions and normals
@@ -128,6 +132,9 @@ public:
 
 	float lTrig, rTrig;
 	float lTrig2, rTrig2;
+
+	int score1;
+	int score2;
 
 
 private:

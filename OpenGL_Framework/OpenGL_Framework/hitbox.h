@@ -14,6 +14,7 @@ class Hitbox {
 public:
 	Hitbox() {}
 	Hitbox(vec3 _position, float _size, float _knockback, float _angleDeg, unsigned int _activeFrames, unsigned int owner, vec3 _velocity);
+	Hitbox(vec3 _position, float _size);
 	~Hitbox();
 
 	void update(int t, vec3 parent);
@@ -64,7 +65,7 @@ private:
 	float angleDeg;
 	float size;
 	unsigned int owner;
-
+	bool hurtbox;
 	//actions
 	unsigned int activeFrames;
 	unsigned int currentFrame;
