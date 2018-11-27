@@ -1365,12 +1365,12 @@ glm::mat4 Character::nSpecial(bool charging)
 			//create hitbox
 			float _kb = 9.0f + (10.0f * (currentFrame * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			unsigned int angle = 45;
-			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.1f, 2.9f, 0.1f), 3.1f, _kb, (float)angle, 7.0f, 0.0f, glm::vec3((-0.5f + (int)facingRight)*2.0f, -0.22f, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.1f, 2.9f, 0.1f), 3.1f, _kb, (float)angle, 7, 0, glm::vec3((-0.5f + (int)facingRight)*2.0f, -0.22f, 0.0f));
 			newAtk->spline = true;
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -20, 4.5f, 0));
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2, 4.0f, 0));
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2, 0.0f, 0));
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -30, 0.5f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -20.0f, 4.5f, 0.0f));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2.0f, 4.0f, 0.0f));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2.0f, 0.0f, 0.0f));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -30.0f, 0.5f, 0.0f));
 			newAtk->facingRight = facingRight;
 			activeHitboxes.push_back(newAtk);
 			//start endlag
@@ -1386,12 +1386,12 @@ glm::mat4 Character::nSpecial(bool charging)
 			//create hitbox
 			float _kb = 20.5f + (11.0f * (currentFrame * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			unsigned int angle = 45;
-			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 2.2f, 0.1f), 2.6f, _kb, (float)angle, 7.0f, 0.0f, glm::vec3((-0.5f + (int)facingRight)*2.0f, -0.4f, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 2.2f, 0.1f), 2.6f, _kb, (float)angle, 7, 0, glm::vec3((-0.5f + (int)facingRight)*2.0f, -0.4f, 0.0f));
 			newAtk->spline = true;
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -20, 4.5f, 0));
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2, 4.0f, 0));
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2, 0.0f, 0));
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -30, 0.5f, 0));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -20.0f, 4.5f, 0.0f));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2.0f, 4.0f, 0.0f));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2.0f, 0.0f, 0.0f));
+			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -30.0f, 0.5f, 0.0f));
 			newAtk->facingRight = facingRight;
 			activeHitboxes.push_back(newAtk);
 			//start endlag

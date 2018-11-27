@@ -21,24 +21,18 @@ Game::~Game()
 	GBufferPass.UnLoad();
 	DeferredLighting.UnLoad();
 	AniShader.UnLoad();
-	/*SobelPass.UnLoad();
-	Sword.Unload();
-	SwordTexture.Unload();
-	Stone.Unload();
-	StoneTexture.Unload();
-	House.Unload();
-	HouseTexture.Unload();
-	Ground.Unload();
-	GroundTexture.Unload();
-	Sphere.Unload();
-	StepTexture.Unload();*/
+	HudShader.UnLoad();
+	boxMesh.Unload();
+	boxTexture.Unload();
 	Court.Unload();
 	CourtTexture.Unload();
 	Background.Unload();
-	HudObj.Unload();
 	BackgroundTexture.Unload();
-	//NormalSword.Unload();
-	//NormalStone.Unload();
+	HudObj.Unload();
+	P1Hud.Unload();
+	P1Bar.Unload();
+	P2Hud.Unload();
+	P2Bar.Unload();
 }
 
 void Game::initializeGame()
@@ -225,7 +219,7 @@ void Game::initializeGame()
 		exit(0);
 	}*/
 
-	WorkBuffer1.InitColorTexture((unsigned int)0, WINDOW_WIDTH / BLOOM_DOWNSCALE, WINDOW_HEIGHT / BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	WorkBuffer1.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
 	if (!WorkBuffer1.CheckFBO())
 	{
 		std::cout << "WB1 FBO failed to initialize.\n";
@@ -233,7 +227,7 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	WorkBuffer2.InitColorTexture((unsigned int)0, WINDOW_WIDTH / BLOOM_DOWNSCALE, WINDOW_HEIGHT / BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	WorkBuffer2.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
 	if (!WorkBuffer2.CheckFBO())
 	{
 		std::cout << "WB2 FBO failed to initialize.\n";
@@ -341,12 +335,12 @@ void Game::update()
 
 	//Check Hurtboxes
 	for (unsigned int i = 0; i < Netbox.size(); i++) {
-		Netbox[i]->update(deltaTime, glm::vec3());
+		Netbox[i]->update((int)deltaTime, glm::vec3());
 	}
 
 	updateInputs();
-	playerOne->update(deltaTime, inputs);
-	playerTwo->update(deltaTime, inputs2);
+	playerOne->update((int)deltaTime, inputs);
+	playerTwo->update((int)deltaTime, inputs2);
 
 	////score
 	//if (abs(abs(playerOne->getPosition().x) - 26) < 1.3f && abs(playerOne->getPosition().y - 10) < 1.3f) {
