@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-//#include "MiniMath\Core.h"
 #include <glm/glm.hpp>
 #include <GLM\gtx\transform.hpp>
 #include "Texture.h"

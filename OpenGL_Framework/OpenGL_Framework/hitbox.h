@@ -7,7 +7,6 @@
 //#include "transform.h"
 #include <vector>
 //#include "camera.h"
-//#include "MiniMath/Core.h"
 #include "Transform.h"
 
 

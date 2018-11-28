@@ -11,7 +11,6 @@
 #include "ShaderProgram.h"
 #include "Texture.h"
 #include <vector>
-#include "MiniMath/Core.h"
 //#include "camera.h"
 #include "hitbox.h"
 #include <iostream>
