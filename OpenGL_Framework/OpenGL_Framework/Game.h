@@ -88,7 +88,7 @@ public:
 	Texture CourtTexture;
 	Mesh Background;
 	Texture BackgroundTexture;
-	glm::mat4 BGTransform;
+	Transform BGTransform;
 	Mesh HudObj;
 	Texture P1Hud;
 	Texture P1Bar;
@@ -108,16 +108,16 @@ public:
 	FrameBuffer HudMap;
 
 
-	glm::mat4 StoneTransform;
+	Transform StoneTransform;
 
-	glm::mat4 CameraTransform;
-	glm::mat4 CameraProjection;
-	glm::mat4 ShadowTransform;
-	glm::mat4 ShadowProjection;
-	glm::mat4 hudTransform;
-	glm::mat4 hudProjection;
+	Transform CameraTransform;
+	Transform CameraProjection;
+	Transform ShadowTransform;
+	Transform ShadowProjection;
+	Transform hudTransform;
+	Transform hudProjection;
 
-	glm::mat4 ViewToShadowMap;
+	Transform ViewToShadowMap;
 
 	void updateInputs();
 	//controller

@@ -352,7 +352,7 @@ void Character::draw(ShaderProgram shader, float dt) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, idleFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 	}
 	else if (action == ACTION_WALK || action == ACTION_RUN) {
 		aniTimer += dt / 6.0f;
@@ -375,7 +375,7 @@ void Character::draw(ShaderProgram shader, float dt) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, walkFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 	}
 	else if (action == ACTION_JAB) {
 		aniTimer += dt / 4.0f;
@@ -398,7 +398,7 @@ void Character::draw(ShaderProgram shader, float dt) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, jabFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 	}
 	else if (action == ACTION_SIDE_ATTACK) {
 		aniTimer += dt / 4.0f;
@@ -421,7 +421,7 @@ void Character::draw(ShaderProgram shader, float dt) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, sAtkFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 	}
 	else if (action == ACTION_UP_ATTACK) {
 		aniTimer += dt / 3.0f;
@@ -445,7 +445,7 @@ void Character::draw(ShaderProgram shader, float dt) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, uAtkFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 	}
 	else if (action == ACTION_DOWN_ATTACK) {
 		aniTimer += dt / 4.0f;
@@ -468,7 +468,7 @@ void Character::draw(ShaderProgram shader, float dt) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, dAtkFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 	}
 	else {
 		index = 0;
@@ -481,7 +481,7 @@ void Character::draw(ShaderProgram shader, float dt) {
 		glBindVertexArray(idleFrames[index]->VAO);
 
 		glDrawArrays(GL_TRIANGLES, 0, idleFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 	}
 }
 
@@ -497,7 +497,7 @@ void Character::drawBoxes(ShaderProgram GBufferPass) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 	}
 	shieldTexture.UnBind();
 
@@ -511,13 +511,13 @@ void Character::drawBoxes(ShaderProgram GBufferPass) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 	}
 	boxTexture.UnBind();
 
 	if (blocking) {
 		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
-		glm::mat4 shield;
+		Transform shield;
 		int i = (int)facingRight;
 		if (i == 0) i = -1;
 		shield.SetTranslation(position + glm::vec3(i*0.7f, 2.0f, 0));
@@ -530,7 +530,7 @@ void Character::drawBoxes(ShaderProgram GBufferPass) {
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 	}
 	shieldTexture.UnBind();
 }
@@ -558,7 +558,7 @@ void Character::drawShadow(ShaderProgram shader, float dt)
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, idleFrames[index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 	}
 	else {
 		glBindVertexArray(body.VAO);
@@ -604,9 +604,9 @@ void Character::hit(Hitbox* hitBy) {
 ///0-up, 1-left, 2-down, 3-right, 4-A, 5-B, 6-jump
 ///7-hardLeft, 8-hardRight
 ///9-shield
-glm::mat4 Character::atkInputHandler(std::vector<bool> inputs)
+Transform Character::atkInputHandler(std::vector<bool> inputs)
 {
-	glm::mat4 result;
+	Transform result;
 	///hit
 	if (action == ACTION_HIT) {
 		//todo
@@ -724,9 +724,9 @@ glm::mat4 Character::atkInputHandler(std::vector<bool> inputs)
 
 }
 
-glm::mat4 Character::idle()
+Transform Character::idle()
 {
-	glm::mat4 result = glm::mat4();
+	Transform result = Transform();
 	if (interuptable == true && action != ACTION_IDLE) {
 		action = ACTION_IDLE;
 		activeFrames = 60;
@@ -751,9 +751,9 @@ glm::mat4 Character::idle()
 	return result;
 }
 
-glm::mat4 Character::walk(bool held)
+Transform Character::walk(bool held)
 {
-	glm::mat4 result = glm::mat4();
+	Transform result = Transform();
 	if (interuptable == true && action != ACTION_WALK) {
 		action = ACTION_WALK;
 		activeFrames = 30;
@@ -793,9 +793,9 @@ glm::mat4 Character::walk(bool held)
 	return result;
 }
 
-glm::mat4 Character::run(bool held)
+Transform Character::run(bool held)
 {
-	glm::mat4 result = glm::mat4();
+	Transform result = Transform();
 	if (interuptable == true && action != ACTION_RUN) {
 		action = ACTION_RUN;
 		activeFrames = 30;
@@ -829,9 +829,9 @@ glm::mat4 Character::run(bool held)
 	return result;
 }
 
-glm::mat4 Character::initialDash(bool right, bool left)
+Transform Character::initialDash(bool right, bool left)
 {
-	glm::mat4 result = glm::mat4();
+	Transform result = Transform();
 	if (interuptable == true && action != ACTION_INTIAL_DASH) {
 		action = ACTION_INTIAL_DASH;
 		activeFrames = dashLength;
@@ -875,9 +875,9 @@ glm::mat4 Character::initialDash(bool right, bool left)
 	return result;
 }
 
-glm::mat4 Character::prejump()
+Transform Character::prejump()
 {
-	glm::mat4 result = glm::mat4();
+	Transform result = Transform();
 	if (interuptable == true && action != ACTION_PREJUMP) {
 		action = ACTION_PREJUMP;
 		activeFrames = prejumpLength;
@@ -900,9 +900,9 @@ glm::mat4 Character::prejump()
 	return result;
 }
 
-glm::mat4 Character::jump()
+Transform Character::jump()
 {
-	glm::mat4 result = glm::mat4();
+	Transform result = Transform();
 	if (interuptable == true && action != ACTION_JUMP) {
 		action = ACTION_JUMP;
 		activeFrames = jumpFrames;
@@ -927,9 +927,9 @@ glm::mat4 Character::jump()
 	return result;
 }
 
-glm::mat4 Character::jump2()
+Transform Character::jump2()
 {
-	glm::mat4 result = glm::mat4();
+	Transform result = Transform();
 	if (interuptable == true && action != ACTION_JUMP2 && jumpsLeft > 0) {
 		action = ACTION_JUMP2;
 		activeFrames = jumpFrames;
@@ -955,9 +955,9 @@ glm::mat4 Character::jump2()
 	return result;
 }
 
-glm::mat4 Character::fall()
+Transform Character::fall()
 {
-	glm::mat4 result = glm::mat4();
+	Transform result = Transform();
 	if (interuptable == true && action != ACTION_FALL) {
 		action = ACTION_FALL;
 		activeFrames = 30;
@@ -985,9 +985,9 @@ glm::mat4 Character::fall()
 
 //0 idle, 1 jumping, 2-jab, 3-fTilt, 4-dTilt, 5-uTilt, 10-hit
 
-glm::mat4 Character::jab()
+Transform Character::jab()
 {
-	glm::mat4 result = glm::mat4();
+	Transform result = Transform();
 	if (interuptable == true && action != ACTION_JAB) {
 		interuptable = false;
 		action = ACTION_JAB;
@@ -1019,9 +1019,9 @@ glm::mat4 Character::jab()
 	return result;
 }
 
-glm::mat4 Character::sAttack()
+Transform Character::sAttack()
 {
-	glm::mat4 result;
+	Transform result;
 	if (interuptable == true && action != ACTION_SIDE_ATTACK) {
 		interuptable = false;
 		action = ACTION_SIDE_ATTACK;
@@ -1061,9 +1061,9 @@ glm::mat4 Character::sAttack()
 	return result;
 }
 
-glm::mat4 Character::dAttack()
+Transform Character::dAttack()
 {
-	glm::mat4 result;
+	Transform result;
 	if (interuptable == true && action != ACTION_DOWN_ATTACK) {
 		interuptable = false;
 		action = ACTION_DOWN_ATTACK;
@@ -1095,9 +1095,9 @@ glm::mat4 Character::dAttack()
 	return result;
 }
 
-glm::mat4 Character::uAttack()
+Transform Character::uAttack()
 {
-	glm::mat4 result;
+	Transform result;
 	if (interuptable == true && action != ACTION_UP_ATTACK) {
 		interuptable = false;
 		action = ACTION_UP_ATTACK;
@@ -1137,9 +1137,9 @@ glm::mat4 Character::uAttack()
 
 //0 idle, 1 jumping, 6-nAir, 7-fAir, 8-dAir, 9-uAir, 10-hit
 
-glm::mat4 Character::nAir()
+Transform Character::nAir()
 {
-	glm::mat4 result;
+	Transform result;
 	if (action != ACTION_NEUTRAL_AERIAL || interuptable == true) {
 		interuptable = false;
 		action = ACTION_NEUTRAL_AERIAL;
@@ -1177,14 +1177,14 @@ glm::mat4 Character::nAir()
 		}
 		currentFrame++;
 		//glm::rotate(result, (float)currentFrame * 10, glm::vec3(0.0f, 1.0f, 0.0f));
-		result.RotateY(currentFrame * 10);
+		result.RotateY(currentFrame * 10.0f);
 	}
 	return result;
 }
 
-glm::mat4 Character::sAir()
+Transform Character::sAir()
 {
-	glm::mat4 result;
+	Transform result;
 	if (action != ACTION_SIDE_AERIAL || interuptable == true) {
 		interuptable = false;
 		action = ACTION_SIDE_AERIAL;
@@ -1222,9 +1222,9 @@ glm::mat4 Character::sAir()
 	return result;
 }
 
-glm::mat4 Character::dAir()
+Transform Character::dAir()
 {
-	glm::mat4 result;
+	Transform result;
 	if (action != ACTION_DOWN_AERIAL || interuptable == true) {
 		interuptable = false;
 		action = ACTION_DOWN_AERIAL;
@@ -1257,9 +1257,9 @@ glm::mat4 Character::dAir()
 	}
 	return result;
 }
-glm::mat4 Character::uAir()
+Transform Character::uAir()
 {
-	glm::mat4 result;
+	Transform result;
 	if (action != ACTION_UP_AERIAL || interuptable == true) {
 		interuptable = false;
 		action = ACTION_UP_AERIAL;
@@ -1293,12 +1293,12 @@ glm::mat4 Character::uAir()
 	return result;
 }
 
-glm::mat4 Character::block(bool held)
+Transform Character::block(bool held)
 {
 	int endlag = 6;//endlag after a successful block is this, on failed attempt its doubled
 	int startLag = 3;
 
-	glm::mat4 result;
+	Transform result;
 	if (interuptable == true && action != ACTION_BLOCK) {//called on first frame of move press
 		interuptable = false;
 		action = ACTION_BLOCK;
@@ -1341,14 +1341,14 @@ glm::mat4 Character::block(bool held)
 
 //0 idle, 1 jumping, 10-hit, 11-nSpecial, 12-sSpecial, 13-dSpecial, 14-uSpecial
 
-glm::mat4 Character::nSpecial(bool charging)
+Transform Character::nSpecial(bool charging)
 {
 	//CHARGABLE SPECIAL
 	int maxCharge = 100;
 	int endlag = 20;
 	int startLag = 10;
 
-	glm::mat4 result;
+	Transform result;
 	if (interuptable == true && action != ACTION_NEUTRAL_SPECIAL && comboMeter >= 5) {//called on first frame of move press
 		interuptable = false;
 		action = ACTION_NEUTRAL_SPECIAL;
@@ -1410,16 +1410,16 @@ glm::mat4 Character::nSpecial(bool charging)
 
 		//animation every frame
 		//glm::rotate(result, (float)currentFrame * 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-		result.RotateY( currentFrame * 1);
+		result.RotateY( currentFrame * 1.0f);
 
 		currentFrame++;
 	}
 	return result;
 }
-glm::mat4 Character::sSpecial()
+Transform Character::sSpecial()
 {
 	//SIDE SPECIAL 1Press
-	glm::mat4 result;
+	Transform result;
 	if (interuptable == true && action != ACTION_SIDE_SPECIAL && comboMeter >= 15) {
 		interuptable = false;
 		action = ACTION_SIDE_SPECIAL;
@@ -1464,7 +1464,7 @@ glm::mat4 Character::sSpecial()
 
 		}
 		//glm::rotate(result, (float)currentFrame * 5.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-		result.RotateY(currentFrame * 5);
+		result.RotateY(currentFrame * 5.0f);
 
 
 		currentFrame++;
@@ -1472,10 +1472,10 @@ glm::mat4 Character::sSpecial()
 	return result;
 }
 
-glm::mat4 Character::dSpecial()
+Transform Character::dSpecial()
 {
 	//SIDE SPECIAL 1Press
-	glm::mat4 result;
+	Transform result;
 	if (interuptable == true && action != ACTION_DOWN_SPECIAL && comboMeter >= 15) {
 		interuptable = false;
 		action = ACTION_DOWN_SPECIAL;
@@ -1506,16 +1506,16 @@ glm::mat4 Character::dSpecial()
 
 		}
 		//glm::rotate(result, (float)currentFrame * 5.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-		result.RotateY(currentFrame * 5);
+		result.RotateY(currentFrame * 5.0f);
 		currentFrame++;
 	}
 	return result;
 }
 
-glm::mat4 Character::uSpecial()
+Transform Character::uSpecial()
 {
 	//SIDE SPECIAL 1Press
-	glm::mat4 result;
+	Transform result;
 	if (interuptable == true && action != ACTION_UP_SPECIAL && comboMeter >= 10) {
 		interuptable = false;
 		action = ACTION_UP_SPECIAL;
@@ -1550,7 +1550,7 @@ glm::mat4 Character::uSpecial()
 
 		}
 		//glm::rotate(result, (float)currentFrame * 5.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-		result.RotateY(currentFrame * 5);
+		result.RotateY(currentFrame * 5.0f);
 		currentFrame++;
 	}
 	return result;

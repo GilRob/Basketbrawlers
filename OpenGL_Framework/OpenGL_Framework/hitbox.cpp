@@ -100,9 +100,9 @@ glm::vec3 Hitbox::getPosition()
 }
 
 //Returns the position of the hitbox
-glm::mat4 Hitbox::getTransform()
+Transform Hitbox::getTransform()
 {
-	glm::mat4 trans;
+	Transform trans;
 	trans.SetTranslation(globalPosition);
 	//glm::scale(trans, glm::vec3(size, size, size) * 1.3f);
 	trans.Scale(glm::vec3(size,size,size) * 1.3f);

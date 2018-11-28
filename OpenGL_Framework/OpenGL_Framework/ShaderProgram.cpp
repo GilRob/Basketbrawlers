@@ -250,14 +250,14 @@ void ShaderProgram::SendUniformMat3(const std::string &name, float *matrix, bool
 {
 	GLint location = GetUniformLocation(name);
 	//1 is the number of matrices
-	glUniformMatrix3fv(location, 1, transpose, matrix); //!transpose is cause of column-major - changed
+	glUniformMatrix3fv(location, 1, !transpose, matrix); //!transpose is cause of column-major - changed
 }
 //****SUPPOSED TO INVERSE TRANSPOSE? ASK FOR CLARIFICATION****//
 void ShaderProgram::SendUniformMat4(const std::string &name, float *matrix, bool transpose)
 {
 	GLint location = GetUniformLocation(name);
 	//1 is the number of matrices
-	glUniformMatrix4fv(location, 1, transpose, matrix); //!transpose is cause of column-major - changed
+	glUniformMatrix4fv(location, 1, !transpose, matrix); //!transpose is cause of column-major - changed
 }
 
 std::string ShaderProgram::ReadFile(const std::string &fileName) const

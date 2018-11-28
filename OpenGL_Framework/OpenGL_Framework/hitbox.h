@@ -8,6 +8,7 @@
 #include <vector>
 //#include "camera.h"
 //#include "MiniMath/Core.h"
+#include "Transform.h"
 
 
 class Hitbox {
@@ -27,7 +28,7 @@ public:
 	float getAngle();
 	float getKnockback();
 	void setDone();
-	glm::mat4 getTransform();
+	Transform getTransform();
 	bool spline;
 	bool facingRight;
 	bool projectile;

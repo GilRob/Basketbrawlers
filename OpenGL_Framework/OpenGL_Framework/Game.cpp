@@ -40,6 +40,7 @@ void Game::initializeGame()
 
 	//Only needs to be done once
 	glEnable(GL_DEPTH_TEST);
+	
 	//glutFullScreen();
 	InitFullScreenQuad();
 
@@ -247,10 +248,10 @@ void Game::initializeGame()
 
 	/*CameraTransform.Translate(vec3(0.0f, 7.5f, 20.0f));
 	CameraTransform.RotateX(-15.0f);*/
-	CameraProjection = glm::mat4::PerspectiveProjection(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 1.0f, 10000.0f);
+	CameraProjection = Transform::PerspectiveProjection(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 1.0f, 10000.0f);
 	//ShadowProjection.OrthographicProjection(35.0f, -35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
-	ShadowProjection = glm::mat4::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -25.0f, 100.0f);
-	hudProjection = glm::mat4::OrthographicProjection((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f, (float)WINDOW_HEIGHT * -0.5f, -10.0f, 100.0f);
+	ShadowProjection = Transform::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -25.0f, 100.0f);
+	hudProjection = Transform::OrthographicProjection((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f, (float)WINDOW_HEIGHT * -0.5f, -10.0f, 100.0f);
 
 
 	Hitbox *hurt1 = new Hitbox(glm::vec3(25.0f, 12.0f, 0.0f), 6.0f);
@@ -394,7 +395,7 @@ void Game::update()
 	//camera->setPositionZ(dist);
 
 	//Make sure to do the reverse of the transform orders due to the change from row-major to column-major, it reverses all mathematic operations
-	CameraTransform = glm::mat4::Identity;
+	CameraTransform = Transform::Identity();
 	//glm::rotate(CameraTransform, (-20.0f - abs(sqrtf(dist*0.01f)*10.0f)), glm::vec3(1.0f, 0.0f, 0.0f));
 	CameraTransform.RotateX(-20.0f - abs(sqrtf(dist*0.01f)*10.0f));
 	//CameraTransform.Translate(vec3(0.0f, 7.5f, 11.0f));
@@ -402,21 +403,26 @@ void Game::update()
 		glm::vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, 
 			abs(sqrtf(dist*0.01f)*20.0f) + 10.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), 
 			dist + 10));*/
-	CameraTransform.Translate(vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, abs(sqrtf(dist*0.01f)*20.0f) + 10.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), dist+10));
+	CameraTransform.Translate(glm::vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, abs(sqrtf(dist*0.01f)*20.0f) + 10.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), dist+10));
 	//glm::rotate(CameraTransform, 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	CameraTransform.RotateY(0.0f);
+	//CameraTransform.RotateZ(180.0f);
 
-	ShadowTransform = glm::mat4::Identity;
-	ShadowTransform.RotateX(-45.0f);
-	ShadowTransform.Translate(glm::vec3(0.0f, 6.0f, 10.0f));
-	ShadowTransform.RotateY(-200.0f);
+	hudTransform = Transform::Identity();
+	hudTransform.RotateY(0.0f);
+
+	ShadowTransform = Transform::Identity();
+	ShadowTransform.RotateX(45.0f);
+	//.RotateY(180.0f);
+	ShadowTransform.Translate(glm::vec3(0.0f, 10.0f, 10.0f));
+	ShadowTransform.RotateY(180.0f);
 	
-	glm::mat4 bias = glm::mat4(0.5f, 0.0f, 0.0f, 0.5f,
+	Transform bias = Transform(0.5f, 0.0f, 0.0f, 0.5f,
 					 0.0f, 0.5f, 0.0f, 0.5f,
 					 0.0f, 0.0f, 0.5f, 0.5f,
 					 0.0f, 0.0f, 0.0f, 1.0f);
 
-	ViewToShadowMap = glm::mat4::Identity;
+	ViewToShadowMap = Transform::Identity();
 	ViewToShadowMap = bias * ShadowProjection * ShadowTransform.GetInverse() * CameraTransform;
 	//ShadowTransform.Translate(vec3(0.0f, 0.0f, 0.0f));
 }
@@ -445,7 +451,7 @@ void Game::draw()
 	glViewport(0, 0, SHADOW_RESOLUTION, SHADOW_RESOLUTION);
 
 	GBufferPass.Bind();
-	GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
+	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 	//The reason of the inverse is because it is easier to do transformations
 	GBufferPass.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 	GBufferPass.SendUniformMat4("uProj", ShadowProjection.data, true);
@@ -463,53 +469,53 @@ void Game::draw()
 	//GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
 	//playerTwo->drawShadow(GBufferPass, 1);
 
-	GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
-	GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
+	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
+	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 
 	GBufferPass.UnBind();
 	//draw p1 shadow
 	if (playerOne->action < 2 || (playerOne->action >= ACTION_JAB && playerOne->action <= ACTION_UP_ATTACK))
 	{
 		AniShader.Bind();
-		AniShader.SendUniformMat4("uModel", glm::mat4().data, true);
+		AniShader.SendUniformMat4("uModel", Transform().data, true);
 		AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 		AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
 
 		AniShader.SendUniformMat4("uModel", playerOne->transform.data, true);
 		playerOne->draw(AniShader, 0);
 
-		AniShader.SendUniformMat4("uModel", glm::mat4().data, true);
+		AniShader.SendUniformMat4("uModel", Transform().data, true);
 	}
 	else {
 		GBufferPass.Bind();
-		GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
+		GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 		GBufferPass.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 		GBufferPass.SendUniformMat4("uProj", ShadowProjection.data, true);
 		GBufferPass.SendUniformMat4("uModel", playerOne->transform.data, true);
 		playerOne->draw(GBufferPass, 0);
-		GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
+		GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 	}
 	//draw p2 shadow
 	if (playerTwo->action < 2 || (playerTwo->action >= ACTION_JAB && playerTwo->action <= ACTION_UP_ATTACK))
 	{
 		AniShader.Bind();
-		AniShader.SendUniformMat4("uModel", glm::mat4().data, true);
+		AniShader.SendUniformMat4("uModel", Transform().data, true);
 		AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 		AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
 
 		AniShader.SendUniformMat4("uModel", playerTwo->transform.data, true);
 		playerTwo->draw(AniShader, 0);
 
-		AniShader.SendUniformMat4("uModel", glm::mat4().data, true);
+		AniShader.SendUniformMat4("uModel", Transform().data, true);
 	}
 	else {
 		GBufferPass.Bind();
-		GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
+		GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 		GBufferPass.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 		GBufferPass.SendUniformMat4("uProj", ShadowProjection.data, true);
 		GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
 		playerTwo->draw(GBufferPass, 0);
-		GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
+		GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 	}
 	glBindVertexArray(0);
 
@@ -520,7 +526,7 @@ void Game::draw()
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	GBufferPass.Bind();
-	GBufferPass.SendUniformMat4("uModel", glm::mat4().data, true);
+	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 	//The reason of the inverse is because it is easier to do transformations
 	GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 	GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
@@ -614,7 +620,7 @@ void Game::draw()
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, glm::mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 	}
 	boxTexture.UnBind();
 
@@ -718,7 +724,8 @@ void Game::draw()
 	DeferredLighting.SendUniform("uPositionMap", 3);
 	//DeferredLighting.SendUniform("uEdgeMap", 4);
 	//DeferredLighting.SendUniform("uStepTexture", 4);
-	DeferredLighting.SendUniform("LightDirection", glm::mat3(CameraTransform.GetInverse()) * ShadowTransform.GetForward());
+	
+	DeferredLighting.SendUniform("LightDirection", glm::vec3( CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
 	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.8f, 0.8f, 0.8f)); //You can LERP through colours to make night to day cycles
 	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.8f, 0.8f, 0.8f));
 	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.8f, 0.8f, 0.8f));
@@ -757,7 +764,7 @@ void Game::draw()
 	drawTime();
 
 	/// Compute High Pass ///
-	glViewport(0, 0, WINDOW_WIDTH / BLOOM_DOWNSCALE, WINDOW_HEIGHT / BLOOM_DOWNSCALE);
+	glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
 
 	//Moving data to the back buffer, at the same time as our last post process
 	BloomHighPass.Bind();
@@ -775,7 +782,7 @@ void Game::draw()
 	BloomHighPass.UnBind();
 
 	/// Compute Blur ///
-	glViewport(0, 0, WINDOW_WIDTH / BLOOM_DOWNSCALE, WINDOW_HEIGHT / BLOOM_DOWNSCALE);
+	glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
 	for (int i = 0; i < BLOOM_BLUR_PASSES; i++)
 	{
 		//Horizontal Blur
@@ -860,16 +867,16 @@ void Game::drawHUD()
 	//now ready to draw 2d
 	//////////////////////////
 	GBufferPass.Bind();
-	hudTransform = glm::mat4::Identity;
+	hudTransform = Transform::Identity();
 	//hudTransform.Translate(vec3(WINDOW_WIDTH * -0.5f, WINDOW_HEIGHT* -0.5f, 0));
 	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
 	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
 
 	//Draw Player 1 HUD
 	///draw quad for p1 pic
-	glm::mat4 hudLoc;
+	Transform hudLoc = Transform::Identity();
 	hudLoc.Scale(100.0f);
-	hudLoc.RotateY(90);
+	hudLoc.RotateY(90.0f);
 	hudLoc.Translate(glm::vec3(-450, -360, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
@@ -878,9 +885,9 @@ void Game::drawHUD()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	///draw quad for p1 bar
-	hudLoc = glm::mat4();
-	hudLoc.Scale(glm::vec3(100.0f, 100.0f, 100.0f * (playerOne->getMeter() / 200.0f)));
-	hudLoc.RotateY(90);
+	hudLoc = Transform::Identity();
+	hudLoc.Scale(glm::vec3(100.0f * (playerOne->getMeter() / 200.0f), 100.0f, 100));
+	hudLoc.RotateY(90.0f);
 	hudLoc.Translate(glm::vec3(-450 - 0.7*(200.0f - playerOne->getMeter()), -360, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
@@ -890,9 +897,9 @@ void Game::drawHUD()
 
 	//Draw Player 2 HUD
 	///draw quad for p2 pic
-	hudLoc = glm::mat4();
+	hudLoc = Transform::Identity();
 	hudLoc.Scale(100.0f);
-	hudLoc.RotateY(90);
+	hudLoc.RotateY(90.0f);
 	hudLoc.Translate(glm::vec3(450, -360 , 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
@@ -901,9 +908,9 @@ void Game::drawHUD()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	///draw quad for p2 bar
-	hudLoc = glm::mat4();
-	hudLoc.Scale(glm::vec3(100.0f, 100.0f, 100.0f * (playerTwo->getMeter() / 200.0f)));
-	hudLoc.RotateY(90);
+	hudLoc = Transform::Identity();
+	hudLoc.Scale(glm::vec3(100.0f * (playerTwo->getMeter() / 200.0f), 100.0f, 100));
+	hudLoc.RotateY(90.0f);
 	hudLoc.Translate(glm::vec3(450 + 0.7*(200.0f - playerTwo->getMeter()), -360, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
@@ -948,30 +955,30 @@ void Game::drawScore() {
 	GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 	GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
 	///score
-	glm::mat4 hudLoc;
+	Transform hudLoc = Transform::Identity();
 	hudLoc.Scale(2.0f);
-	hudLoc.RotateY(90);
-	hudLoc.RotateZ(90);
+	hudLoc.RotateY(90.0f);
+	hudLoc.RotateX(-90.0f);
 	hudLoc.Translate(glm::vec3(-1, 7, -7));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[score1 % 10]->Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 	///score
-	hudLoc = glm::mat4();
+	hudLoc = Transform::Identity();
 	hudLoc.Scale(2.0f);
-	hudLoc.RotateY(90);
-	hudLoc.RotateZ(90);
-	hudLoc.Translate(glm::vec3(2, 7, -7));
+	hudLoc.RotateY(90.0f);
+	hudLoc.RotateX(-90.0f);
+	hudLoc.Translate(glm::vec3(2, 7, -7.1f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[10]->Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 	///score
-	hudLoc = glm::mat4();
+	hudLoc = Transform::Identity();
 	hudLoc.Scale(2.0f);
-	hudLoc.RotateY(90);
-	hudLoc.RotateZ(90);
+	hudLoc.RotateY(90.0f);
+	hudLoc.RotateX(-90.0f);
 	hudLoc.Translate(glm::vec3(5, 7, -7));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[score2 % 10]->Bind();
@@ -1015,12 +1022,12 @@ void Game::drawTime()
 	//now ready to draw 2d
 	//////////////////////////
 	GBufferPass.Bind();
-	hudTransform = glm::mat4::Identity;
+	hudTransform = Transform::Identity();
 	//hudTransform.Translate(vec3(WINDOW_WIDTH * -0.5f, WINDOW_HEIGHT* -0.5f, 0));
 	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
 	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
 
-	int timer = 300 - TotalGameTime;
+	int timer = 300 - (int)TotalGameTime;
 	if (timer < 0) timer = 0;
 	int min = (int)timer / 60;
 	int secT = ((int)timer % 60) / 10;
@@ -1031,10 +1038,10 @@ void Game::drawTime()
 
 	//Draw Time
 	///min
-	glm::mat4 hudLoc;
+	Transform hudLoc;
 	hudLoc.Scale(40.0f);
-	hudLoc.RotateY(90);
-	hudLoc.RotateZ(90);
+	hudLoc.RotateY(90.0f);
+	hudLoc.RotateX(-90.0f);
 	hudLoc.Translate(glm::vec3(-50, 280, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
@@ -1043,10 +1050,10 @@ void Game::drawTime()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	///speerate
-	hudLoc = glm::mat4();
+	hudLoc = Transform();
 	hudLoc.Scale(40.0f);
-	hudLoc.RotateY(90);
-	hudLoc.RotateZ(90);
+	hudLoc.RotateY(90.0f);
+	hudLoc.RotateX(-90.0f);
 	hudLoc.Translate(glm::vec3(0, 280, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
@@ -1055,10 +1062,10 @@ void Game::drawTime()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	///sec tens
-	hudLoc = glm::mat4();
+	hudLoc = Transform();
 	hudLoc.Scale(40.0f);
-	hudLoc.RotateY(90);
-	hudLoc.RotateZ(90);
+	hudLoc.RotateY(90.0f);
+	hudLoc.RotateX(-90.0f);
 	hudLoc.Translate(glm::vec3(50, 280, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
@@ -1067,10 +1074,10 @@ void Game::drawTime()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	///sec ones
-	hudLoc = glm::mat4();
+	hudLoc = Transform();
 	hudLoc.Scale(40.0f);
-	hudLoc.RotateY(90);
-	hudLoc.RotateZ(90);
+	hudLoc.RotateY(90.0f);
+	hudLoc.RotateX(-90.0f);
 	hudLoc.Translate(glm::vec3(120 , 280, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 

@@ -5,67 +5,86 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-struct transform
+struct Transform
 {
-	enum // Indexes
+	enum //Indexes
 	{
-		RightX = 0, UpX = 1, ForwardX = 2, TransX = 3,
-		RightY = 4, UpY = 5, ForwardY = 6, TransY = 7,
-		RightZ = 8, UpZ = 9, ForwardZ = 10, TransZ = 11,
-		W = 12, W1 = 13, W2 = 14, W3 = 15
+		RightX = 0, UpX = 4, ForwardX = 8, TransX = 12,
+		RightY = 1, UpY = 5, ForwardY = 9, TransY = 13,
+		RightZ = 2, UpZ = 6, ForwardZ = 10, TransZ = 14,
+		W0 = 3, W1 = 7, W2 = 11, W3 = 15
 	};
 
-	transform() {
-		matData = glm::mat4();
+	glm::mat3 getRotationMat() {
+		glm::mat3 temp;
+		temp[0][0] = matData[0][0];
+		temp[0][1] = matData[0][1];
+		temp[0][2] = matData[0][2];
+		temp[1][0] = matData[1][0];
+		temp[1][1] = matData[1][1];
+		temp[1][2] = matData[1][2];
+		temp[2][0] = matData[2][0];
+		temp[2][1] = matData[2][1];
+		temp[2][2] = matData[2][2];
+		return temp;
+	}
+
+	Transform() {
+		//matData = glm::mat4();
+		matData = Identity().matData;
 		setData(matData);
 	}
-	explicit transform(const glm::mat4& mat) {
+	explicit Transform(const glm::mat4& mat) {
 		matData = mat;
 		setData(matData);
 	}
-	explicit transform(const glm::quat& rotation) {
+	explicit Transform(const glm::quat& rotation) {
 		matData = glm::mat4_cast(rotation);
 		setData(matData);
 	}
-	explicit transform(const glm::mat3& rotation) {
-		transform();
+	explicit Transform(const glm::mat3& rotation) {
+		Transform();
 		matData *= glm::mat4(rotation);
 		setData(matData);
 	}
-	transform(const glm::quat& rotation, const glm::vec3& translation) {
+	Transform(const glm::quat& rotation, const glm::vec3& translation) {
+		Transform();
 		matData = glm::translate(matData, translation);
 		matData *= glm::mat4_cast(rotation);
 		setData(matData);
 	}
-	transform(const glm::mat3& rotation, const glm::vec3& translation) {
+	Transform(const glm::mat3& rotation, const glm::vec3& translation) {
+		Transform();
 		matData = glm::translate(matData, translation);
 		matData *= glm::mat4(rotation);
 		setData(matData);
 	}
-	transform(const glm::quat& rotation, const glm::vec3& translation, const glm::vec3& scale) {
+	Transform(const glm::quat& rotation, const glm::vec3& translation, const glm::vec3& scale) {
+		Transform();
 		matData = glm::translate(matData, translation);
 		matData *= glm::mat4_cast(rotation);
 		matData *= glm::scale(matData, scale);
 		setData(matData);
 	}
-	transform(const glm::mat3& rotation, const glm::vec3& translation, const glm::vec3& scale) {
+	Transform(const glm::mat3& rotation, const glm::vec3& translation, const glm::vec3& scale) {
+		Transform();
 		matData = glm::translate(matData, translation);
 		matData *= glm::mat4(rotation);
 		matData *= glm::scale(matData, scale);
 		setData(matData);
 	}
-	transform(const glm::vec3& right, const glm::vec3& up, const glm::vec3& forward, const glm::vec4& translation) {
-		transform();
+	Transform(const glm::vec3& right, const glm::vec3& up, const glm::vec3& forward, const glm::vec4& translation) {
+		Transform();
 		SetRight(right);
 		SetUp(up);
 		SetForward(forward);
 		SetTranslation(glm::vec3(translation.x, translation.y, translation.z));
 	}
 
-	transform(float f0, float f1, float f2, float f3,
-		float f4, float f5, float f6, float f7,
-		float f8, float f9, float f10, float f11,
-		float f12, float f13, float f14, float f15) {
+	Transform(float f0, float f4, float f8, float f12,
+		float f1, float f5, float f9, float f13,
+		float f2, float f6, float f10, float f14,
+		float f3, float f7, float f11, float f15) {
 
 		data[0] = f0;
 		data[1] = f1;
@@ -86,77 +105,82 @@ struct transform
 		setMat(data);
 	}
 
-	bool operator==(const transform& m) const {
+	bool operator==(const Transform& m) const {
 		if (matData == m.matData)
 			return true;
 		else
 			return false;
 	}
-	bool operator!=(const transform& m) const {
+	bool operator!=(const Transform& m) const {
 		if (matData != m.matData)
 			return true;
 		else
 			return false;
 	}
 
-	transform& operator*=(const transform& m) {
+	Transform& operator=(const Transform& m) {
+		matData = glm::mat4(m.matData);
+		setData(matData);
+		return *this;
+	}
+
+	Transform& operator*=(const Transform& m) {
 		matData *= m.matData;
 		setData(matData);
 		return *this;
 	}
-	transform& operator*=(float scalar) {
+	Transform& operator*=(float scalar) {
 		matData *= scalar;
 		setData(matData);
 		return *this;
 	}
-	transform& operator/=(float divisor) {
+	Transform& operator/=(float divisor) {
 		matData /= divisor;
 		setData(matData);
 		return *this;
 	}
-	transform& operator+=(const transform& m) {
+	Transform& operator+=(const Transform& m) {
 		matData += m.matData;
 		setData(matData);
 		return *this;
 	}
-	transform& operator-=(const transform& m) {
+	Transform& operator-=(const Transform& m) {
 		matData -= m.matData;
 		setData(matData);
 		return *this;
 	}
 
-	transform operator*(const transform& m) const {
+	Transform operator*(const Transform& m) const {
 		glm::mat4 tempM = matData * m.matData;
-		return transform(tempM);
+		return Transform(tempM);
 	}
-	transform operator+(const transform& m) const {
+	Transform operator+(const Transform& m) const {
 		glm::mat4 tempM = matData + m.matData;
-		return transform(tempM);
+		return Transform(tempM);
 	}
-	transform operator-(const transform& m) const {
+	Transform operator-(const Transform& m) const {
 		glm::mat4 tempM = matData - m.matData;
-		return transform(tempM);
+		return Transform(tempM);
 	}
-	//transform operator*(const transform& m) const;
-	transform operator*(float scalar) const {
+	Transform operator*(float scalar) const {
 		glm::mat4 tempM = matData * scalar;
-		return transform(tempM);
+		return Transform(tempM);
 	}
-	transform operator/(float divisor) const {
+	Transform operator/(float divisor) const {
 		glm::mat4 tempM = matData / divisor;
-		return transform(tempM);
+		return Transform(tempM);
 	}
-	transform operator-() const {
+	Transform operator-() const {
 		glm::mat4 tempM = matData * -1.0f;
-		return transform(tempM);
+		return Transform(tempM);
 	}
 
-	float operator[](unsigned index) const {
-		return data[index];
-	}
-	float& operator[](unsigned index) {
-		return data[index];
-	}
+	//float operator[](unsigned index) const {
+	//	return data[index];
+	//}
+	//float& operator[](unsigned index) {
+	//	return data[index];
+	//}
 
 	void Transpose() {
 		matData = glm::transpose(matData);
@@ -173,20 +197,20 @@ struct transform
 		matData = glm::inverse(matData);
 		setData(matData);
 	}
-	transform GetTranspose() const {
+	Transform GetTranspose() const {
 		glm::mat4 temp = glm::transpose(matData);
-		return(transform(temp));
+		return(Transform(temp));
 	}
-	transform GetInverse() const {
+	Transform GetInverse() const {
 		glm::mat4 temp = glm::inverse(matData);
-		return(transform(temp));
+		return(Transform(temp));
 	}
 	// Computes the inverse assuming standard homogeneous matrix format.
 	// [ R     T ]
 	// [ 0 0 0 1 ]
-	transform GetFastInverse() const {
+	Transform GetFastInverse() const {
 		glm::mat4 temp = glm::inverse(matData);
-		return(transform(temp));
+		return(Transform(temp));
 	}
 
 	void Scale(const glm::vec3& scale) {
@@ -199,18 +223,22 @@ struct transform
 	}
 
 	void Rotate(const glm::vec3& axis, float degrees) {
+		degrees *= (3.1416f / 180.0f);
 		matData = glm::rotate(matData, degrees, axis);
 		setData(matData);
 	}
 	void RotateX(float degrees){
+		degrees *= (3.1416f / 180.0f);
 		matData = glm::rotate(matData, degrees, glm::vec3(1, 0, 0));
 		setData(matData);
 	}
 	void RotateY(float degrees){
+		degrees *= (3.1416f / 180.0f);
 		matData = glm::rotate(matData, degrees, glm::vec3(0, 1, 0));
 		setData(matData);
 	}
 	void RotateZ(float degrees) {
+		degrees *= (3.1416f / 180.0f);
 		matData = glm::rotate(matData, degrees, glm::vec3(0, 0, 1));
 		setData(matData);
 	}
@@ -246,7 +274,6 @@ struct transform
 		data[TransZ] = v.z;
 		setMat(data);
 	}
-
 	glm::vec3 GetRight() const {
 		return glm::vec3(data[RightX], data[RightY], data[RightZ]);
 	}
@@ -260,61 +287,68 @@ struct transform
 		return glm::vec3(data[TransX], data[TransY], data[TransZ]);
 	}
 
-	static const transform Identity;
-
-	static transform PerspectiveProjection(float fovyDegrees, float aspect, float zNear, float zFar) {
-		return transform(glm::perspective(fovyDegrees, aspect, zNear, zFar));
-	}
-	static transform InversePerspectiveProjection(float fovyDegrees, float aspect, float zNear, float zFar) {
-		return transform(glm::inverse(glm::perspective(fovyDegrees, aspect, zNear, zFar)));
+	static Transform Identity() {
+		return Transform(1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1);
 	}
 
-	static transform OrthographicProjection(float left, float right, float top, float bottom, float zNear, float zFar) {
-		return transform(glm::ortho(left, right, top, bottom, zNear, zFar));
+	static Transform PerspectiveProjection(float fovyDegrees, float aspect, float zNear, float zFar) {
+		fovyDegrees *= (3.1416f / 180.0f);
+		return Transform(glm::perspective(fovyDegrees, aspect, zNear, zFar));
 	}
-	static transform InverseOrthographicProjection(float left, float right, float top, float bottom, float zNear, float zFar) {
-		return transform(glm::inverse(glm::ortho(left, right, top, bottom, zNear, zFar)));
+	static Transform InversePerspectiveProjection(float fovyDegrees, float aspect, float zNear, float zFar) {
+		fovyDegrees *= (3.1416f / 180.0f);
+		return Transform(glm::inverse(glm::perspective(fovyDegrees, aspect, zNear, zFar)));
 	}
 
-	static transform LookAt(const glm::vec3& position, const glm::vec3& target, const glm::vec3& upVector) {
-		return transform(glm::lookAt(position, target, upVector));
+	static Transform OrthographicProjection(float left, float right, float top, float bottom, float zNear, float zFar) {
+		return Transform(glm::ortho(left, right, bottom, top, zNear, zFar));
+	}
+	static Transform InverseOrthographicProjection(float left, float right, float top, float bottom, float zNear, float zFar) {
+		return Transform(glm::inverse(glm::ortho(left, right, bottom, top, zNear, zFar)));
+	}
+
+	static Transform LookAt(const glm::vec3& position, const glm::vec3& target, const glm::vec3& upVector) {
+		return Transform(glm::lookAt(position, target, upVector));
 	}
 
 	void setData(glm::mat4 mat) {
 		data[0] = mat[0][0];
-		data[1] = mat[1][0];
-		data[2] = mat[2][0];
-		data[3] = mat[3][0];
-		data[4] = mat[0][1];
+		data[1] = mat[0][1];
+		data[2] = mat[0][2];
+		data[3] = mat[0][3];
+		data[4] = mat[1][0];
 		data[5] = mat[1][1];
-		data[6] = mat[2][1];
-		data[7] = mat[3][1];
-		data[8] = mat[0][2];
-		data[9] = mat[1][2];
+		data[6] = mat[1][2];
+		data[7] = mat[1][3];
+		data[8] = mat[2][0];
+		data[9] = mat[2][1];
 		data[10] = mat[2][2];
-		data[11] = mat[2][2];
-		data[12] = mat[0][3];
-		data[13] = mat[1][3];
-		data[14] = mat[2][3];
+		data[11] = mat[2][3];
+		data[12] = mat[3][0];
+		data[13] = mat[3][1];
+		data[14] = mat[3][2];
 		data[15] = mat[3][3];
 	}
 
 	void setMat(float dat[16]) {
 		matData[0][0] = dat[0];
-		matData[1][0] = dat[1];
-		matData[2][0] = dat[2];
-		matData[3][0] = dat[3];
-		matData[0][1] = dat[4];
+		matData[0][1] = dat[1];
+		matData[0][2] = dat[2];
+		matData[0][3] = dat[3];
+		matData[1][0] = dat[4];
 		matData[1][1] = dat[5];
-		matData[2][1] = dat[6];
-		matData[3][1] = dat[7];
-		matData[0][2] = dat[8];
-		matData[1][2] = dat[9];
+		matData[1][2] = dat[6];
+		matData[1][3] = dat[7];
+		matData[2][0] = dat[8];
+		matData[2][1] = dat[9];
 		matData[2][2] = dat[10];
-		matData[2][2] = dat[11];
-		matData[0][3] = dat[12];
-		matData[1][3] = dat[13];
-		matData[2][3] = dat[14];
+		matData[2][3] = dat[11];
+		matData[3][0] = dat[12];
+		matData[3][1] = dat[13];
+		matData[3][2] = dat[14];
 		matData[3][3] = dat[15];
 	}
 

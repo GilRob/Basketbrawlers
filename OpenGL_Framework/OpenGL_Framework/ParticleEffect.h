@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <GLM\gtx\transform.hpp>
 #include "Texture.h"
+#include "Transform.h"
 
 struct ParticleList
 {
@@ -27,7 +28,7 @@ public:
 	void Update(float elapsed);
 	void Render();
 
-	glm::mat4 Transform;
+	Transform transform;
 
 	glm::vec2 RangeX = glm::vec2(-10.0f, 10.0f);
 	glm::vec2 RangeY = glm::vec2(0.0f, 10.0f);

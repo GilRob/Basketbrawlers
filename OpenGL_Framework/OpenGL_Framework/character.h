@@ -11,10 +11,11 @@
 #include "ShaderProgram.h"
 #include "Texture.h"
 #include <vector>
-//#include "MiniMath/Core.h"
+#include "MiniMath/Core.h"
 //#include "camera.h"
 #include "hitbox.h"
 #include <iostream>
+#include "Transform.h"
 
 
 #define ACTION_IDLE				0
@@ -62,7 +63,7 @@ public:
 	void setPosition(glm::vec3 pos);
 	std::vector<Hitbox*> getHitboxes();
 	std::vector<Hitbox*> getHurtboxes();
-	glm::mat4 atkInputHandler(std::vector<bool> inputs);
+	Transform atkInputHandler(std::vector<bool> inputs);
 
 	bool facingRight;
 	bool blocking;
@@ -75,28 +76,28 @@ public:
 	bool interuptable;
 
 	//Actions
-	glm::mat4 idle();
-	glm::mat4 walk(bool held);
-	glm::mat4 run(bool held);
-	glm::mat4 initialDash(bool left, bool right);
-	glm::mat4 prejump();
-	glm::mat4 jump();
-	glm::mat4 jump2();
-	glm::mat4 fall();
+	Transform idle();
+	Transform walk(bool held);
+	Transform run(bool held);
+	Transform initialDash(bool left, bool right);
+	Transform prejump();
+	Transform jump();
+	Transform jump2();
+	Transform fall();
 	void hit(Hitbox* hitBy);
-	glm::mat4 jab();
-	glm::mat4 sAttack();
-	glm::mat4 dAttack();
-	glm::mat4 uAttack();
-	glm::mat4 nSpecial(bool charging);
-	glm::mat4 sSpecial();
-	glm::mat4 dSpecial();
-	glm::mat4 uSpecial();
-	glm::mat4 nAir();
-	glm::mat4 sAir();
-	glm::mat4 dAir();
-	glm::mat4 uAir();
-	glm::mat4 block(bool held);
+	Transform jab();
+	Transform sAttack();
+	Transform dAttack();
+	Transform uAttack();
+	Transform nSpecial(bool charging);
+	Transform sSpecial();
+	Transform dSpecial();
+	Transform uSpecial();
+	Transform nAir();
+	Transform sAir();
+	Transform dAir();
+	Transform uAir();
+	Transform block(bool held);
 
 	//----------------------------------------------------------
 	void comboAdd() {
@@ -135,7 +136,7 @@ public:
 		return comboMeter;
 	}
 
-	glm::mat4 transform;
+	Transform transform;
 	Mesh body;
 	std::vector<Mesh*> idleFrames;
 	std::vector<Mesh*> walkFrames;
