@@ -262,6 +262,10 @@ void Game::initializeGame()
 	score1 = 0;
 	score2 = 0;
 
+
+	playerOne->setPosition(glm::vec3(-5, 0, 0));
+	playerTwo->setPosition(glm::vec3(5, 0, 0));
+
 	updateTimer = new Timer();
 }
 
@@ -652,35 +656,15 @@ void Game::draw()
 
 	AniShader.UnBind();*/
 
-	if (playerOne->action < 2 || (playerOne->action >= ACTION_JAB && playerOne->action <= ACTION_UP_ATTACK))
-	{
 		AniShader.Bind();
 		AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 		AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
 		playerOne->draw(AniShader, 1);
-	}
-	else {
-		GBufferPass.Bind();
-		GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
-		GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-		GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
-		playerOne->draw(GBufferPass, 0);
-	}
 
-	if (playerTwo->action < 2 || (playerTwo->action >= ACTION_JAB && playerTwo->action <= ACTION_UP_ATTACK))
-	{
 		AniShader.Bind();
 		AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 		AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
 		playerTwo->draw(AniShader, 1);
-	}
-	else {
-		GBufferPass.Bind();
-		GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
-		GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-		GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
-		playerTwo->draw(GBufferPass, 0);
-	}
 
 
 	drawScore();
@@ -1162,8 +1146,16 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 {
 	switch(key)
 	{
-	case 'w': //w
-		//inputs[0] = false;
+	case 'R': //w
+	case 'r': //w
+		score1 = 0;
+		score2 = 0;
+		playerOne->respawn();
+		playerTwo->respawn();
+		playerOne->setPosition(glm::vec3(-5, 0, 0));
+		playerTwo->setPosition(glm::vec3(5, 0, 0));
+		//updateTimer = new Timer();
+		TotalGameTime = 0.0f;
 		break;
 	case 'd': //d
 		//inputs[1] = false;

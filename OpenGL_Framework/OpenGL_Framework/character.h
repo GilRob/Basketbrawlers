@@ -26,7 +26,7 @@
 #define ACTION_JUMP2			6
 #define ACTION_FALL				7
 #define ACTION_HIT				8
-#define ACTION_PLACEHOLDER		9
+#define ACTION_PLACEHOLDER		23
 
 #define ACTION_JAB				10
 #define ACTION_SIDE_ATTACK		11
@@ -37,13 +37,13 @@
 #define ACTION_DOWN_SPECIAL		16
 #define ACTION_UP_SPECIAL		17
 
-#define ACTION_NEUTRAL_AERIAL	20
-#define ACTION_SIDE_AERIAL		21
-#define ACTION_DOWN_AERIAL		22
-#define ACTION_UP_AERIAL		23
+#define ACTION_NEUTRAL_AERIAL	18
+#define ACTION_SIDE_AERIAL		19
+#define ACTION_DOWN_AERIAL		20
+#define ACTION_UP_AERIAL		21
 
-#define ACTION_BLOCK			30
-#define ACTION_DASH				31
+#define ACTION_BLOCK			9
+#define ACTION_DASH				22
 
 
 //Will be the parent class for all other charcaters
@@ -137,12 +137,13 @@ public:
 
 	Transform transform;
 	Mesh body;
-	std::vector<Mesh*> idleFrames;
-	std::vector<Mesh*> walkFrames;
-	std::vector<Mesh*> jabFrames;
-	std::vector<Mesh*> sAtkFrames;
-	std::vector<Mesh*> uAtkFrames;
-	std::vector<Mesh*> dAtkFrames;
+	std::vector<Mesh*> aniFrames[22];
+	//std::vector<Mesh*> idleFrames;
+	//std::vector<Mesh*> walkFrames;
+	//std::vector<Mesh*> jabFrames;
+	//std::vector<Mesh*> sAtkFrames;
+	//std::vector<Mesh*> uAtkFrames;
+	//std::vector<Mesh*> dAtkFrames;
 	Texture texture;
 	float aniTimer;
 	unsigned int index;
