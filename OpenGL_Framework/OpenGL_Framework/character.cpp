@@ -372,13 +372,13 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	///max run speed
 	runSpeed = 0.33f;
 	///force applied for running
-	runAccel = 0.52f;
+	runAccel = 0.75f;//0.52f;
 	///force appplied for directional movement in air
-	airAccel = 0.18f;//15
+	airAccel = 0.18f;
 	///upwards force for jump
-	jumpForce = 0.44f;
+	jumpForce = 0.65f;//0.44f;
 	///amount of frames jump last for
-	jumpFrames = 12;
+	jumpFrames = 8;//12;
 	///Dash length (in frames)
 	dashLength = 8;
 	///number of frames before character leaves ground after jump input
@@ -386,7 +386,7 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	///total number of air/double jumps
 	airJumps = jumpsLeft = 1;
 	///amount of frames character is stunned after being launched
-	hitstun = 10;
+	hitstun = 18;//10;
 	///amount of frames character is launched for when hit
 	hitframes = 12;
 
@@ -582,7 +582,10 @@ glm::vec3 Character::getPosition()
 
 void Character::draw(ShaderProgram shader, float dt) {
 	if (action < ACTION_DASH) {
-		aniTimer += dt / 3.1f;
+		if (action == ACTION_IDLE)
+			aniTimer += dt / 5.0f;
+		else
+			aniTimer += dt / 3.1f;
 		while (aniTimer > 1.0f)
 		{
 			aniTimer -= 1.0f;
@@ -1174,7 +1177,8 @@ Transform Character::sAttack()
 		///Will be changed in the future
 
 		if (currentFrame == 7) {
-			float _kb = 6.0f + (9.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			float _kb = 10.0f + (9.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			//float _kb = 6.0f + (9.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 0.6f, 0.1f), 2.8f, _kb, 45, 7, 0, glm::vec3(0,0,0));
 			newAtk->spline = true;
 			newAtk->facingRight = facingRight;
@@ -1224,7 +1228,8 @@ Transform Character::dAttack()
 		///Will be changed in the future
 
 		if (currentFrame == 6) {
-			float _kb = 7.0f + (7.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			float _kb = 13.0f + (9.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+	//old		//float _kb = 7.0f + (7.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 0.7f, 0.1f), 2.8f, _kb, 80, 7, 0, glm::vec3((-0.5f + (int)facingRight)*1.0f, 0.0f, 0.0f));
 			newAtk->facingRight = facingRight;
 			activeHitboxes.push_back(newAtk);
@@ -1258,7 +1263,8 @@ Transform Character::uAttack()
 		///Will be changed in the future
 
 		if (currentFrame == 15) {
-			float _kb = 7.0f + (7.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			float _kb = 13.0f + (7.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			//float _kb = 7.0f + (7.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*2.3f, 1.25f, 0.05f), 3.2f, _kb, 89, 8, 0, glm::vec3((-0.5f + (int)facingRight)*-0.8f, 2.0f, 0.0f));
 			newAtk->spline = true;
 			newAtk->facingRight = facingRight;
