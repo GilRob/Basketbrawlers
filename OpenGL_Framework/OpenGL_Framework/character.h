@@ -122,8 +122,8 @@ public:
 	void resetTimer() { comboTimer = 0; }
 
 	void respawn() {
-		comboTimer = 0;
-		comboMeter = 0;
+		comboTimer = 50;
+		comboMeter = 50;
 		position = glm::vec3(0, 15, 0);
 		velocity = glm::vec3(0, 0, 0);
 		interuptable = true;

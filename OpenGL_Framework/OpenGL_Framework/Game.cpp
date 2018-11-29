@@ -28,13 +28,21 @@ Game::~Game()
 	boxTexture.Unload();
 	Court.Unload();
 	CourtTexture.Unload();
-	Background.Unload();
-	BackgroundTexture.Unload();
 	HudObj.Unload();
 	P1Hud.Unload();
 	P1Bar.Unload();
 	P2Hud.Unload();
 	P2Bar.Unload();
+	Chairs.Unload();
+	ChairTexture.Unload();
+	Nets.Unload();
+	NetTexture.Unload();
+	lightJumbo.Unload();
+	lightJumboTexture.Unload();
+	adRot.Unload();
+	adTexture.Unload();
+	Bottle.Unload();
+	bottleTexture.Unload();
 }
 
 void Game::initializeGame()
@@ -46,6 +54,119 @@ void Game::initializeGame()
 	//glutFullScreen();
 	InitFullScreenQuad();
 
+	//Load All Textures
+	if (!bottleTexture.Load("./Assets/Textures/bottleTex.png"))
+	{
+		std::cout << "bottle Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+	if (!adTexture.Load("./Assets/Textures/words.png"))
+	{
+		std::cout << "lightJumbo Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+	if (!lightJumboTexture.Load("./Assets/Textures/lightJumboTex.png"))
+	{
+		std::cout << "lightJumbo Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+	if (!NetTexture.Load("./Assets/Textures/net.png"))
+	{
+		std::cout << "net Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+	if (!ChairTexture.Load("./Assets/Textures/chair.png"))
+	{
+		std::cout << "Chair Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+	if (!CourtTexture.Load("./Assets/Textures/court.png"))
+	{
+		std::cout << "Court Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+
+//=================================================================//
+	//Load models
+
+	std::vector<std::string> chairs;
+	chairs.push_back("./Assets/Models/chairs.obj");
+	Chairs.LoadFromFile(chairs);
+
+	std::vector<std::string> nets;
+	nets.push_back("./Assets/Models/nets.obj");
+	Nets.LoadFromFile(nets);
+
+	std::vector<std::string> lJ;
+	lJ.push_back("./Assets/Models/lightsJumbo.obj");
+	lightJumbo.LoadFromFile(lJ);
+
+	std::vector<std::string> ad;
+	ad.push_back("./Assets/Models/ad.obj");
+	adRot.LoadFromFile(ad);
+
+	std::vector<std::string> bottles;
+	bottles.push_back("./Assets/Models/bottles.obj");
+	Bottle.LoadFromFile(bottles);
+
+	std::vector<std::string> court;
+	court.push_back("./Assets/Models/court.obj");
+	Court.LoadFromFile(court);
+
+	std::vector<std::string> hitBox;
+	hitBox.push_back("./Assets/Models/Hitbox.obj");
+	boxMesh.LoadFromFile(hitBox);
+
+//================================================================//
+	//Load Hud Obj and Texture
+
+	std::vector<std::string> hud1;
+	hud1.push_back("./Assets/Models/UI_Object.obj");
+	HudObj.LoadFromFile(hud1);
+
+	if (!P1Hud.Load("./Assets/Textures/PlayerOneHud.png"))
+	{
+		std::cout << "BKG Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+	if (!P1Bar.Load("./Assets/Textures/PlayerOneBar.png"))
+	{
+		std::cout << "BKG Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+	if (!P2Hud.Load("./Assets/Textures/PlayerTwoHud.png"))
+	{
+		std::cout << "BKG Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+	if (!P2Bar.Load("./Assets/Textures/PlayerTwoBar.png"))
+	{
+		std::cout << "BKG Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+
+	if (!(boxTexture.Load("./Assets/Textures/redclear.png")))
+	{
+		std::cout << "Character Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+
+
+//===================================================================//
+	//Init Controls and Players
+
+
 	inputs2 = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A
 
 	playerOne = new Character("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png");
@@ -54,6 +175,9 @@ void Game::initializeGame()
 
 	playerTwo = new Character("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png");
 
+
+//====================================================================//
+	//Load Shaders
 	if (!HudShader.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/HudShader.frag"))
 	{
 		std::cout << "GBP Shaders failed to initialize.\n";
@@ -96,13 +220,6 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	/*if (!GBufferPass.Load("./Assets/Shaders/StaticGeometry.vert", "./Assets/Shaders/GBufferPass.frag"))
-	{
-		std::cout << "GBP Shaders failed to initialize.\n";
-		system("pause");
-		exit(0);
-	}*/
-
 	if (!DeferredLighting.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/DeferredLighting.frag"))
 	{
 		std::cout << "DL Shaders failed to initialize.\n";
@@ -123,142 +240,16 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}
+
+//================================================================//
+	//Particle Program
+
 	if (!ParticleProgram.Load(
 		"./Assets/Shaders/Particles/BillBoard.vert",
 		"./Assets/Shaders/Particles/BillBoard.frag",
 		"./Assets/Shaders/Particles/BillBoard.geom"))
 	{
 		std::cout << "PP failed to initialize.\n";
-		system("pause");
-		exit(0);
-	}
-
-	std::vector<std::string> court;
-	court.push_back("./Assets/Models/court.obj");
-	Court.LoadFromFile(court);
-
-	if (!CourtTexture.Load("./Assets/Textures/court.png"))
-	{
-		std::cout << "Court Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-
-	std::vector<std::string> bkg;
-	bkg.push_back("./Assets/Models/Background.obj");
-	Background.LoadFromFile(bkg);
-
-	std::vector<std::string> hud1;
-	hud1.push_back("./Assets/Models/UI_Object.obj");
-	HudObj.LoadFromFile(hud1);
-
-	if (!BackgroundTexture.Load("./Assets/Textures/BackgroundTexture.jpg"))
-	{
-		std::cout << "BKG Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-	BGTransform.SetTranslation(glm::vec3(0, 3, -40));
-
-	if (!P1Hud.Load("./Assets/Textures/PlayerOneHud.png"))
-	{
-		std::cout << "BKG Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-	if (!P1Bar.Load("./Assets/Textures/PlayerOneBar.png"))
-	{
-		std::cout << "BKG Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-	if (!P2Hud.Load("./Assets/Textures/PlayerTwoHud.png"))
-	{
-		std::cout << "BKG Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-	if (!P2Bar.Load("./Assets/Textures/PlayerTwoBar.png"))
-	{
-		std::cout << "BKG Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-
-
-	std::vector<std::string> hitBox;
-	hitBox.push_back("./Assets/Models/Hitbox.obj");
-	boxMesh.LoadFromFile(hitBox);
-
-	if (!(boxTexture.Load("./Assets/Textures/redclear.png")))
-	{
-		std::cout << "Character Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-
-	loadTime();
-
-	GBuffer.InitDepthTexture(WINDOW_WIDTH, WINDOW_HEIGHT);
-	//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
-	//These parameters can be changed to whatever you want
-	GBuffer.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE); //Flat color
-	GBuffer.InitColorTexture(1, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB16, GL_NEAREST, GL_CLAMP_TO_EDGE); //Normals (xyz)
-	//Buffer explained at Week 10 time: 5:30 - 7:45
-	GBuffer.InitColorTexture(2, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE); //View Space Positions (xyz)
-	if (!GBuffer.CheckFBO())
-	{
-		std::cout << "GB FBO failed to initialize.\n";
-		system("pause");
-		exit(0);
-	}
-
-	DeferredComposite.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
-	if (!DeferredComposite.CheckFBO())
-	{
-		std::cout << "DC FBO failed to initialize.\n";
-		system("pause");
-		exit(0);
-	}
-
-	ShadowMap.InitDepthTexture(SHADOW_RESOLUTION, SHADOW_RESOLUTION);
-	if (!ShadowMap.CheckFBO())
-	{
-		std::cout << "SM FBO failed to initialize.\n";
-		system("pause");
-		exit(0);
-	}
-
-	//THis is a single channel texture explained at Week 11 time: ~3:30
-	/*EdgeMap.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_R8, GL_NEAREST, GL_CLAMP_TO_EDGE);
-	if (!EdgeMap.CheckFBO())
-	{
-		std::cout << "EM FBO failed to initialize.\n";
-		system("pause");
-		exit(0);
-	}*/
-
-	WorkBuffer1.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
-	if (!WorkBuffer1.CheckFBO())
-	{
-		std::cout << "WB1 FBO failed to initialize.\n";
-		system("pause");
-		exit(0);
-	}
-
-	WorkBuffer2.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
-	if (!WorkBuffer2.CheckFBO())
-	{
-		std::cout << "WB2 FBO failed to initialize.\n";
-		system("pause");
-		exit(0);
-	}
-	//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
-	//These parameters can be changed to whatever you want
-	HudMap.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
-	if (!HudMap.CheckFBO())
-	{
-		std::cout << "HudMap FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
@@ -333,88 +324,66 @@ void Game::initializeGame()
 	ConfettiEffectRedLeft.Mass = 2.0f;
 	ConfettiEffectRedLeft.Gravity = 0.2f;
 
-	std::vector<std::string> chairs;
-	chairs.push_back("./Assets/Models/chairs.obj");
-	Chairs.LoadFromFile(chairs);
-	/*{
-		std::cout << "Sword Model failed to load.\n";
+//=======================================================================//
+	//Init Scene & Frame Buffers
+
+	GBuffer.InitDepthTexture(WINDOW_WIDTH, WINDOW_HEIGHT);
+	//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
+	//These parameters can be changed to whatever you want
+	GBuffer.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE); //Flat color
+	GBuffer.InitColorTexture(1, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB16, GL_NEAREST, GL_CLAMP_TO_EDGE); //Normals (xyz)
+	//Buffer explained at Week 10 time: 5:30 - 7:45
+	GBuffer.InitColorTexture(2, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE); //View Space Positions (xyz)
+	if (!GBuffer.CheckFBO())
+	{
+		std::cout << "GB FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
-	}*/
+	}
 
-		if (!ChairTexture.Load("./Assets/Textures/chair.png"))
-		{
-			std::cout << "Chair Texture failed to load.\n";
-			system("pause");
-			exit(0);
-		}
-
-
-	std::vector<std::string> nets;
-	nets.push_back("./Assets/Models/nets.obj");
-	Nets.LoadFromFile(nets);
-	/* {
-		std::cout << "Sword Model failed to load.\n";
+	DeferredComposite.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	if (!DeferredComposite.CheckFBO())
+	{
+		std::cout << "DC FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
-	} */
+	}
 
-		if (!NetTexture.Load("./Assets/Textures/net.png"))
-		{
-			std::cout << "net Texture failed to load.\n";
-			system("pause");
-			exit(0);
-		}
-
-	std::vector<std::string> lJ;
-	lJ.push_back("./Assets/Models/lightsJumbo.obj");
-	lightJumbo.LoadFromFile(lJ);
-	/* {
-		std::cout << "Sword Model failed to load.\n";
+	ShadowMap.InitDepthTexture(SHADOW_RESOLUTION, SHADOW_RESOLUTION);
+	if (!ShadowMap.CheckFBO())
+	{
+		std::cout << "SM FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
-	} */
-		if (!lightJumboTexture.Load("./Assets/Textures/lightJumboTex.png"))
-		{
-			std::cout << "lightJumbo Texture failed to load.\n";
-			system("pause");
-			exit(0);
-		}
+	}
 
-	std::vector<std::string> ad;
-	ad.push_back("./Assets/Models/ad.obj");
-	adRot.LoadFromFile(ad);
-	/* {
-		std::cout << "Sword Model failed to load.\n";
+	WorkBuffer1.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	if (!WorkBuffer1.CheckFBO())
+	{
+		std::cout << "WB1 FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
-	} */
+	}
 
-		if (!adTexture.Load("./Assets/Textures/words.png"))
-		{
-			std::cout << "lightJumbo Texture failed to load.\n";
-			system("pause");
-			exit(0);
-		}
-
-	std::vector<std::string> bottles;
-	bottles.push_back("./Assets/Models/bottles.obj");
-	Bottle.LoadFromFile(bottles);
-	/* {
-		std::cout << "Sword Model failed to load.\n";
+	WorkBuffer2.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	if (!WorkBuffer2.CheckFBO())
+	{
+		std::cout << "WB2 FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
-	} */
+	}
+	//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
+	//These parameters can be changed to whatever you want
+	HudMap.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	if (!HudMap.CheckFBO())
+	{
+		std::cout << "HudMap FBO failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
 
-		if (!bottleTexture.Load("./Assets/Textures/bottleTex.png"))
-		{
-			std::cout << "bottle Texture failed to load.\n";
-			system("pause");
-			exit(0);
-		}
-
-
-
+//================================================================//
+	//Camera Init
 
 	/*CameraTransform.Translate(vec3(0.0f, 7.5f, 20.0f));
 	CameraTransform.RotateX(-15.0f);*/
@@ -424,19 +393,26 @@ void Game::initializeGame()
 	hudProjection = Transform::OrthographicProjection((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f, (float)WINDOW_HEIGHT * -0.5f, -10.0f, 100.0f);
 
 
-	Hitbox *hurt1 = new Hitbox(glm::vec3(25.0f, 12.0f, 0.0f), 6.0f);
-	Netbox.push_back(hurt1);
-	Hitbox *hurt2 = new Hitbox(glm::vec3(-25.0f, 12.0f, 0.0f), 6.0f);
-	Netbox.push_back(hurt2);
+//=================================================================//
+	//Init Hitboxes for Net
 
+	Hitbox *hurt1 = new Hitbox(glm::vec3(25.5f, 12.5f, 0.0f), 2.0f);
+	Netbox.push_back(hurt1);
+	Hitbox *hurt2 = new Hitbox(glm::vec3(-25.5f, 12.5f, 0.0f), 2.0f);
+	Netbox.push_back(hurt2);
 	score1 = 0;
 	score2 = 0;
+	p1Score = false;
+	p2Score = false;
 
 
+	loadTime();//load time gui textures and obj
 	playerOne->setPosition(glm::vec3(-5, 0, 0));
 	playerTwo->setPosition(glm::vec3(5, 0, 0));
 
+	//start timer
 	updateTimer = new Timer();
+
 }
 
 void Game::update()
@@ -801,21 +777,30 @@ void Game::draw()
 	glBindVertexArray(Chairs.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, Chairs.GetNumVertices());
 
-	NetTexture.Bind();
-	glBindVertexArray(Nets.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, Nets.GetNumVertices());
-
-	lightJumboTexture.Bind();
-	glBindVertexArray(lightJumbo.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, lightJumbo.GetNumVertices());
 
 	adTexture.Bind();
 	glBindVertexArray(adRot.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, adRot.GetNumVertices());
 
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_CULL_FACE);
+
 	bottleTexture.Bind();
 	glBindVertexArray(Bottle.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, Bottle.GetNumVertices());
+
+	lightJumboTexture.Bind();
+	glBindVertexArray(lightJumbo.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, lightJumbo.GetNumVertices());
+
+	NetTexture.Bind();
+	glBindVertexArray(Nets.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, Nets.GetNumVertices());
+
+	glDisable(GL_BLEND);
+	glEnable(GL_CULL_FACE);
 
 	glActiveTexture(GL_TEXTURE6);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
@@ -1332,7 +1317,7 @@ void Game::drawScore() {
 	hudLoc.Scale(2.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(-1, 11, -14));
+	hudLoc.Translate(glm::vec3(-1, 15, -17));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[score1 % 10]->Bind();
 	glBindVertexArray(HudObj.VAO);
@@ -1342,7 +1327,7 @@ void Game::drawScore() {
 	hudLoc.Scale(2.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(2, 11, -14.1f));
+	hudLoc.Translate(glm::vec3(2, 15, -17.1f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[10]->Bind();
 	glBindVertexArray(HudObj.VAO);
@@ -1352,7 +1337,7 @@ void Game::drawScore() {
 	hudLoc.Scale(2.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(5, 11, -14));
+	hudLoc.Translate(glm::vec3(5, 15, -17));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[score2 % 10]->Bind();
 	glBindVertexArray(HudObj.VAO);

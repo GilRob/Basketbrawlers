@@ -75,9 +75,6 @@ public:
 
 	Mesh Court;
 	Texture CourtTexture;
-	Mesh Background;
-	Texture BackgroundTexture;
-	Transform BGTransform;
 	Mesh HudObj;
 	Texture P1Hud;
 	Texture P1Bar;
