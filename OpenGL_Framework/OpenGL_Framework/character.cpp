@@ -1,6 +1,6 @@
 #include "character.h"
 
-
+//new push
 #define BASE_ANI_TOGGLE false//non-offensive animations
 #define G_ATK_ANI_TOGGLE false//ground attacks
 #define A_ATK_ANI_TOGGLE false//aerials
