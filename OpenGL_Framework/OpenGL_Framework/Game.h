@@ -60,6 +60,8 @@ public:
 	ShaderProgram BloomComposite;
 	ShaderProgram DeferredLighting;
 	ShaderProgram AniShader;
+	ShaderProgram PointLight;
+	ShaderProgram ParticleProgram;
 
 	Mesh boxMesh;
 	Texture boxTexture;
@@ -70,20 +72,7 @@ public:
 	std::vector<bool> inputs;
 
 	/// ENTITIES ///
-	//Mesh Monkey;
-	//Texture GrassTexture;
-	/*Mesh Sword;
-	Mesh Stone;
-	Mesh House;
-	Mesh Ground;
-	Mesh Sphere;
-	Texture SwordTexture;
-	Texture StoneTexture;
-	Texture HouseTexture;
-	Texture GroundTexture;
-	Texture StepTexture;*/
-	//Texture NormalSword;
-	//Texture NormalStone;
+
 	Mesh Court;
 	Texture CourtTexture;
 	Mesh Background;
@@ -94,8 +83,23 @@ public:
 	Texture P1Bar;
 	Texture P2Hud;
 	Texture P2Bar;
+	//Particle Effects
+	ParticleEffect ConfettiEffectBlueRight;
+	ParticleEffect ConfettiEffectBlueLeft;
+	ParticleEffect ConfettiEffectRedRight;
+	ParticleEffect ConfettiEffectRedLeft;
 	std::vector<Texture*> time;
 	std::vector<Hitbox*>Netbox;//2
+	Mesh Chairs;
+	Texture ChairTexture;
+	Mesh Nets;
+	Texture NetTexture;
+	Mesh lightJumbo;
+	Texture lightJumboTexture;
+	Mesh adRot;
+	Texture adTexture;
+	Mesh Bottle;
+	Texture bottleTexture;
 
 	/// FRAMEBUFFERS ///
 	FrameBuffer GBuffer; //Utility buffer to hold positions and normals
@@ -136,6 +140,8 @@ public:
 	int score1;
 	int score2;
 
+	bool p1Score = false;
+	bool p2Score = false;
 
 private:
 

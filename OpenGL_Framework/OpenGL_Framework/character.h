@@ -138,12 +138,6 @@ public:
 	Transform transform;
 	Mesh body;
 	std::vector<Mesh*> aniFrames[22];
-	//std::vector<Mesh*> idleFrames;
-	//std::vector<Mesh*> walkFrames;
-	//std::vector<Mesh*> jabFrames;
-	//std::vector<Mesh*> sAtkFrames;
-	//std::vector<Mesh*> uAtkFrames;
-	//std::vector<Mesh*> dAtkFrames;
 	Texture texture;
 	float aniTimer;
 	unsigned int index;
@@ -196,5 +190,4 @@ protected:
 	Texture shieldTexture;
 
 private:
-
 };

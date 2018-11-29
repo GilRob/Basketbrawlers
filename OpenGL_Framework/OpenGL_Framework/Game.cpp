@@ -22,6 +22,8 @@ Game::~Game()
 	DeferredLighting.UnLoad();
 	AniShader.UnLoad();
 	HudShader.UnLoad();
+	PointLight.UnLoad();
+	ParticleProgram.UnLoad();
 	boxMesh.Unload();
 	boxTexture.Unload();
 	Court.Unload();
@@ -115,11 +117,27 @@ void Game::initializeGame()
 		exit(0);
 	}
 
+	if (!PointLight.Load("./Assets/Shaders/PassThroughLight.vert", "./Assets/Shaders/PointLight.frag"))
+	{
+		std::cout << "SL Shaders failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	if (!ParticleProgram.Load(
+		"./Assets/Shaders/Particles/BillBoard.vert",
+		"./Assets/Shaders/Particles/BillBoard.frag",
+		"./Assets/Shaders/Particles/BillBoard.geom"))
+	{
+		std::cout << "PP failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
+
 	std::vector<std::string> court;
-	court.push_back("./Assets/Models/KnightCourt.obj");
+	court.push_back("./Assets/Models/court.obj");
 	Court.LoadFromFile(court);
 
-	if (!CourtTexture.Load("./Assets/Textures/GameCastleTexture.png"))
+	if (!CourtTexture.Load("./Assets/Textures/court.png"))
 	{
 		std::cout << "Court Texture failed to load.\n";
 		system("pause");
@@ -245,6 +263,158 @@ void Game::initializeGame()
 		exit(0);
 	}
 
+	if (!ConfettiEffectBlueRight.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)100, (unsigned int)100))
+	{
+		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	//Missing .Set which is what the video uses***
+	ConfettiEffectBlueRight.LerpAlpha = glm::vec2(0.4f, 0.8f);
+	ConfettiEffectBlueRight.LerpSize = glm::vec2(1.0f, 2.0f);
+	ConfettiEffectBlueRight.RangeLifetime = glm::vec2(4.0f, 4.0f);
+	ConfettiEffectBlueRight.RangeVelocity = glm::vec2(-5.0f, 5.0f);
+	ConfettiEffectBlueRight.RangeX = glm::vec2(7.5f, 7.5f);
+	ConfettiEffectBlueRight.RangeY = glm::vec2(20.0f, 20.0f);
+	ConfettiEffectBlueRight.RangeZ = glm::vec2(-2.5f, -2.5f);
+	ConfettiEffectBlueRight.HaveGravity = true;
+	ConfettiEffectBlueRight.Mass = 2.0f;
+	ConfettiEffectBlueRight.Gravity = 0.2f;
+
+	if (!ConfettiEffectBlueLeft.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)100, (unsigned int)100))
+	{
+		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	ConfettiEffectBlueLeft.LerpAlpha = glm::vec2(0.4f, 0.8f);
+	ConfettiEffectBlueLeft.LerpSize = glm::vec2(1.0f, 2.0f);
+	ConfettiEffectBlueLeft.RangeLifetime = glm::vec2(4.0f, 4.0f);
+	ConfettiEffectBlueLeft.RangeVelocity = glm::vec2(-5.0f, 5.0f);
+	ConfettiEffectBlueLeft.RangeX = glm::vec2(-7.5f, -7.5f);
+	ConfettiEffectBlueLeft.RangeY = glm::vec2(20.0f, 20.0f);
+	ConfettiEffectBlueLeft.RangeZ = glm::vec2(-2.5f, -2.5f);
+	ConfettiEffectBlueLeft.HaveGravity = true;
+	ConfettiEffectBlueLeft.Mass = 2.0f;
+	ConfettiEffectBlueLeft.Gravity = 0.2f;
+
+	if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)100, (unsigned int)100))
+	{
+		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	//Missing .Set which is what the video uses***
+	ConfettiEffectRedRight.LerpAlpha = glm::vec2(0.4f, 0.8f);
+	ConfettiEffectRedRight.LerpSize = glm::vec2(1.0f, 2.0f);
+	ConfettiEffectRedRight.RangeLifetime = glm::vec2(4.0f, 4.0f);
+	ConfettiEffectRedRight.RangeVelocity = glm::vec2(-5.0f, 5.0f);
+	ConfettiEffectRedRight.RangeX = glm::vec2(7.5f, 7.5f);
+	ConfettiEffectRedRight.RangeY = glm::vec2(20.0f, 20.0f);
+	ConfettiEffectRedRight.RangeZ = glm::vec2(-2.5f, -2.5f);
+	ConfettiEffectRedRight.HaveGravity = true;
+	ConfettiEffectRedRight.Mass = 2.0f;
+	ConfettiEffectRedRight.Gravity = 0.2f;
+
+	if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)100, (unsigned int)100))
+	{
+		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	ConfettiEffectRedLeft.LerpAlpha = glm::vec2(0.4f, 0.8f);
+	ConfettiEffectRedLeft.LerpSize = glm::vec2(1.0f, 2.0f);
+	ConfettiEffectRedLeft.RangeLifetime = glm::vec2(4.0f, 4.0f);
+	ConfettiEffectRedLeft.RangeVelocity = glm::vec2(-5.0f, 5.0f);
+	ConfettiEffectRedLeft.RangeX = glm::vec2(-7.5f, -7.5f);
+	ConfettiEffectRedLeft.RangeY = glm::vec2(20.0f, 20.0f);
+	ConfettiEffectRedLeft.RangeZ = glm::vec2(-2.5f, -2.5f);
+	ConfettiEffectRedLeft.HaveGravity = true;
+	ConfettiEffectRedLeft.Mass = 2.0f;
+	ConfettiEffectRedLeft.Gravity = 0.2f;
+
+	std::vector<std::string> chairs;
+	chairs.push_back("./Assets/Models/chairs.obj");
+	Chairs.LoadFromFile(chairs);
+	/*{
+		std::cout << "Sword Model failed to load.\n";
+		system("pause");
+		exit(0);
+	}*/
+
+		if (!ChairTexture.Load("./Assets/Textures/chair.png"))
+		{
+			std::cout << "Chair Texture failed to load.\n";
+			system("pause");
+			exit(0);
+		}
+
+
+	std::vector<std::string> nets;
+	nets.push_back("./Assets/Models/nets.obj");
+	Nets.LoadFromFile(nets);
+	/* {
+		std::cout << "Sword Model failed to load.\n";
+		system("pause");
+		exit(0);
+	} */
+
+		if (!NetTexture.Load("./Assets/Textures/net.png"))
+		{
+			std::cout << "net Texture failed to load.\n";
+			system("pause");
+			exit(0);
+		}
+
+	std::vector<std::string> lJ;
+	lJ.push_back("./Assets/Models/lightsJumbo.obj");
+	lightJumbo.LoadFromFile(lJ);
+	/* {
+		std::cout << "Sword Model failed to load.\n";
+		system("pause");
+		exit(0);
+	} */
+		if (!lightJumboTexture.Load("./Assets/Textures/lightJumboTex.png"))
+		{
+			std::cout << "lightJumbo Texture failed to load.\n";
+			system("pause");
+			exit(0);
+		}
+
+	std::vector<std::string> ad;
+	ad.push_back("./Assets/Models/ad.obj");
+	adRot.LoadFromFile(ad);
+	/* {
+		std::cout << "Sword Model failed to load.\n";
+		system("pause");
+		exit(0);
+	} */
+
+		if (!adTexture.Load("./Assets/Textures/words.png"))
+		{
+			std::cout << "lightJumbo Texture failed to load.\n";
+			system("pause");
+			exit(0);
+		}
+
+	std::vector<std::string> bottles;
+	bottles.push_back("./Assets/Models/bottles.obj");
+	Bottle.LoadFromFile(bottles);
+	/* {
+		std::cout << "Sword Model failed to load.\n";
+		system("pause");
+		exit(0);
+	} */
+
+		if (!bottleTexture.Load("./Assets/Textures/bottleTex.png"))
+		{
+			std::cout << "bottle Texture failed to load.\n";
+			system("pause");
+			exit(0);
+		}
+
+
+
 
 	/*CameraTransform.Translate(vec3(0.0f, 7.5f, 20.0f));
 	CameraTransform.RotateX(-15.0f);*/
@@ -367,6 +537,7 @@ void Game::update()
 				std::cout << std::endl << "Player 1 Scored" << std::endl;
 				score1++;
 				//i = 100;
+				p1Score = true;
 				j = 100;
 
 			}
@@ -379,6 +550,7 @@ void Game::update()
 				std::cout << std::endl << "Player 2 Scored" << std::endl;
 				score2++;
 				//i = 100;
+				p2Score = true;
 				j = 100;
 
 			}
@@ -429,6 +601,27 @@ void Game::update()
 	ViewToShadowMap = Transform::Identity();
 	ViewToShadowMap = bias * ShadowProjection * ShadowTransform.GetInverse() * CameraTransform;
 	//ShadowTransform.Translate(vec3(0.0f, 0.0f, 0.0f));
+
+	///PARTICLE EFFECTS
+	//Update Patricle Effects
+	if (ConfettiEffectBlueRight.Playing == true)
+	{
+		ConfettiEffectBlueRight.Update(deltaTime);
+	}
+	if (ConfettiEffectBlueLeft.Playing == true)
+	{
+		ConfettiEffectBlueLeft.Update(deltaTime);
+	}
+	if (ConfettiEffectRedRight.Playing == true)
+	{
+		ConfettiEffectRedRight.Update(deltaTime);
+	}
+	if (ConfettiEffectRedLeft.Playing == true)
+	{
+		ConfettiEffectRedLeft.Update(deltaTime);
+	}
+	
+
 }
 /*
 ***Always remember to ask the three questions***
@@ -558,7 +751,7 @@ void Game::draw()
 
 	///playerOne->draw(GBufferPass);
 	///playerTwo->draw(GBufferPass);
-	
+
 	/*SwordTexture.Bind();
 	glBindVertexArray(Sword.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, Sword.GetNumVertices());
@@ -597,13 +790,50 @@ void Game::draw()
 	glBindVertexArray(Court.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, Court.GetNumVertices());
 
-	BackgroundTexture.Bind();
-	glBindVertexArray(Background.VAO);
-	GBufferPass.SendUniformMat4("uModel", BGTransform.data, true);
-	GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
-	glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
-	
+	//BackgroundTexture.Bind();
+	//glBindVertexArray(Background.VAO);
+	//GBufferPass.SendUniformMat4("uModel", BGTransform.data, true);
+	//GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+	//GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
+	//glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
+
+	ChairTexture.Bind();
+	glBindVertexArray(Chairs.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, Chairs.GetNumVertices());
+
+	NetTexture.Bind();
+	glBindVertexArray(Nets.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, Nets.GetNumVertices());
+
+	lightJumboTexture.Bind();
+	glBindVertexArray(lightJumbo.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, lightJumbo.GetNumVertices());
+
+	adTexture.Bind();
+	glBindVertexArray(adRot.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, adRot.GetNumVertices());
+
+	bottleTexture.Bind();
+	glBindVertexArray(Bottle.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, Bottle.GetNumVertices());
+
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+
+
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
@@ -656,15 +886,15 @@ void Game::draw()
 
 	AniShader.UnBind();*/
 
-		AniShader.Bind();
-		AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-		AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
-		playerOne->draw(AniShader, 1);
+	AniShader.Bind();
+	AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
+	playerOne->draw(AniShader, 1);
 
-		AniShader.Bind();
-		AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-		AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
-		playerTwo->draw(AniShader, 1);
+	AniShader.Bind();
+	AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
+	playerTwo->draw(AniShader, 1);
 
 
 	drawScore();
@@ -708,8 +938,8 @@ void Game::draw()
 	DeferredLighting.SendUniform("uPositionMap", 3);
 	//DeferredLighting.SendUniform("uEdgeMap", 4);
 	//DeferredLighting.SendUniform("uStepTexture", 4);
-	
-	DeferredLighting.SendUniform("LightDirection", glm::vec3( CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+
+	DeferredLighting.SendUniform("LightDirection", glm::vec3(CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
 	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.8f, 0.8f, 0.8f)); //You can LERP through colours to make night to day cycles
 	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.8f, 0.8f, 0.8f));
 	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.8f, 0.8f, 0.8f));
@@ -724,15 +954,118 @@ void Game::draw()
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
-	//glActiveTexture(GL_TEXTURE4);
-	//glBindTexture(GL_TEXTURE_2D, EdgeMap.GetColorHandle(0));
-	//glActiveTexture(GL_TEXTURE5);
-	//StepTexture.Bind();
+
+
+
+	DrawFullScreenQuad();
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+
+	if (p1Score == true)
+	{
+		PointLight.Bind();
+
+		PointLight.SendUniform("uSceneAlbedo", 0);
+		PointLight.SendUniform("uNormalMap", 2);
+		PointLight.SendUniform("uPositionMap", 3);
+		glm::vec4 lightPos = CameraTransform.GetInverse().matData * glm::vec4(playerOne->getPosition(), 1.0f);
+		PointLight.SendUniform("uLightPosition", glm::vec3(lightPos));
+		PointLight.SendUniform("uLightColor", glm::vec3(1.0f, 0.0f, 0.0f));
+
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+		//std::cout << timer << std::endl;
+		if (timer >= 0.5 && timer < 1)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 1 && timer < 1.5)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 1.5 && timer < 2)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 2 && timer < 2.5)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 2.5 && timer < 3)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 3 && timer < 3.5)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 3.5 && timer < 4)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 4.1)
+			timer = 0;
+
 		DrawFullScreenQuad();
-	//glBindTexture(GL_TEXTURE_2D, GL_NONE); //Could I do StepTexture.UnBInd()?
-	//glActiveTexture(GL_TEXTURE4);
-	//glBindTexture(GL_TEXTURE_2D, GL_NONE);
-	//glActiveTexture(GL_TEXTURE3);
+
+		PointLight.UnBind();
+	}
+
+	if (p2Score == true)
+	{
+		PointLight.Bind();
+
+		PointLight.SendUniform("uSceneAlbedo", 0);
+		PointLight.SendUniform("uNormalMap", 2);
+		PointLight.SendUniform("uPositionMap", 3);
+		glm::vec4 lightPos = CameraTransform.GetInverse().matData * glm::vec4(playerTwo->getPosition(), 1.0f);
+		PointLight.SendUniform("uLightPosition", glm::vec3(lightPos));
+		PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 1.0f));
+
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+		//std::cout << timer << std::endl;
+		if (timer >= 0.5 && timer < 1)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 1 && timer < 1.5)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 1.0f));
+		}
+		else if (timer >= 1.5 && timer < 2)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 2 && timer < 2.5)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 1.0f));
+		}
+		else if (timer >= 2.5 && timer < 3)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 3 && timer < 3.5)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 1.0f));
+		}
+		else if (timer >= 3.5 && timer < 4)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 4.1)
+			timer = 0;
+
+		DrawFullScreenQuad();
+
+		PointLight.UnBind();
+	}
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_BLEND);
+
+
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
@@ -740,6 +1073,62 @@ void Game::draw()
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
+
+	if (p1Score == true)
+	{
+		ParticleProgram.Bind();
+		ParticleProgram.SendUniform("uTex", 0);
+		ParticleProgram.SendUniformMat4("uModel", ConfettiEffectBlueRight.transform.data, true);
+		ParticleProgram.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+		ParticleProgram.SendUniformMat4("uProj", CameraProjection.data, true);
+
+		ConfettiEffectRedRight.Playing = true;
+		ConfettiEffectRedRight.Render();
+
+		ConfettiEffectRedLeft.Playing = true;
+		ConfettiEffectRedLeft.Render();
+
+		ParticleProgram.UnBind();
+
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+		std::cout << timer << std::endl;
+		if (timer >= 4)
+		{
+			ConfettiEffectRedRight.Playing = false;
+			ConfettiEffectRedLeft.Playing = false;
+			timer = 0;
+			p1Score = false;
+		}
+	}
+
+	if (p2Score == true)
+	{
+		ParticleProgram.Bind();
+		ParticleProgram.SendUniform("uTex", 0);
+		ParticleProgram.SendUniformMat4("uModel", ConfettiEffectRedRight.transform.data, true);
+		ParticleProgram.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+		ParticleProgram.SendUniformMat4("uProj", CameraProjection.data, true);
+
+		ConfettiEffectBlueRight.Playing = true;
+		ConfettiEffectBlueRight.Render();
+
+		ConfettiEffectBlueLeft.Playing = true;
+		ConfettiEffectBlueLeft.Render();
+
+		ParticleProgram.UnBind();
+
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+		std::cout << timer << std::endl;
+		if (timer >= 4)
+		{
+			ConfettiEffectBlueRight.Playing = false;
+			ConfettiEffectBlueLeft.Playing = false;
+			timer = 0;
+			p2Score = false;
+		}
+	}
 
 	DeferredComposite.UnBind();
 	DeferredLighting.UnBind();
@@ -814,7 +1203,7 @@ void Game::draw()
 	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
-		DrawFullScreenQuad();
+	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
@@ -943,7 +1332,7 @@ void Game::drawScore() {
 	hudLoc.Scale(2.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(-1, 7, -7));
+	hudLoc.Translate(glm::vec3(-1, 11, -14));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[score1 % 10]->Bind();
 	glBindVertexArray(HudObj.VAO);
@@ -953,7 +1342,7 @@ void Game::drawScore() {
 	hudLoc.Scale(2.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(2, 7, -7.1f));
+	hudLoc.Translate(glm::vec3(2, 11, -14.1f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[10]->Bind();
 	glBindVertexArray(HudObj.VAO);
@@ -963,7 +1352,7 @@ void Game::drawScore() {
 	hudLoc.Scale(2.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(5, 7, -7));
+	hudLoc.Translate(glm::vec3(5, 11, -14));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[score2 % 10]->Bind();
 	glBindVertexArray(HudObj.VAO);

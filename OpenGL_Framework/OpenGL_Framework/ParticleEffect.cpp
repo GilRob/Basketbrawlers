@@ -5,6 +5,8 @@
 
 ParticleEffect::ParticleEffect()
 {
+	Gravity = 0.5;
+	Mass = 2;
 }
 
 ParticleEffect::~ParticleEffect()
@@ -48,7 +50,7 @@ bool ParticleEffect::Init(const std::string &textureFile, unsigned int maxPartic
 	}
 
 	_MaxParticles = maxParticles;
-	_Rate = rate;
+	_Rate = (float)rate;
 
 	_Particles.Positions = new glm::vec3[_MaxParticles];
 	_Particles.Velocities = new glm::vec3[_MaxParticles];
@@ -91,7 +93,7 @@ bool ParticleEffect::Init(const std::string &textureFile, unsigned int maxPartic
 
 void ParticleEffect::Update(float elapsed)
 {
-	int NumToSpawn = _Rate;
+	int NumToSpawn = (int)_Rate;
 
 	/// Create new particles ///
 	while (
@@ -100,10 +102,10 @@ void ParticleEffect::Update(float elapsed)
 		//We have more particles to generate this frame...
 		NumToSpawn > 0)
 	{
-		_Particles.Alpha[_NumCurrentParticles]		= LerpAlpha.x;
+		_Particles.Alpha[_NumCurrentParticles]		= RandomRangef(LerpAlpha.x, LerpAlpha.y);
 		_Particles.Ages[_NumCurrentParticles]		= 0.0f;
 		_Particles.Lifetimes[_NumCurrentParticles]	= RandomRangef(RangeLifetime.x, RangeLifetime.y);
-		_Particles.Size[_NumCurrentParticles]		= LerpSize.x;
+		_Particles.Size[_NumCurrentParticles]		= RandomRangef(LerpSize.x, LerpSize.y);
 		//Missing .Set which is what the video uses
 		//_Particles.Positions[_NumCurrentParticles] = vec3((RandomRangef(RangeX.x, RangeX.y), RandomRangef(RangeY.x, RangeY.y), RandomRangef(RangeZ.x, RangeZ.y)));
 		_Particles.Positions[_NumCurrentParticles].x = RandomRangef(RangeX.x, RangeX.y);
@@ -116,8 +118,7 @@ void ParticleEffect::Update(float elapsed)
 		_Particles.Velocities[_NumCurrentParticles].x = RandomRangef(-1.0f, 1.0f);
 		_Particles.Velocities[_NumCurrentParticles].y = RandomRangef(-1.0f, 1.0f);
 		_Particles.Velocities[_NumCurrentParticles].z = RandomRangef(-1.0f, 1.0f);
-		glm::normalize(_Particles.Velocities[_NumCurrentParticles]);
-		//_Particles.Velocities[_NumCurrentParticles].Normalize();
+		_Particles.Velocities[_NumCurrentParticles] = glm::normalize(_Particles.Velocities[_NumCurrentParticles]);
 		_Particles.Velocities[_NumCurrentParticles] *= RandomRangef(RangeVelocity.x, RangeVelocity.y);
 
 		//counters...
@@ -145,7 +146,16 @@ void ParticleEffect::Update(float elapsed)
 			continue;
 		}
 
-		_Particles.Positions[i] += _Particles.Velocities[i] * elapsed;
+		if (HaveGravity)
+		{
+			//physics update
+			force = glm::vec3(0, 0 - Gravity, 0);
+			acceleration = force / Mass;
+			_Particles.Velocities[i] += acceleration;
+			_Particles.Positions[i] += _Particles.Velocities[i] * elapsed;
+		}
+		else
+			_Particles.Positions[i] += _Particles.Velocities[i] * elapsed;
 
 		float interp = _Particles.Ages[i] / _Particles.Lifetimes[i];
 		

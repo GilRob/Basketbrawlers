@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <glm/glm.hpp>
-#include <GLM\gtx\transform.hpp>
 #include "Texture.h"
 #include "Transform.h"
 
@@ -38,11 +37,18 @@ public:
 	glm::vec2 LerpAlpha = glm::vec2(0.5f, 0.0f);
 	glm::vec2 LerpSize = glm::vec2(0.0f, 1.0f);
 
+	bool HaveGravity = false;
+	bool Playing = false;
+	float Mass;
+	float Gravity;
+	glm::vec3 force;
+	glm::vec3 acceleration;
+
 private:
 	ParticleList _Particles;
 	Texture _Texture;
 
-	unsigned int _Rate = 0;
+	float _Rate = 0.0f;
 	unsigned int _MaxParticles = 0;
 	unsigned int _NumCurrentParticles = 0;
 

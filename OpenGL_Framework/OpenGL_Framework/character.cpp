@@ -1,13 +1,21 @@
 #include "character.h"
 
-#define BASE_ANI_TOGGLE true//non-offensive animations
-#define G_ATK_ANI_TOGGLE true//ground attacks
-#define A_ATK_ANI_TOGGLE true//aerials
-#define S_ATK_ANI_TOGGLE true//specials
+
+#define BASE_ANI_TOGGLE false//non-offensive animations
+#define G_ATK_ANI_TOGGLE false//ground attacks
+#define A_ATK_ANI_TOGGLE false//aerials
+#define S_ATK_ANI_TOGGLE false//specials
 #define HITBOX_TOGGLE false//visual hitboxes
 #define HURTBOX_TOGGLE false//visual hurtboxes
 
 Character::Character(const std::string& bodyName, const std::string& textureName){
+
+	if (!(texture.Load(textureName)))//"./Assets/Textures/Sword.png"))
+	{
+		std::cout << "Character Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
 
 	aniTimer = 0.f;
 	index = 0;
@@ -88,7 +96,7 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 		aniFrames[ACTION_JUMP2].push_back(jab2);
 	}
 	///hurt
-	length = 4;
+	length = 1;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
 	for (int c = 0; c < length; ++c)
@@ -332,13 +340,6 @@ Character::Character(const std::string& bodyName, const std::string& textureName
 	file.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string(0) + ".obj");
 	body.LoadFromFile(file);
 
-	//texture
-	if (!(texture.Load(textureName)))//"./Assets/Textures/Sword.png"))
-	{
-		std::cout << "Character Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
 
 	//Set Physics
 	position = glm::vec3(0, 0, 0);
@@ -751,11 +752,14 @@ Transform Character::atkInputHandler(std::vector<bool> inputs)
 	Transform result;
 	///hit
 	if (action == ACTION_HIT) {
-		//todo
 		//If in Hitstun reduce directional influence
 		force.x = (inputs[1] - inputs[3]) *  diMultiplier;
 		if (currentFrame < (unsigned int)hitframes)//only launched for hitframes, character will just be stunned for the remaining frames (hitstun + moves kb)
 			velocity = hitForce;
+		if (facingRight)
+			result.RotateY(-45.0f);
+		else
+			result.RotateY(45.0f);
 		currentFrame++;
 	}
 	//AIR

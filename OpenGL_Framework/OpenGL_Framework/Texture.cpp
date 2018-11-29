@@ -34,7 +34,7 @@ bool Texture::Load(const std::string &file)
 
 	unsigned char* textureData;
 	textureData = SOIL_load_image((this->filename).c_str(),
-		&this->sizeX, &this->sizeY, &this->channels, SOIL_LOAD_RGBA);
+		&(this->sizeX), &(this->sizeY), &(this->channels), SOIL_LOAD_RGBA);
 
 	if (this->sizeX == 0 || this->sizeY == 0 || this->channels == 0)
 	{
