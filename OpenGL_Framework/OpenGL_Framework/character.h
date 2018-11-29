@@ -5,15 +5,16 @@
 //#include <GL/glut.h>
 //#include <GL/glew.h>
 //#include <GL/gl.h>
-//#include <glm/glm.hpp>
+#include <glm/glm.hpp>
+#include <GLM\gtx\transform.hpp>
 #include "Mesh.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
 #include <vector>
-#include "MiniMath/Core.h"
 //#include "camera.h"
 #include "hitbox.h"
 #include <iostream>
+#include "Transform.h"
 
 
 #define ACTION_IDLE				0
@@ -25,7 +26,7 @@
 #define ACTION_JUMP2			6
 #define ACTION_FALL				7
 #define ACTION_HIT				8
-#define ACTION_PLACEHOLDER		9
+#define ACTION_PLACEHOLDER		23
 
 #define ACTION_JAB				10
 #define ACTION_SIDE_ATTACK		11
@@ -36,13 +37,13 @@
 #define ACTION_DOWN_SPECIAL		16
 #define ACTION_UP_SPECIAL		17
 
-#define ACTION_NEUTRAL_AERIAL	20
-#define ACTION_SIDE_AERIAL		21
-#define ACTION_DOWN_AERIAL		22
-#define ACTION_UP_AERIAL		23
+#define ACTION_NEUTRAL_AERIAL	18
+#define ACTION_SIDE_AERIAL		19
+#define ACTION_DOWN_AERIAL		20
+#define ACTION_UP_AERIAL		21
 
-#define ACTION_BLOCK			30
-#define ACTION_DASH				31
+#define ACTION_BLOCK			9
+#define ACTION_DASH				22
 
 
 //Will be the parent class for all other charcaters
@@ -57,11 +58,11 @@ public:
 	void draw(ShaderProgram GBufferPass, float dt);
 	void drawBoxes(ShaderProgram GBufferPass);
 	void drawShadow(ShaderProgram GBufferPass, float dt);
-	vec3 getPosition();
-	void setPosition(vec3 pos);
+	glm::vec3 getPosition();
+	void setPosition(glm::vec3 pos);
 	std::vector<Hitbox*> getHitboxes();
 	std::vector<Hitbox*> getHurtboxes();
-	mat4 atkInputHandler(std::vector<bool> inputs);
+	Transform atkInputHandler(std::vector<bool> inputs);
 
 	bool facingRight;
 	bool blocking;
@@ -74,28 +75,28 @@ public:
 	bool interuptable;
 
 	//Actions
-	mat4 idle();
-	mat4 walk(bool held);
-	mat4 run(bool held);
-	mat4 initialDash(bool left, bool right);
-	mat4 prejump();
-	mat4 jump();
-	mat4 jump2();
-	mat4 fall();
+	Transform idle();
+	Transform walk(bool held);
+	Transform run(bool held);
+	Transform initialDash(bool left, bool right);
+	Transform prejump();
+	Transform jump();
+	Transform jump2();
+	Transform fall();
 	void hit(Hitbox* hitBy);
-	mat4 jab();
-	mat4 sAttack();
-	mat4 dAttack();
-	mat4 uAttack();
-	mat4 nSpecial(bool charging);
-	mat4 sSpecial();
-	mat4 dSpecial();
-	mat4 uSpecial();
-	mat4 nAir();
-	mat4 sAir();
-	mat4 dAir();
-	mat4 uAir();
-	mat4 block(bool held);
+	Transform jab();
+	Transform sAttack();
+	Transform dAttack();
+	Transform uAttack();
+	Transform nSpecial(bool charging);
+	Transform sSpecial();
+	Transform dSpecial();
+	Transform uSpecial();
+	Transform nAir();
+	Transform sAir();
+	Transform dAir();
+	Transform uAir();
+	Transform block(bool held);
 
 	//----------------------------------------------------------
 	void comboAdd() {
@@ -123,8 +124,8 @@ public:
 	void respawn() {
 		comboTimer = 0;
 		comboMeter = 0;
-		position = vec3(0, 15, 0);
-		velocity = vec3(0, 0, 0);
+		position = glm::vec3(0, 15, 0);
+		velocity = glm::vec3(0, 0, 0);
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
 		fall();
@@ -134,14 +135,9 @@ public:
 		return comboMeter;
 	}
 
-	mat4 transform;
+	Transform transform;
 	Mesh body;
-	std::vector<Mesh*> idleFrames;
-	std::vector<Mesh*> walkFrames;
-	std::vector<Mesh*> jabFrames;
-	std::vector<Mesh*> sAtkFrames;
-	std::vector<Mesh*> uAtkFrames;
-	std::vector<Mesh*> dAtkFrames;
+	std::vector<Mesh*> aniFrames[22];
 	Texture texture;
 	float aniTimer;
 	unsigned int index;
@@ -149,11 +145,11 @@ protected:
 	//model
 
 	//physics
-	vec3 position;
-	vec3 velocity;
-	vec3 acceleration;
-	vec3 force;
-	vec3 hitForce;
+	glm::vec3 position;
+	glm::vec3 velocity;
+	glm::vec3 acceleration;
+	glm::vec3 force;
+	glm::vec3 hitForce;
 
 	//Attributes
 	float mass;
@@ -194,5 +190,4 @@ protected:
 	Texture shieldTexture;
 
 private:
-
 };

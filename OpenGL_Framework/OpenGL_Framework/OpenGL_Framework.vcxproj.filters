@@ -106,6 +106,9 @@
     <ClInclude Include="controller.h">
       <Filter>GameFunctions</Filter>
     </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>GameFunctions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\GreyScalePost.frag">

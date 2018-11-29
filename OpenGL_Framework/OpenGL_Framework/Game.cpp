@@ -21,24 +21,20 @@ Game::~Game()
 	GBufferPass.UnLoad();
 	DeferredLighting.UnLoad();
 	AniShader.UnLoad();
-	/*SobelPass.UnLoad();
-	Sword.Unload();
-	SwordTexture.Unload();
-	Stone.Unload();
-	StoneTexture.Unload();
-	House.Unload();
-	HouseTexture.Unload();
-	Ground.Unload();
-	GroundTexture.Unload();
-	Sphere.Unload();
-	StepTexture.Unload();*/
+	HudShader.UnLoad();
+	PointLight.UnLoad();
+	ParticleProgram.UnLoad();
+	boxMesh.Unload();
+	boxTexture.Unload();
 	Court.Unload();
 	CourtTexture.Unload();
 	Background.Unload();
-	HudObj.Unload();
 	BackgroundTexture.Unload();
-	//NormalSword.Unload();
-	//NormalStone.Unload();
+	HudObj.Unload();
+	P1Hud.Unload();
+	P1Bar.Unload();
+	P2Hud.Unload();
+	P2Bar.Unload();
 }
 
 void Game::initializeGame()
@@ -46,6 +42,7 @@ void Game::initializeGame()
 
 	//Only needs to be done once
 	glEnable(GL_DEPTH_TEST);
+	
 	//glutFullScreen();
 	InitFullScreenQuad();
 
@@ -120,11 +117,27 @@ void Game::initializeGame()
 		exit(0);
 	}
 
+	if (!PointLight.Load("./Assets/Shaders/PassThroughLight.vert", "./Assets/Shaders/PointLight.frag"))
+	{
+		std::cout << "SL Shaders failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	if (!ParticleProgram.Load(
+		"./Assets/Shaders/Particles/BillBoard.vert",
+		"./Assets/Shaders/Particles/BillBoard.frag",
+		"./Assets/Shaders/Particles/BillBoard.geom"))
+	{
+		std::cout << "PP failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
+
 	std::vector<std::string> court;
-	court.push_back("./Assets/Models/KnightCourt.obj");
+	court.push_back("./Assets/Models/court.obj");
 	Court.LoadFromFile(court);
 
-	if (!CourtTexture.Load("./Assets/Textures/GameCastleTexture.png"))
+	if (!CourtTexture.Load("./Assets/Textures/court.png"))
 	{
 		std::cout << "Court Texture failed to load.\n";
 		system("pause");
@@ -145,7 +158,7 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}
-	BGTransform.SetTranslation(vec3(0, 3, -40));
+	BGTransform.SetTranslation(glm::vec3(0, 3, -40));
 
 	if (!P1Hud.Load("./Assets/Textures/PlayerOneHud.png"))
 	{
@@ -225,7 +238,7 @@ void Game::initializeGame()
 		exit(0);
 	}*/
 
-	WorkBuffer1.InitColorTexture(0, WINDOW_WIDTH / BLOOM_DOWNSCALE, WINDOW_HEIGHT / BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	WorkBuffer1.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
 	if (!WorkBuffer1.CheckFBO())
 	{
 		std::cout << "WB1 FBO failed to initialize.\n";
@@ -233,7 +246,7 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	WorkBuffer2.InitColorTexture(0, WINDOW_WIDTH / BLOOM_DOWNSCALE, WINDOW_HEIGHT / BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	WorkBuffer2.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
 	if (!WorkBuffer2.CheckFBO())
 	{
 		std::cout << "WB2 FBO failed to initialize.\n";
@@ -250,22 +263,178 @@ void Game::initializeGame()
 		exit(0);
 	}
 
+	if (!ConfettiEffectBlueRight.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)100, (unsigned int)100))
+	{
+		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	//Missing .Set which is what the video uses***
+	ConfettiEffectBlueRight.LerpAlpha = glm::vec2(0.4f, 0.8f);
+	ConfettiEffectBlueRight.LerpSize = glm::vec2(1.0f, 2.0f);
+	ConfettiEffectBlueRight.RangeLifetime = glm::vec2(4.0f, 4.0f);
+	ConfettiEffectBlueRight.RangeVelocity = glm::vec2(-5.0f, 5.0f);
+	ConfettiEffectBlueRight.RangeX = glm::vec2(7.5f, 7.5f);
+	ConfettiEffectBlueRight.RangeY = glm::vec2(20.0f, 20.0f);
+	ConfettiEffectBlueRight.RangeZ = glm::vec2(-2.5f, -2.5f);
+	ConfettiEffectBlueRight.HaveGravity = true;
+	ConfettiEffectBlueRight.Mass = 2.0f;
+	ConfettiEffectBlueRight.Gravity = 0.2f;
+
+	if (!ConfettiEffectBlueLeft.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)100, (unsigned int)100))
+	{
+		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	ConfettiEffectBlueLeft.LerpAlpha = glm::vec2(0.4f, 0.8f);
+	ConfettiEffectBlueLeft.LerpSize = glm::vec2(1.0f, 2.0f);
+	ConfettiEffectBlueLeft.RangeLifetime = glm::vec2(4.0f, 4.0f);
+	ConfettiEffectBlueLeft.RangeVelocity = glm::vec2(-5.0f, 5.0f);
+	ConfettiEffectBlueLeft.RangeX = glm::vec2(-7.5f, -7.5f);
+	ConfettiEffectBlueLeft.RangeY = glm::vec2(20.0f, 20.0f);
+	ConfettiEffectBlueLeft.RangeZ = glm::vec2(-2.5f, -2.5f);
+	ConfettiEffectBlueLeft.HaveGravity = true;
+	ConfettiEffectBlueLeft.Mass = 2.0f;
+	ConfettiEffectBlueLeft.Gravity = 0.2f;
+
+	if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)100, (unsigned int)100))
+	{
+		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	//Missing .Set which is what the video uses***
+	ConfettiEffectRedRight.LerpAlpha = glm::vec2(0.4f, 0.8f);
+	ConfettiEffectRedRight.LerpSize = glm::vec2(1.0f, 2.0f);
+	ConfettiEffectRedRight.RangeLifetime = glm::vec2(4.0f, 4.0f);
+	ConfettiEffectRedRight.RangeVelocity = glm::vec2(-5.0f, 5.0f);
+	ConfettiEffectRedRight.RangeX = glm::vec2(7.5f, 7.5f);
+	ConfettiEffectRedRight.RangeY = glm::vec2(20.0f, 20.0f);
+	ConfettiEffectRedRight.RangeZ = glm::vec2(-2.5f, -2.5f);
+	ConfettiEffectRedRight.HaveGravity = true;
+	ConfettiEffectRedRight.Mass = 2.0f;
+	ConfettiEffectRedRight.Gravity = 0.2f;
+
+	if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)100, (unsigned int)100))
+	{
+		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	ConfettiEffectRedLeft.LerpAlpha = glm::vec2(0.4f, 0.8f);
+	ConfettiEffectRedLeft.LerpSize = glm::vec2(1.0f, 2.0f);
+	ConfettiEffectRedLeft.RangeLifetime = glm::vec2(4.0f, 4.0f);
+	ConfettiEffectRedLeft.RangeVelocity = glm::vec2(-5.0f, 5.0f);
+	ConfettiEffectRedLeft.RangeX = glm::vec2(-7.5f, -7.5f);
+	ConfettiEffectRedLeft.RangeY = glm::vec2(20.0f, 20.0f);
+	ConfettiEffectRedLeft.RangeZ = glm::vec2(-2.5f, -2.5f);
+	ConfettiEffectRedLeft.HaveGravity = true;
+	ConfettiEffectRedLeft.Mass = 2.0f;
+	ConfettiEffectRedLeft.Gravity = 0.2f;
+
+	std::vector<std::string> chairs;
+	chairs.push_back("./Assets/Models/chairs.obj");
+	Chairs.LoadFromFile(chairs);
+	/*{
+		std::cout << "Sword Model failed to load.\n";
+		system("pause");
+		exit(0);
+	}*/
+
+		if (!ChairTexture.Load("./Assets/Textures/chair.png"))
+		{
+			std::cout << "Chair Texture failed to load.\n";
+			system("pause");
+			exit(0);
+		}
+
+
+	std::vector<std::string> nets;
+	nets.push_back("./Assets/Models/nets.obj");
+	Nets.LoadFromFile(nets);
+	/* {
+		std::cout << "Sword Model failed to load.\n";
+		system("pause");
+		exit(0);
+	} */
+
+		if (!NetTexture.Load("./Assets/Textures/net.png"))
+		{
+			std::cout << "net Texture failed to load.\n";
+			system("pause");
+			exit(0);
+		}
+
+	std::vector<std::string> lJ;
+	lJ.push_back("./Assets/Models/lightsJumbo.obj");
+	lightJumbo.LoadFromFile(lJ);
+	/* {
+		std::cout << "Sword Model failed to load.\n";
+		system("pause");
+		exit(0);
+	} */
+		if (!lightJumboTexture.Load("./Assets/Textures/lightJumboTex.png"))
+		{
+			std::cout << "lightJumbo Texture failed to load.\n";
+			system("pause");
+			exit(0);
+		}
+
+	std::vector<std::string> ad;
+	ad.push_back("./Assets/Models/ad.obj");
+	adRot.LoadFromFile(ad);
+	/* {
+		std::cout << "Sword Model failed to load.\n";
+		system("pause");
+		exit(0);
+	} */
+
+		if (!adTexture.Load("./Assets/Textures/words.png"))
+		{
+			std::cout << "lightJumbo Texture failed to load.\n";
+			system("pause");
+			exit(0);
+		}
+
+	std::vector<std::string> bottles;
+	bottles.push_back("./Assets/Models/bottles.obj");
+	Bottle.LoadFromFile(bottles);
+	/* {
+		std::cout << "Sword Model failed to load.\n";
+		system("pause");
+		exit(0);
+	} */
+
+		if (!bottleTexture.Load("./Assets/Textures/bottleTex.png"))
+		{
+			std::cout << "bottle Texture failed to load.\n";
+			system("pause");
+			exit(0);
+		}
+
+
+
 
 	/*CameraTransform.Translate(vec3(0.0f, 7.5f, 20.0f));
 	CameraTransform.RotateX(-15.0f);*/
-	CameraProjection = mat4::PerspectiveProjection(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 1.0f, 10000.0f);
+	CameraProjection = Transform::PerspectiveProjection(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 1.0f, 10000.0f);
 	//ShadowProjection.OrthographicProjection(35.0f, -35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
-	ShadowProjection = mat4::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -25.0f, 100.0f);
-	hudProjection = mat4::OrthographicProjection((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f, (float)WINDOW_HEIGHT * -0.5f, -10.0f, 100.0f);
+	ShadowProjection = Transform::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -25.0f, 100.0f);
+	hudProjection = Transform::OrthographicProjection((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f, (float)WINDOW_HEIGHT * -0.5f, -10.0f, 100.0f);
 
 
-	Hitbox *hurt1 = new Hitbox(vec3(25.0f, 12.0f, 0.0f), 6.0f);
+	Hitbox *hurt1 = new Hitbox(glm::vec3(25.0f, 12.0f, 0.0f), 6.0f);
 	Netbox.push_back(hurt1);
-	Hitbox *hurt2 = new Hitbox(vec3(-25.0f, 12.0f, 0.0f), 6.0f);
+	Hitbox *hurt2 = new Hitbox(glm::vec3(-25.0f, 12.0f, 0.0f), 6.0f);
 	Netbox.push_back(hurt2);
 
 	score1 = 0;
 	score2 = 0;
+
+
+	playerOne->setPosition(glm::vec3(-5, 0, 0));
+	playerTwo->setPosition(glm::vec3(5, 0, 0));
 
 	updateTimer = new Timer();
 }
@@ -283,17 +452,17 @@ void Game::update()
 	float diffy = (playerOne->getPosition().y) - (playerTwo->getPosition().y);//difference between characters y
 	if (abs(diffx) < 0.6f && abs(diffx) != 0 && abs(diffy) < 1.5f) {//if they are touching
 		//push them off
-		playerOne->setPosition(playerOne->getPosition() + vec3(((diffx / abs(diffx))*0.01f), 0, 0));
-		playerTwo->setPosition(playerTwo->getPosition() + vec3(((diffx / abs(diffx))*-0.01f), 0, 0));
+		playerOne->setPosition(playerOne->getPosition() + glm::vec3(((diffx / abs(diffx))*0.01f), 0, 0));
+		playerTwo->setPosition(playerTwo->getPosition() + glm::vec3(((diffx / abs(diffx))*-0.01f), 0, 0));
 	}
 
 	//new hitbox collisions
-	for (int i = 0; i < playerOne->getHitboxes().size(); i++) {
-		for (int j = 0; j < playerTwo->getHurtboxes().size(); j++) {
+	for (unsigned int i = 0; i < playerOne->getHitboxes().size(); i++) {
+		for (unsigned int j = 0; j < playerTwo->getHurtboxes().size(); j++) {
 
-			vec3 diff = playerOne->getHitboxes()[i]->getPosition() - playerTwo->getHurtboxes()[j]->getPosition();
+			glm::vec3 diff = playerOne->getHitboxes()[i]->getPosition() - playerTwo->getHurtboxes()[j]->getPosition();
 			float size = (playerOne->getHitboxes()[i]->getSize() + playerTwo->getHurtboxes()[j]->getSize()) *0.5f;
-			if (diff.Length() < size) {
+			if (/*diff.Length()*/ glm::length(diff) < size) {
 				if (playerTwo->blocking && (playerOne->facingRight != playerTwo->facingRight)) {//add only in front condition
 					playerTwo->blockSuccessful = true;
 					playerOne->getHitboxes()[i]->setDone();
@@ -314,12 +483,12 @@ void Game::update()
 	}
 
 	
-	for (int i = 0; i < playerTwo->getHitboxes().size(); i++) {
-		for (int j = 0; j < playerOne->getHurtboxes().size(); j++) {
+	for (unsigned int i = 0; i < playerTwo->getHitboxes().size(); i++) {
+		for (unsigned int j = 0; j < playerOne->getHurtboxes().size(); j++) {
 
-			vec3 diff = playerTwo->getHitboxes()[i]->getPosition() - playerOne->getHurtboxes()[j]->getPosition();
+			glm::vec3 diff = playerTwo->getHitboxes()[i]->getPosition() - playerOne->getHurtboxes()[j]->getPosition();
 			float size = (playerTwo->getHitboxes()[i]->getSize() + playerOne->getHurtboxes()[j]->getSize()) *0.5f;
-			if (diff.Length() < size) {
+			if (/*diff.Length()*/ glm::length(diff) < size) {
 				if (playerOne->blocking && (playerOne->facingRight != playerTwo->facingRight)) {//add only in front condition
 					playerOne->blockSuccessful = true;
 					playerTwo->getHitboxes()[i]->setDone();
@@ -340,13 +509,13 @@ void Game::update()
 	}
 
 	//Check Hurtboxes
-	for (int i = 0; i < Netbox.size(); i++) {
-		Netbox[i]->update(deltaTime, vec3());
+	for (unsigned int i = 0; i < Netbox.size(); i++) {
+		Netbox[i]->update((int)deltaTime, glm::vec3());
 	}
 
 	updateInputs();
-	playerOne->update(deltaTime, inputs);
-	playerTwo->update(deltaTime, inputs2);
+	playerOne->update((int)deltaTime, inputs);
+	playerTwo->update((int)deltaTime, inputs2);
 
 	////score
 	//if (abs(abs(playerOne->getPosition().x) - 26) < 1.3f && abs(playerOne->getPosition().y - 10) < 1.3f) {
@@ -359,27 +528,29 @@ void Game::update()
 	//}
 
 	//new score code
-	for (int i = 0; i < Netbox.size(); i++) {
-		for (int j = 0; j < playerTwo->getHurtboxes().size(); j++) {
-			vec3 diff = Netbox[i]->getPosition() - playerTwo->getHurtboxes()[j]->getPosition();
+	for (unsigned int i = 0; i < Netbox.size(); i++) {
+		for (unsigned int j = 0; j < playerTwo->getHurtboxes().size(); j++) {
+			glm::vec3 diff = Netbox[i]->getPosition() - playerTwo->getHurtboxes()[j]->getPosition();
 			float size = (Netbox[i]->getSize() + playerTwo->getHurtboxes()[j]->getSize()) *0.5f;
-			if (diff.Length() < size) {
+			if (/*diff.Length()*/ glm::length(diff) < size) {
 				playerTwo->respawn();
 				std::cout << std::endl << "Player 1 Scored" << std::endl;
 				score1++;
-				i = 100;
+				//i = 100;
+				p1Score = true;
 				j = 100;
 
 			}
 		}
-		for (int j = 0; j < playerOne->getHurtboxes().size(); j++) {
-			vec3 diff = Netbox[i]->getPosition() - playerOne->getHurtboxes()[j]->getPosition();
+		for (unsigned int j = 0; j < playerOne->getHurtboxes().size(); j++) {
+			glm::vec3 diff = Netbox[i]->getPosition() - playerOne->getHurtboxes()[j]->getPosition();
 			float size = (Netbox[i]->getSize() + playerOne->getHurtboxes()[j]->getSize()) *0.5f;
-			if (diff.Length() < size) {
+			if (/*diff.Length()*/ glm::length(diff) < size) {
 				playerOne->respawn();
 				std::cout << std::endl << "Player 2 Scored" << std::endl;
 				score2++;
-				i = 100;
+				//i = 100;
+				p2Score = true;
 				j = 100;
 
 			}
@@ -400,25 +571,57 @@ void Game::update()
 	//camera->setPositionZ(dist);
 
 	//Make sure to do the reverse of the transform orders due to the change from row-major to column-major, it reverses all mathematic operations
-	CameraTransform = mat4::Identity;
+	CameraTransform = Transform::Identity();
+	//glm::rotate(CameraTransform, (-20.0f - abs(sqrtf(dist*0.01f)*10.0f)), glm::vec3(1.0f, 0.0f, 0.0f));
 	CameraTransform.RotateX(-20.0f - abs(sqrtf(dist*0.01f)*10.0f));
 	//CameraTransform.Translate(vec3(0.0f, 7.5f, 11.0f));
-	CameraTransform.Translate(vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, abs(sqrtf(dist*0.01f)*20.0f) + 10.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), dist+10));
+	/*glm::translate(CameraTransform,
+		glm::vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, 
+			abs(sqrtf(dist*0.01f)*20.0f) + 10.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), 
+			dist + 10));*/
+	CameraTransform.Translate(glm::vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, abs(sqrtf(dist*0.01f)*20.0f) + 10.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), dist+10));
+	//glm::rotate(CameraTransform, 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	CameraTransform.RotateY(0.0f);
+	//CameraTransform.RotateZ(180.0f);
 
-	ShadowTransform = mat4::Identity;
-	ShadowTransform.RotateX(-45.0f);
-	ShadowTransform.Translate(vec3(0.0f, 6.0f, 10.0f));
-	ShadowTransform.RotateY(-200.0f);
+	hudTransform = Transform::Identity();
+	hudTransform.RotateY(0.0f);
+
+	ShadowTransform = Transform::Identity();
+	ShadowTransform.RotateX(45.0f);
+	//.RotateY(180.0f);
+	ShadowTransform.Translate(glm::vec3(0.0f, 10.0f, 10.0f));
+	ShadowTransform.RotateY(180.0f);
 	
-	mat4 bias = mat4(0.5f, 0.0f, 0.0f, 0.5f,
+	Transform bias = Transform(0.5f, 0.0f, 0.0f, 0.5f,
 					 0.0f, 0.5f, 0.0f, 0.5f,
 					 0.0f, 0.0f, 0.5f, 0.5f,
 					 0.0f, 0.0f, 0.0f, 1.0f);
 
-	ViewToShadowMap = mat4::Identity;
+	ViewToShadowMap = Transform::Identity();
 	ViewToShadowMap = bias * ShadowProjection * ShadowTransform.GetInverse() * CameraTransform;
 	//ShadowTransform.Translate(vec3(0.0f, 0.0f, 0.0f));
+
+	///PARTICLE EFFECTS
+	//Update Patricle Effects
+	if (ConfettiEffectBlueRight.Playing == true)
+	{
+		ConfettiEffectBlueRight.Update(deltaTime);
+	}
+	if (ConfettiEffectBlueLeft.Playing == true)
+	{
+		ConfettiEffectBlueLeft.Update(deltaTime);
+	}
+	if (ConfettiEffectRedRight.Playing == true)
+	{
+		ConfettiEffectRedRight.Update(deltaTime);
+	}
+	if (ConfettiEffectRedLeft.Playing == true)
+	{
+		ConfettiEffectRedLeft.Update(deltaTime);
+	}
+	
+
 }
 /*
 ***Always remember to ask the three questions***
@@ -445,7 +648,7 @@ void Game::draw()
 	glViewport(0, 0, SHADOW_RESOLUTION, SHADOW_RESOLUTION);
 
 	GBufferPass.Bind();
-	GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 	//The reason of the inverse is because it is easier to do transformations
 	GBufferPass.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 	GBufferPass.SendUniformMat4("uProj", ShadowProjection.data, true);
@@ -463,53 +666,53 @@ void Game::draw()
 	//GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
 	//playerTwo->drawShadow(GBufferPass, 1);
 
-	GBufferPass.SendUniformMat4("uModel", mat4().data, true);
-	GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
+	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 
 	GBufferPass.UnBind();
 	//draw p1 shadow
 	if (playerOne->action < 2 || (playerOne->action >= ACTION_JAB && playerOne->action <= ACTION_UP_ATTACK))
 	{
 		AniShader.Bind();
-		AniShader.SendUniformMat4("uModel", mat4().data, true);
+		AniShader.SendUniformMat4("uModel", Transform().data, true);
 		AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 		AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
 
 		AniShader.SendUniformMat4("uModel", playerOne->transform.data, true);
 		playerOne->draw(AniShader, 0);
 
-		AniShader.SendUniformMat4("uModel", mat4().data, true);
+		AniShader.SendUniformMat4("uModel", Transform().data, true);
 	}
 	else {
 		GBufferPass.Bind();
-		GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+		GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 		GBufferPass.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 		GBufferPass.SendUniformMat4("uProj", ShadowProjection.data, true);
 		GBufferPass.SendUniformMat4("uModel", playerOne->transform.data, true);
 		playerOne->draw(GBufferPass, 0);
-		GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+		GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 	}
 	//draw p2 shadow
 	if (playerTwo->action < 2 || (playerTwo->action >= ACTION_JAB && playerTwo->action <= ACTION_UP_ATTACK))
 	{
 		AniShader.Bind();
-		AniShader.SendUniformMat4("uModel", mat4().data, true);
+		AniShader.SendUniformMat4("uModel", Transform().data, true);
 		AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 		AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
 
 		AniShader.SendUniformMat4("uModel", playerTwo->transform.data, true);
 		playerTwo->draw(AniShader, 0);
 
-		AniShader.SendUniformMat4("uModel", mat4().data, true);
+		AniShader.SendUniformMat4("uModel", Transform().data, true);
 	}
 	else {
 		GBufferPass.Bind();
-		GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+		GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 		GBufferPass.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 		GBufferPass.SendUniformMat4("uProj", ShadowProjection.data, true);
 		GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
 		playerTwo->draw(GBufferPass, 0);
-		GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+		GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 	}
 	glBindVertexArray(0);
 
@@ -520,7 +723,7 @@ void Game::draw()
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	GBufferPass.Bind();
-	GBufferPass.SendUniformMat4("uModel", mat4().data, true);
+	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 	//The reason of the inverse is because it is easier to do transformations
 	GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 	GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
@@ -548,7 +751,7 @@ void Game::draw()
 
 	///playerOne->draw(GBufferPass);
 	///playerTwo->draw(GBufferPass);
-	
+
 	/*SwordTexture.Bind();
 	glBindVertexArray(Sword.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, Sword.GetNumVertices());
@@ -587,13 +790,50 @@ void Game::draw()
 	glBindVertexArray(Court.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, Court.GetNumVertices());
 
-	BackgroundTexture.Bind();
-	glBindVertexArray(Background.VAO);
-	GBufferPass.SendUniformMat4("uModel", BGTransform.data, true);
-	GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
-	glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
-	
+	//BackgroundTexture.Bind();
+	//glBindVertexArray(Background.VAO);
+	//GBufferPass.SendUniformMat4("uModel", BGTransform.data, true);
+	//GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+	//GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
+	//glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
+
+	ChairTexture.Bind();
+	glBindVertexArray(Chairs.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, Chairs.GetNumVertices());
+
+	NetTexture.Bind();
+	glBindVertexArray(Nets.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, Nets.GetNumVertices());
+
+	lightJumboTexture.Bind();
+	glBindVertexArray(lightJumbo.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, lightJumbo.GetNumVertices());
+
+	adTexture.Bind();
+	glBindVertexArray(adRot.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, adRot.GetNumVertices());
+
+	bottleTexture.Bind();
+	glBindVertexArray(Bottle.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, Bottle.GetNumVertices());
+
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+
+
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
@@ -605,7 +845,7 @@ void Game::draw()
 
 	CourtTexture.UnBind();
 
-	for (int i = 0; i < Netbox.size(); i++) {
+	for (unsigned int i = 0; i < Netbox.size(); i++) {
 		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
 		glUniformMatrix4fv(modelLoc, 1, false, Netbox[i]->getTransform().data);
 
@@ -614,7 +854,7 @@ void Game::draw()
 
 		// Adjust model matrix for next object's location
 		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
+		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 	}
 	boxTexture.UnBind();
 
@@ -646,35 +886,15 @@ void Game::draw()
 
 	AniShader.UnBind();*/
 
-	if (playerOne->action < 2 || (playerOne->action >= ACTION_JAB && playerOne->action <= ACTION_UP_ATTACK))
-	{
-		AniShader.Bind();
-		AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-		AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
-		playerOne->draw(AniShader, 1);
-	}
-	else {
-		GBufferPass.Bind();
-		GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
-		GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-		GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
-		playerOne->draw(GBufferPass, 0);
-	}
+	AniShader.Bind();
+	AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
+	playerOne->draw(AniShader, 1);
 
-	if (playerTwo->action < 2 || (playerTwo->action >= ACTION_JAB && playerTwo->action <= ACTION_UP_ATTACK))
-	{
-		AniShader.Bind();
-		AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-		AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
-		playerTwo->draw(AniShader, 1);
-	}
-	else {
-		GBufferPass.Bind();
-		GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
-		GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-		GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
-		playerTwo->draw(GBufferPass, 0);
-	}
+	AniShader.Bind();
+	AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
+	playerTwo->draw(AniShader, 1);
 
 
 	drawScore();
@@ -718,10 +938,11 @@ void Game::draw()
 	DeferredLighting.SendUniform("uPositionMap", 3);
 	//DeferredLighting.SendUniform("uEdgeMap", 4);
 	//DeferredLighting.SendUniform("uStepTexture", 4);
-	DeferredLighting.SendUniform("LightDirection", mat3(CameraTransform.GetInverse()) * ShadowTransform.GetForward());
-	DeferredLighting.SendUniform("LightAmbient", vec3(0.8f, 0.8f, 0.8f)); //You can LERP through colours to make night to day cycles
-	DeferredLighting.SendUniform("LightDiffuse", vec3(0.8f, 0.8f, 0.8f));
-	DeferredLighting.SendUniform("LightSpecular", vec3(0.8f, 0.8f, 0.8f));
+
+	DeferredLighting.SendUniform("LightDirection", glm::vec3(CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.8f, 0.8f, 0.8f)); //You can LERP through colours to make night to day cycles
+	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.8f, 0.8f, 0.8f));
 	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
 
 	DeferredComposite.Bind();
@@ -733,15 +954,118 @@ void Game::draw()
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
-	//glActiveTexture(GL_TEXTURE4);
-	//glBindTexture(GL_TEXTURE_2D, EdgeMap.GetColorHandle(0));
-	//glActiveTexture(GL_TEXTURE5);
-	//StepTexture.Bind();
+
+
+
+	DrawFullScreenQuad();
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+
+	if (p1Score == true)
+	{
+		PointLight.Bind();
+
+		PointLight.SendUniform("uSceneAlbedo", 0);
+		PointLight.SendUniform("uNormalMap", 2);
+		PointLight.SendUniform("uPositionMap", 3);
+		glm::vec4 lightPos = CameraTransform.GetInverse().matData * glm::vec4(playerOne->getPosition(), 1.0f);
+		PointLight.SendUniform("uLightPosition", glm::vec3(lightPos));
+		PointLight.SendUniform("uLightColor", glm::vec3(1.0f, 0.0f, 0.0f));
+
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+		//std::cout << timer << std::endl;
+		if (timer >= 0.5 && timer < 1)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 1 && timer < 1.5)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 1.5 && timer < 2)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 2 && timer < 2.5)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 2.5 && timer < 3)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 3 && timer < 3.5)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 3.5 && timer < 4)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 4.1)
+			timer = 0;
+
 		DrawFullScreenQuad();
-	//glBindTexture(GL_TEXTURE_2D, GL_NONE); //Could I do StepTexture.UnBInd()?
-	//glActiveTexture(GL_TEXTURE4);
-	//glBindTexture(GL_TEXTURE_2D, GL_NONE);
-	//glActiveTexture(GL_TEXTURE3);
+
+		PointLight.UnBind();
+	}
+
+	if (p2Score == true)
+	{
+		PointLight.Bind();
+
+		PointLight.SendUniform("uSceneAlbedo", 0);
+		PointLight.SendUniform("uNormalMap", 2);
+		PointLight.SendUniform("uPositionMap", 3);
+		glm::vec4 lightPos = CameraTransform.GetInverse().matData * glm::vec4(playerTwo->getPosition(), 1.0f);
+		PointLight.SendUniform("uLightPosition", glm::vec3(lightPos));
+		PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 1.0f));
+
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+		//std::cout << timer << std::endl;
+		if (timer >= 0.5 && timer < 1)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 1 && timer < 1.5)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 1.0f));
+		}
+		else if (timer >= 1.5 && timer < 2)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 2 && timer < 2.5)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 1.0f));
+		}
+		else if (timer >= 2.5 && timer < 3)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 3 && timer < 3.5)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 1.0f));
+		}
+		else if (timer >= 3.5 && timer < 4)
+		{
+			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (timer >= 4.1)
+			timer = 0;
+
+		DrawFullScreenQuad();
+
+		PointLight.UnBind();
+	}
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_BLEND);
+
+
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
@@ -750,6 +1074,62 @@ void Game::draw()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
 
+	if (p1Score == true)
+	{
+		ParticleProgram.Bind();
+		ParticleProgram.SendUniform("uTex", 0);
+		ParticleProgram.SendUniformMat4("uModel", ConfettiEffectBlueRight.transform.data, true);
+		ParticleProgram.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+		ParticleProgram.SendUniformMat4("uProj", CameraProjection.data, true);
+
+		ConfettiEffectRedRight.Playing = true;
+		ConfettiEffectRedRight.Render();
+
+		ConfettiEffectRedLeft.Playing = true;
+		ConfettiEffectRedLeft.Render();
+
+		ParticleProgram.UnBind();
+
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+		std::cout << timer << std::endl;
+		if (timer >= 4)
+		{
+			ConfettiEffectRedRight.Playing = false;
+			ConfettiEffectRedLeft.Playing = false;
+			timer = 0;
+			p1Score = false;
+		}
+	}
+
+	if (p2Score == true)
+	{
+		ParticleProgram.Bind();
+		ParticleProgram.SendUniform("uTex", 0);
+		ParticleProgram.SendUniformMat4("uModel", ConfettiEffectRedRight.transform.data, true);
+		ParticleProgram.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
+		ParticleProgram.SendUniformMat4("uProj", CameraProjection.data, true);
+
+		ConfettiEffectBlueRight.Playing = true;
+		ConfettiEffectBlueRight.Render();
+
+		ConfettiEffectBlueLeft.Playing = true;
+		ConfettiEffectBlueLeft.Render();
+
+		ParticleProgram.UnBind();
+
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+		std::cout << timer << std::endl;
+		if (timer >= 4)
+		{
+			ConfettiEffectBlueRight.Playing = false;
+			ConfettiEffectBlueLeft.Playing = false;
+			timer = 0;
+			p2Score = false;
+		}
+	}
+
 	DeferredComposite.UnBind();
 	DeferredLighting.UnBind();
 
@@ -757,7 +1137,7 @@ void Game::draw()
 	drawTime();
 
 	/// Compute High Pass ///
-	glViewport(0, 0, WINDOW_WIDTH / BLOOM_DOWNSCALE, WINDOW_HEIGHT / BLOOM_DOWNSCALE);
+	glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
 
 	//Moving data to the back buffer, at the same time as our last post process
 	BloomHighPass.Bind();
@@ -775,7 +1155,7 @@ void Game::draw()
 	BloomHighPass.UnBind();
 
 	/// Compute Blur ///
-	glViewport(0, 0, WINDOW_WIDTH / BLOOM_DOWNSCALE, WINDOW_HEIGHT / BLOOM_DOWNSCALE);
+	glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
 	for (int i = 0; i < BLOOM_BLUR_PASSES; i++)
 	{
 		//Horizontal Blur
@@ -823,7 +1203,7 @@ void Game::draw()
 	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
-		DrawFullScreenQuad();
+	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
@@ -860,17 +1240,17 @@ void Game::drawHUD()
 	//now ready to draw 2d
 	//////////////////////////
 	GBufferPass.Bind();
-	hudTransform = mat4::Identity;
+	hudTransform = Transform::Identity();
 	//hudTransform.Translate(vec3(WINDOW_WIDTH * -0.5f, WINDOW_HEIGHT* -0.5f, 0));
 	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
 	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
 
 	//Draw Player 1 HUD
 	///draw quad for p1 pic
-	mat4 hudLoc;
+	Transform hudLoc = Transform::Identity();
 	hudLoc.Scale(100.0f);
-	hudLoc.RotateY(90);
-	hudLoc.Translate(vec3(-450, -360, 0));
+	hudLoc.RotateY(90.0f);
+	hudLoc.Translate(glm::vec3(-450, -360, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P1Hud.Bind();
@@ -878,10 +1258,10 @@ void Game::drawHUD()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	///draw quad for p1 bar
-	hudLoc = mat4();
-	hudLoc.Scale(vec3(100.0f, 100.0f, 100.0f * (playerOne->getMeter() / 200.0f)));
-	hudLoc.RotateY(90);
-	hudLoc.Translate(vec3(-450 - 0.7*(200.0f - playerOne->getMeter()), -360, 0));
+	hudLoc = Transform::Identity();
+	hudLoc.Scale(glm::vec3(100.0f * (playerOne->getMeter() / 200.0f), 100.0f, 100));
+	hudLoc.RotateY(90.0f);
+	hudLoc.Translate(glm::vec3(-450 - 0.7*(200.0f - playerOne->getMeter()), -360, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P1Bar.Bind();
@@ -890,10 +1270,10 @@ void Game::drawHUD()
 
 	//Draw Player 2 HUD
 	///draw quad for p2 pic
-	hudLoc = mat4();
+	hudLoc = Transform::Identity();
 	hudLoc.Scale(100.0f);
-	hudLoc.RotateY(90);
-	hudLoc.Translate(vec3(450, -360 , 0));
+	hudLoc.RotateY(90.0f);
+	hudLoc.Translate(glm::vec3(450, -360 , 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P2Hud.Bind();
@@ -901,10 +1281,10 @@ void Game::drawHUD()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	///draw quad for p2 bar
-	hudLoc = mat4();
-	hudLoc.Scale(vec3(100.0f, 100.0f, 100.0f * (playerTwo->getMeter() / 200.0f)));
-	hudLoc.RotateY(90);
-	hudLoc.Translate(vec3(450 + 0.7*(200.0f - playerTwo->getMeter()), -360, 0));
+	hudLoc = Transform::Identity();
+	hudLoc.Scale(glm::vec3(100.0f * (playerTwo->getMeter() / 200.0f), 100.0f, 100));
+	hudLoc.RotateY(90.0f);
+	hudLoc.Translate(glm::vec3(450 + 0.7*(200.0f - playerTwo->getMeter()), -360, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P2Bar.Bind();
@@ -948,31 +1328,31 @@ void Game::drawScore() {
 	GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 	GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
 	///score
-	mat4 hudLoc;
+	Transform hudLoc = Transform::Identity();
 	hudLoc.Scale(2.0f);
-	hudLoc.RotateY(90);
-	hudLoc.RotateZ(90);
-	hudLoc.Translate(vec3(-1, 7, -7));
+	hudLoc.RotateY(90.0f);
+	hudLoc.RotateX(-90.0f);
+	hudLoc.Translate(glm::vec3(-1, 11, -14));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[score1 % 10]->Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 	///score
-	hudLoc = mat4();
+	hudLoc = Transform::Identity();
 	hudLoc.Scale(2.0f);
-	hudLoc.RotateY(90);
-	hudLoc.RotateZ(90);
-	hudLoc.Translate(vec3(2, 7, -7));
+	hudLoc.RotateY(90.0f);
+	hudLoc.RotateX(-90.0f);
+	hudLoc.Translate(glm::vec3(2, 11, -14.1f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[10]->Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 	///score
-	hudLoc = mat4();
+	hudLoc = Transform::Identity();
 	hudLoc.Scale(2.0f);
-	hudLoc.RotateY(90);
-	hudLoc.RotateZ(90);
-	hudLoc.Translate(vec3(5, 7, -7));
+	hudLoc.RotateY(90.0f);
+	hudLoc.RotateX(-90.0f);
+	hudLoc.Translate(glm::vec3(5, 11, -14));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[score2 % 10]->Bind();
 	glBindVertexArray(HudObj.VAO);
@@ -1015,12 +1395,12 @@ void Game::drawTime()
 	//now ready to draw 2d
 	//////////////////////////
 	GBufferPass.Bind();
-	hudTransform = mat4::Identity;
+	hudTransform = Transform::Identity();
 	//hudTransform.Translate(vec3(WINDOW_WIDTH * -0.5f, WINDOW_HEIGHT* -0.5f, 0));
 	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
 	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
 
-	int timer = 300 - TotalGameTime;
+	int timer = 300 - (int)TotalGameTime;
 	if (timer < 0) timer = 0;
 	int min = (int)timer / 60;
 	int secT = ((int)timer % 60) / 10;
@@ -1031,11 +1411,11 @@ void Game::drawTime()
 
 	//Draw Time
 	///min
-	mat4 hudLoc;
+	Transform hudLoc;
 	hudLoc.Scale(40.0f);
-	hudLoc.RotateY(90);
-	hudLoc.RotateZ(90);
-	hudLoc.Translate(vec3(-50, 280, 0));
+	hudLoc.RotateY(90.0f);
+	hudLoc.RotateX(-90.0f);
+	hudLoc.Translate(glm::vec3(-50, 280, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[min]->Bind();
@@ -1043,11 +1423,11 @@ void Game::drawTime()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	///speerate
-	hudLoc = mat4();
+	hudLoc = Transform();
 	hudLoc.Scale(40.0f);
-	hudLoc.RotateY(90);
-	hudLoc.RotateZ(90);
-	hudLoc.Translate(vec3(0, 280, 0));
+	hudLoc.RotateY(90.0f);
+	hudLoc.RotateX(-90.0f);
+	hudLoc.Translate(glm::vec3(0, 280, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[10]->Bind();
@@ -1055,11 +1435,11 @@ void Game::drawTime()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	///sec tens
-	hudLoc = mat4();
+	hudLoc = Transform();
 	hudLoc.Scale(40.0f);
-	hudLoc.RotateY(90);
-	hudLoc.RotateZ(90);
-	hudLoc.Translate(vec3(50, 280, 0));
+	hudLoc.RotateY(90.0f);
+	hudLoc.RotateX(-90.0f);
+	hudLoc.Translate(glm::vec3(50, 280, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[secT]->Bind();
@@ -1067,11 +1447,11 @@ void Game::drawTime()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	///sec ones
-	hudLoc = mat4();
+	hudLoc = Transform();
 	hudLoc.Scale(40.0f);
-	hudLoc.RotateY(90);
-	hudLoc.RotateZ(90);
-	hudLoc.Translate(vec3(120 , 280, 0));
+	hudLoc.RotateY(90.0f);
+	hudLoc.RotateX(-90.0f);
+	hudLoc.Translate(glm::vec3(120 , 280, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[secO]->Bind();
@@ -1155,8 +1535,16 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 {
 	switch(key)
 	{
-	case 'w': //w
-		//inputs[0] = false;
+	case 'R': //w
+	case 'r': //w
+		score1 = 0;
+		score2 = 0;
+		playerOne->respawn();
+		playerTwo->respawn();
+		playerOne->setPosition(glm::vec3(-5, 0, 0));
+		playerTwo->setPosition(glm::vec3(5, 0, 0));
+		//updateTimer = new Timer();
+		TotalGameTime = 0.0f;
 		break;
 	case 'd': //d
 		//inputs[1] = false;

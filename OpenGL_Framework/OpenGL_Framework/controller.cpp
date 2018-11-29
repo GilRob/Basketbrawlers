@@ -180,8 +180,8 @@ namespace Input {
 		if (!m_connected[_index]) return false;
 		XINPUT_VIBRATION vibration;
 		memset(&vibration, 0, sizeof(XINPUT_VIBRATION));
-		vibration.wLeftMotorSpeed = _leftPower * 65535;
-		vibration.wRightMotorSpeed = _rightPower * 65535;
+		vibration.wLeftMotorSpeed = (WORD)_leftPower * 65535;
+		vibration.wRightMotorSpeed = (WORD)_rightPower * 65535;
 		XInputSetState(_index, &vibration);
 		return true;
 	}

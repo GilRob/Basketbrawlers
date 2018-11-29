@@ -228,19 +228,19 @@ void ShaderProgram::SendUniform(const std::string &name, float scalar)
 	glUniform1f(location, scalar);
 }
 
-void ShaderProgram::SendUniform(const std::string &name, const vec2 &vector)
+void ShaderProgram::SendUniform(const std::string &name, const glm::vec2 &vector)
 {
 	GLint location = GetUniformLocation(name);
 	glUniform2f(location, vector.x, vector.y);
 }
 
-void ShaderProgram::SendUniform(const std::string &name, const vec3 &vector)
+void ShaderProgram::SendUniform(const std::string &name, const glm::vec3 &vector)
 {
 	GLint location = GetUniformLocation(name);
 	glUniform3f(location, vector.x, vector.y, vector.z);
 }
 
-void ShaderProgram::SendUniform(const std::string &name, const vec4 &vector)
+void ShaderProgram::SendUniform(const std::string &name, const glm::vec4 &vector)
 {
 	GLint location = GetUniformLocation(name);
 	glUniform4f(location, vector.x, vector.y, vector.z, vector.w); //Usefule for colours?
@@ -250,14 +250,14 @@ void ShaderProgram::SendUniformMat3(const std::string &name, float *matrix, bool
 {
 	GLint location = GetUniformLocation(name);
 	//1 is the number of matrices
-	glUniformMatrix3fv(location, 1, !transpose, matrix);
+	glUniformMatrix3fv(location, 1, !transpose, matrix); //!transpose is cause of column-major - changed
 }
 //****SUPPOSED TO INVERSE TRANSPOSE? ASK FOR CLARIFICATION****//
 void ShaderProgram::SendUniformMat4(const std::string &name, float *matrix, bool transpose)
 {
 	GLint location = GetUniformLocation(name);
 	//1 is the number of matrices
-	glUniformMatrix4fv(location, 1, !transpose, matrix);
+	glUniformMatrix4fv(location, 1, !transpose, matrix); //!transpose is cause of column-major - changed
 }
 
 std::string ShaderProgram::ReadFile(const std::string &fileName) const

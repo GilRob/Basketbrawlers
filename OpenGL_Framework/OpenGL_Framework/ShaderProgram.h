@@ -1,8 +1,8 @@
 #pragma once
 #include <GL\glew.h>
 
-#include <MiniMath\Core.h>
-//#include <glm/glm.hpp>
+#include <glm/glm.hpp>
+#include <GLM\gtx\transform.hpp>
 #include <string>
 
 class ShaderProgram
@@ -36,9 +36,9 @@ public:
 	void SendUniform(const std::string &name, int integer);
 	void SendUniform(const std::string &name, unsigned int unsigned_nteger);
 	void SendUniform(const std::string &name, float scalar);
-	void SendUniform(const std::string &name, const vec2 &vector);
-	void SendUniform(const std::string &name, const vec3 &vector);
-	void SendUniform(const std::string &name, const vec4 &vector);
+	void SendUniform(const std::string &name, const glm::vec2 &vector);
+	void SendUniform(const std::string &name, const glm::vec3 &vector);
+	void SendUniform(const std::string &name, const glm::vec4 &vector);
 	void SendUniformMat3(const std::string &name, float *matrix, bool transpose);
 	void SendUniformMat4(const std::string &name, float *matrix, bool transpose);
 

@@ -5,6 +5,8 @@
 
 ParticleEffect::ParticleEffect()
 {
+	Gravity = 0.5;
+	Mass = 2;
 }
 
 ParticleEffect::~ParticleEffect()
@@ -48,10 +50,10 @@ bool ParticleEffect::Init(const std::string &textureFile, unsigned int maxPartic
 	}
 
 	_MaxParticles = maxParticles;
-	_Rate = rate;
+	_Rate = (float)rate;
 
-	_Particles.Positions = new vec3[_MaxParticles];
-	_Particles.Velocities = new vec3[_MaxParticles];
+	_Particles.Positions = new glm::vec3[_MaxParticles];
+	_Particles.Velocities = new glm::vec3[_MaxParticles];
 	_Particles.Alpha = new float[_MaxParticles];
 	_Particles.Ages = new float[_MaxParticles];
 	_Particles.Lifetimes = new float[_MaxParticles];
@@ -71,7 +73,7 @@ bool ParticleEffect::Init(const std::string &textureFile, unsigned int maxPartic
 	glEnableVertexAttribArray(2);	//Alpha
 
 	glBindBuffer(GL_ARRAY_BUFFER, _VBO_Position);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * _MaxParticles, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * _MaxParticles, NULL, GL_DYNAMIC_DRAW);
 	glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 
 	glBindBuffer(GL_ARRAY_BUFFER, _VBO_Size);
@@ -91,7 +93,7 @@ bool ParticleEffect::Init(const std::string &textureFile, unsigned int maxPartic
 
 void ParticleEffect::Update(float elapsed)
 {
-	int NumToSpawn = _Rate;
+	int NumToSpawn = (int)_Rate;
 
 	/// Create new particles ///
 	while (
@@ -100,10 +102,10 @@ void ParticleEffect::Update(float elapsed)
 		//We have more particles to generate this frame...
 		NumToSpawn > 0)
 	{
-		_Particles.Alpha[_NumCurrentParticles]		= LerpAlpha.x;
+		_Particles.Alpha[_NumCurrentParticles]		= RandomRangef(LerpAlpha.x, LerpAlpha.y);
 		_Particles.Ages[_NumCurrentParticles]		= 0.0f;
 		_Particles.Lifetimes[_NumCurrentParticles]	= RandomRangef(RangeLifetime.x, RangeLifetime.y);
-		_Particles.Size[_NumCurrentParticles]		= LerpSize.x;
+		_Particles.Size[_NumCurrentParticles]		= RandomRangef(LerpSize.x, LerpSize.y);
 		//Missing .Set which is what the video uses
 		//_Particles.Positions[_NumCurrentParticles] = vec3((RandomRangef(RangeX.x, RangeX.y), RandomRangef(RangeY.x, RangeY.y), RandomRangef(RangeZ.x, RangeZ.y)));
 		_Particles.Positions[_NumCurrentParticles].x = RandomRangef(RangeX.x, RangeX.y);
@@ -116,7 +118,7 @@ void ParticleEffect::Update(float elapsed)
 		_Particles.Velocities[_NumCurrentParticles].x = RandomRangef(-1.0f, 1.0f);
 		_Particles.Velocities[_NumCurrentParticles].y = RandomRangef(-1.0f, 1.0f);
 		_Particles.Velocities[_NumCurrentParticles].z = RandomRangef(-1.0f, 1.0f);
-		_Particles.Velocities[_NumCurrentParticles].Normalize();
+		_Particles.Velocities[_NumCurrentParticles] = glm::normalize(_Particles.Velocities[_NumCurrentParticles]);
 		_Particles.Velocities[_NumCurrentParticles] *= RandomRangef(RangeVelocity.x, RangeVelocity.y);
 
 		//counters...
@@ -144,12 +146,21 @@ void ParticleEffect::Update(float elapsed)
 			continue;
 		}
 
-		_Particles.Positions[i] += _Particles.Velocities[i] * elapsed;
+		if (HaveGravity)
+		{
+			//physics update
+			force = glm::vec3(0, 0 - Gravity, 0);
+			acceleration = force / Mass;
+			_Particles.Velocities[i] += acceleration;
+			_Particles.Positions[i] += _Particles.Velocities[i] * elapsed;
+		}
+		else
+			_Particles.Positions[i] += _Particles.Velocities[i] * elapsed;
 
 		float interp = _Particles.Ages[i] / _Particles.Lifetimes[i];
 		
-		_Particles.Alpha[i] = LERP(LerpAlpha.x, LerpAlpha.y, interp);
-		_Particles.Size[i]	= LERP(LerpSize.x, LerpSize.y, interp);
+		_Particles.Alpha[i] = glm::mix(LerpAlpha.x, LerpAlpha.y, interp);
+		_Particles.Size[i]	= glm::mix(LerpSize.x, LerpSize.y, interp);
 	}
 
 	//Update OpenGL on the changes
@@ -157,7 +168,7 @@ void ParticleEffect::Update(float elapsed)
 	glBindBuffer(GL_ARRAY_BUFFER, _VBO_Position);
 	//Call this because glBufferData will reallocate the entire array :O
 	//This will update the data in an existing array, update a small subset as you need to
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vec3) * _NumCurrentParticles, &_Particles.Positions[0]);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * _NumCurrentParticles, &_Particles.Positions[0]);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _VBO_Size);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * _NumCurrentParticles, &_Particles.Size[0]);

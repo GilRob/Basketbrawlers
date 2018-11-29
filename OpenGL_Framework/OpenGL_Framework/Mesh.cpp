@@ -2,7 +2,7 @@
 #include "Mesh.h"
 #include <fstream>
 #include <iostream>
-#include <MiniMath\Core.h>
+//#include <MiniMath\Core.h>
 
 
 #define CHAR_BUFFER_SIZE 128
@@ -137,9 +137,9 @@ bool Mesh::LoadFromFile(const std::vector<std::string> &files)
 		char inputString[CHAR_BUFFER_SIZE];
 
 		//Unique data
-		std::vector<vec3> vertexData;
-		std::vector<vec2> textureData;
-		std::vector<vec3> normalData;
+		std::vector<glm::vec3> vertexData;
+		std::vector<glm::vec2> textureData;
+		std::vector<glm::vec3> normalData;
 		//index/face data
 		std::vector<MeshFace> faceData;
 		//OpenGL ready data
@@ -166,7 +166,7 @@ bool Mesh::LoadFromFile(const std::vector<std::string> &files)
 			else if (std::strstr(inputString, "vn") != nullptr)
 			{
 				//This line as vertex data
-				vec3 temp;
+				glm::vec3 temp;
 				//Checks for the letter vn and then three floats
 				std::sscanf(inputString, "vn %f %f %f", &temp.x, &temp.y, &temp.z);
 				normalData.push_back(temp);
@@ -174,7 +174,7 @@ bool Mesh::LoadFromFile(const std::vector<std::string> &files)
 			else if (std::strstr(inputString, "vt") != nullptr)
 			{
 				//This line as vertex data
-				vec2 temp;
+				glm::vec2 temp;
 				//Checks for the letter vt tand then two floats
 				std::sscanf(inputString, "vt %f %f", &temp.x, &temp.y);
 				textureData.push_back(temp);
@@ -182,7 +182,7 @@ bool Mesh::LoadFromFile(const std::vector<std::string> &files)
 			else if (inputString[0] == 'v')
 			{
 				//This line as vertex data
-				vec3 temp;
+				glm::vec3 temp;
 				//Checks for the letter v and then three floats
 				std::sscanf(inputString, "v %f %f %f", &temp.x, &temp.y, &temp.z);
 				vertexData.push_back(temp);
@@ -224,7 +224,7 @@ bool Mesh::LoadFromFile(const std::vector<std::string> &files)
 
 		if (textureData.size() < 2)
 		{
-			textureData.push_back(vec2());
+			textureData.push_back(glm::vec2());
 		}
 
 		//unpack the data
@@ -304,7 +304,7 @@ bool Mesh::LoadFromFile(const std::vector<std::string> &files)
 //- Release data from OpenGL (VRAM)
 void Mesh::Unload()
 {
-	for (int c = 0; c < _NumFrames; ++c)
+	for (unsigned int c = 0; c < _NumFrames; ++c)
 	{
 		glDeleteBuffers(1, &VBO_Normals[c]);
 		glDeleteBuffers(1, &VBO_UVs[c]);
