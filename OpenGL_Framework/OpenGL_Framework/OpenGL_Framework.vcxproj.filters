@@ -156,5 +156,14 @@
     <None Include="Assets\Shaders\AnimationShader.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Assets\Shaders\PointLight.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\HudShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PassThroughLight.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

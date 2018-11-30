@@ -1,6 +1,8 @@
 #include "Game.h"
 #include "Utilities.h"
 
+#define FULLSCREEN true
+
 Game::Game()
 	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(1)
 	//This constructor in the initializer list is to solve the issue of creating a frame buffer object without no default constructor
@@ -53,6 +55,8 @@ void Game::initializeGame()
 	
 	//glutFullScreen();
 	InitFullScreenQuad();
+	if (FULLSCREEN)
+		glutFullScreen();
 
 	//Load All Textures
 	if (!bottleTexture.Load("./Assets/Textures/bottleTex.png"))
@@ -91,6 +95,12 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}
+	if (!ScoreTexture.Load("./Assets/Textures/score.png"))
+	{
+		std::cout << "bottle Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
 
 //=================================================================//
 	//Load models
@@ -122,6 +132,10 @@ void Game::initializeGame()
 	std::vector<std::string> hitBox;
 	hitBox.push_back("./Assets/Models/Hitbox.obj");
 	boxMesh.LoadFromFile(hitBox);
+
+	std::vector<std::string> scoreb;
+	scoreb.push_back("./Assets/Models/score.obj");
+	ScoreBoard.LoadFromFile(scoreb);
 
 //================================================================//
 	//Load Hud Obj and Texture
@@ -254,7 +268,7 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	if (!ConfettiEffectBlueRight.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)100, (unsigned int)100))
+	if (!ConfettiEffectBlueRight.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)50))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -265,14 +279,14 @@ void Game::initializeGame()
 	ConfettiEffectBlueRight.LerpSize = glm::vec2(1.0f, 2.0f);
 	ConfettiEffectBlueRight.RangeLifetime = glm::vec2(4.0f, 4.0f);
 	ConfettiEffectBlueRight.RangeVelocity = glm::vec2(-5.0f, 5.0f);
-	ConfettiEffectBlueRight.RangeX = glm::vec2(7.5f, 7.5f);
+	ConfettiEffectBlueRight.RangeX = glm::vec2(12.0f, 12.0f);
 	ConfettiEffectBlueRight.RangeY = glm::vec2(20.0f, 20.0f);
-	ConfettiEffectBlueRight.RangeZ = glm::vec2(-2.5f, -2.5f);
+	ConfettiEffectBlueRight.RangeZ = glm::vec2(-15.0f, -15.0f);
 	ConfettiEffectBlueRight.HaveGravity = true;
 	ConfettiEffectBlueRight.Mass = 2.0f;
 	ConfettiEffectBlueRight.Gravity = 0.2f;
 
-	if (!ConfettiEffectBlueLeft.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)100, (unsigned int)100))
+	if (!ConfettiEffectBlueLeft.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)50))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -282,14 +296,14 @@ void Game::initializeGame()
 	ConfettiEffectBlueLeft.LerpSize = glm::vec2(1.0f, 2.0f);
 	ConfettiEffectBlueLeft.RangeLifetime = glm::vec2(4.0f, 4.0f);
 	ConfettiEffectBlueLeft.RangeVelocity = glm::vec2(-5.0f, 5.0f);
-	ConfettiEffectBlueLeft.RangeX = glm::vec2(-7.5f, -7.5f);
+	ConfettiEffectBlueLeft.RangeX = glm::vec2(-12.0f, -12.0f);
 	ConfettiEffectBlueLeft.RangeY = glm::vec2(20.0f, 20.0f);
-	ConfettiEffectBlueLeft.RangeZ = glm::vec2(-2.5f, -2.5f);
+	ConfettiEffectBlueLeft.RangeZ = glm::vec2(-15.0f, -15.0f);
 	ConfettiEffectBlueLeft.HaveGravity = true;
 	ConfettiEffectBlueLeft.Mass = 2.0f;
 	ConfettiEffectBlueLeft.Gravity = 0.2f;
 
-	if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)100, (unsigned int)100))
+	if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)50))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -300,14 +314,14 @@ void Game::initializeGame()
 	ConfettiEffectRedRight.LerpSize = glm::vec2(1.0f, 2.0f);
 	ConfettiEffectRedRight.RangeLifetime = glm::vec2(4.0f, 4.0f);
 	ConfettiEffectRedRight.RangeVelocity = glm::vec2(-5.0f, 5.0f);
-	ConfettiEffectRedRight.RangeX = glm::vec2(7.5f, 7.5f);
+	ConfettiEffectRedRight.RangeX = glm::vec2(12.0f, 12.0f);
 	ConfettiEffectRedRight.RangeY = glm::vec2(20.0f, 20.0f);
-	ConfettiEffectRedRight.RangeZ = glm::vec2(-2.5f, -2.5f);
+	ConfettiEffectRedRight.RangeZ = glm::vec2(-15.0f, -15.0f);
 	ConfettiEffectRedRight.HaveGravity = true;
 	ConfettiEffectRedRight.Mass = 2.0f;
 	ConfettiEffectRedRight.Gravity = 0.2f;
 
-	if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)100, (unsigned int)100))
+	if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)50))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -317,23 +331,33 @@ void Game::initializeGame()
 	ConfettiEffectRedLeft.LerpSize = glm::vec2(1.0f, 2.0f);
 	ConfettiEffectRedLeft.RangeLifetime = glm::vec2(4.0f, 4.0f);
 	ConfettiEffectRedLeft.RangeVelocity = glm::vec2(-5.0f, 5.0f);
-	ConfettiEffectRedLeft.RangeX = glm::vec2(-7.5f, -7.5f);
+	ConfettiEffectRedLeft.RangeX = glm::vec2(-12.0f, -12.0f);
 	ConfettiEffectRedLeft.RangeY = glm::vec2(20.0f, 20.0f);
-	ConfettiEffectRedLeft.RangeZ = glm::vec2(-2.5f, -2.5f);
+	ConfettiEffectRedLeft.RangeZ = glm::vec2(-15.0f, -15.0f);
 	ConfettiEffectRedLeft.HaveGravity = true;
 	ConfettiEffectRedLeft.Mass = 2.0f;
 	ConfettiEffectRedLeft.Gravity = 0.2f;
 
 //=======================================================================//
 	//Init Scene & Frame Buffers
-
-	GBuffer.InitDepthTexture(WINDOW_WIDTH, WINDOW_HEIGHT);
-	//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
-	//These parameters can be changed to whatever you want
-	GBuffer.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE); //Flat color
-	GBuffer.InitColorTexture(1, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB16, GL_NEAREST, GL_CLAMP_TO_EDGE); //Normals (xyz)
-	//Buffer explained at Week 10 time: 5:30 - 7:45
-	GBuffer.InitColorTexture(2, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE); //View Space Positions (xyz)
+	if (FULLSCREEN) {
+		GBuffer.InitDepthTexture(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+		//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
+		//These parameters can be changed to whatever you want
+		GBuffer.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE); //Flat color
+		GBuffer.InitColorTexture(1, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGB16, GL_NEAREST, GL_CLAMP_TO_EDGE); //Normals (xyz)
+		//Buffer explained at Week 10 time: 5:30 - 7:45
+		GBuffer.InitColorTexture(2, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE); //View Space Positions (xyz)
+	}
+	else {
+		GBuffer.InitDepthTexture(WINDOW_WIDTH, WINDOW_HEIGHT);
+		//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
+		//These parameters can be changed to whatever you want
+		GBuffer.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE); //Flat color
+		GBuffer.InitColorTexture(1, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB16, GL_NEAREST, GL_CLAMP_TO_EDGE); //Normals (xyz)
+		//Buffer explained at Week 10 time: 5:30 - 7:45
+		GBuffer.InitColorTexture(2, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE); //View Space Positions (xyz)
+	}
 	if (!GBuffer.CheckFBO())
 	{
 		std::cout << "GB FBO failed to initialize.\n";
@@ -341,6 +365,9 @@ void Game::initializeGame()
 		exit(0);
 	}
 
+	if (FULLSCREEN)
+		DeferredComposite.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	else
 	DeferredComposite.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	if (!DeferredComposite.CheckFBO())
 	{
@@ -357,6 +384,9 @@ void Game::initializeGame()
 		exit(0);
 	}
 
+	if (FULLSCREEN)
+		WorkBuffer1.InitColorTexture(0,FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	else
 	WorkBuffer1.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
 	if (!WorkBuffer1.CheckFBO())
 	{
@@ -365,6 +395,9 @@ void Game::initializeGame()
 		exit(0);
 	}
 
+	if (FULLSCREEN)
+		WorkBuffer2.InitColorTexture(0, FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	else
 	WorkBuffer2.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
 	if (!WorkBuffer2.CheckFBO())
 	{
@@ -374,6 +407,9 @@ void Game::initializeGame()
 	}
 	//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
 	//These parameters can be changed to whatever you want
+	if (FULLSCREEN)
+		HudMap.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	else
 	HudMap.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	if (!HudMap.CheckFBO())
 	{
@@ -387,18 +423,25 @@ void Game::initializeGame()
 
 	/*CameraTransform.Translate(vec3(0.0f, 7.5f, 20.0f));
 	CameraTransform.RotateX(-15.0f);*/
-	CameraProjection = Transform::PerspectiveProjection(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 1.0f, 10000.0f);
-	//ShadowProjection.OrthographicProjection(35.0f, -35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
-	ShadowProjection = Transform::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -25.0f, 100.0f);
-	hudProjection = Transform::OrthographicProjection((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f, (float)WINDOW_HEIGHT * -0.5f, -10.0f, 100.0f);
-
+	if (FULLSCREEN) {
+		CameraProjection = Transform::PerspectiveProjection(60.0f, (float)FULLSCREEN_WIDTH / (float)FULLSCREEN_HEIGHT, 1.0f, 10000.0f);
+		//ShadowProjection.OrthographicProjection(35.0f, -35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
+		ShadowProjection = Transform::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -25.0f, 100.0f);
+		hudProjection = Transform::OrthographicProjection((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, -10.0f, 100.0f);
+	}
+	else {
+		CameraProjection = Transform::PerspectiveProjection(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 1.0f, 10000.0f);
+		//ShadowProjection.OrthographicProjection(35.0f, -35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
+		ShadowProjection = Transform::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -25.0f, 100.0f);
+		hudProjection = Transform::OrthographicProjection((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f, (float)WINDOW_HEIGHT * -0.5f, -10.0f, 100.0f);
+	}
 
 //=================================================================//
 	//Init Hitboxes for Net
 
-	Hitbox *hurt1 = new Hitbox(glm::vec3(25.5f, 12.5f, 0.0f), 2.0f);
+	Hitbox *hurt1 = new Hitbox(glm::vec3(25.1f, 12.5f, 0.0f), 2.0f);
 	Netbox.push_back(hurt1);
-	Hitbox *hurt2 = new Hitbox(glm::vec3(-25.5f, 12.5f, 0.0f), 2.0f);
+	Hitbox *hurt2 = new Hitbox(glm::vec3(-25.1f, 12.5f, 0.0f), 2.0f);
 	Netbox.push_back(hurt2);
 	score1 = 0;
 	score2 = 0;
@@ -549,13 +592,13 @@ void Game::update()
 	//Make sure to do the reverse of the transform orders due to the change from row-major to column-major, it reverses all mathematic operations
 	CameraTransform = Transform::Identity();
 	//glm::rotate(CameraTransform, (-20.0f - abs(sqrtf(dist*0.01f)*10.0f)), glm::vec3(1.0f, 0.0f, 0.0f));
-	CameraTransform.RotateX(-20.0f - abs(sqrtf(dist*0.01f)*10.0f));
+	CameraTransform.RotateX(-20.0f - abs(sqrtf(dist*0.01f)*5.0f));
 	//CameraTransform.Translate(vec3(0.0f, 7.5f, 11.0f));
 	/*glm::translate(CameraTransform,
 		glm::vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, 
 			abs(sqrtf(dist*0.01f)*20.0f) + 10.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), 
 			dist + 10));*/
-	CameraTransform.Translate(glm::vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, abs(sqrtf(dist*0.01f)*20.0f) + 10.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), dist+10));
+	CameraTransform.Translate(glm::vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, abs(sqrtf(dist*0.01f)*18.5f) + 10.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), (dist* 0.75f)+9));
 	//glm::rotate(CameraTransform, 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	CameraTransform.RotateY(0.0f);
 	//CameraTransform.RotateZ(180.0f);
@@ -696,6 +739,9 @@ void Game::draw()
 	AniShader.UnBind();
 
 	/// Generate The Scene ///
+	if(FULLSCREEN)
+		glViewport(0, 0,FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	else
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	GBufferPass.Bind();
@@ -782,6 +828,9 @@ void Game::draw()
 	glBindVertexArray(adRot.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, adRot.GetNumVertices());
 
+	ScoreTexture.Bind();
+	glBindVertexArray(ScoreBoard.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, ScoreBoard.GetNumVertices());
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -830,18 +879,20 @@ void Game::draw()
 
 	CourtTexture.UnBind();
 
-	for (unsigned int i = 0; i < Netbox.size(); i++) {
-		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
-		glUniformMatrix4fv(modelLoc, 1, false, Netbox[i]->getTransform().data);
-
-		boxTexture.Bind();
-		glBindVertexArray(boxMesh.VAO);
-
-		// Adjust model matrix for next object's location
-		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
-	}
-	boxTexture.UnBind();
+	//DRAW NET HITBOX CODE
+	//	for (unsigned int i = 0; i < Netbox.size(); i++) {
+	//		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
+	//		glUniformMatrix4fv(modelLoc, 1, false, Netbox[i]->getTransform().data);
+	//
+	//		boxTexture.Bind();
+	//		glBindVertexArray(boxMesh.VAO);
+	//
+	//		// Adjust model matrix for next object's location
+	//		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
+	//		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
+	//	}
+	//	boxTexture.UnBind();
+	
 
 	playerOne->drawBoxes(GBufferPass);
 	playerTwo->drawBoxes(GBufferPass);
@@ -890,7 +941,10 @@ void Game::draw()
 
 
 	/// Detect Edges ///
-	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	if (FULLSCREEN)
+		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	else
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	//Rednering it with the shader
 	/*SobelPass.Bind();
@@ -913,7 +967,10 @@ void Game::draw()
 	SobelPass.UnBind();*/
 
 	/// Create Scene From GBuffer ///
-	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	if (FULLSCREEN)
+		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	else
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	DeferredLighting.Bind();
 	DeferredLighting.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
@@ -954,7 +1011,7 @@ void Game::draw()
 		PointLight.SendUniform("uSceneAlbedo", 0);
 		PointLight.SendUniform("uNormalMap", 2);
 		PointLight.SendUniform("uPositionMap", 3);
-		glm::vec4 lightPos = CameraTransform.GetInverse().matData * glm::vec4(playerOne->getPosition(), 1.0f);
+		glm::vec4 lightPos = CameraTransform.GetInverse().matData * glm::vec4(0.0f, 5.0f, 0.0f, 1.0f);
 		PointLight.SendUniform("uLightPosition", glm::vec3(lightPos));
 		PointLight.SendUniform("uLightColor", glm::vec3(1.0f, 0.0f, 0.0f));
 
@@ -1004,7 +1061,7 @@ void Game::draw()
 		PointLight.SendUniform("uSceneAlbedo", 0);
 		PointLight.SendUniform("uNormalMap", 2);
 		PointLight.SendUniform("uPositionMap", 3);
-		glm::vec4 lightPos = CameraTransform.GetInverse().matData * glm::vec4(playerTwo->getPosition(), 1.0f);
+		glm::vec4 lightPos = CameraTransform.GetInverse().matData * glm::vec4(0.0f, 5.0f, 0.0f, 1.0f);
 		PointLight.SendUniform("uLightPosition", glm::vec3(lightPos));
 		PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -1122,6 +1179,9 @@ void Game::draw()
 	drawTime();
 
 	/// Compute High Pass ///
+	if (FULLSCREEN)
+		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
+	else
 	glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
 
 	//Moving data to the back buffer, at the same time as our last post process
@@ -1140,12 +1200,18 @@ void Game::draw()
 	BloomHighPass.UnBind();
 
 	/// Compute Blur ///
+	if(FULLSCREEN)
+		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
+	else
 	glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
 	for (int i = 0; i < BLOOM_BLUR_PASSES; i++)
 	{
 		//Horizontal Blur
 		BlurHorizontal.Bind();
 		BlurHorizontal.SendUniform("uTex", 0);
+		if (FULLSCREEN)
+			BlurHorizontal.SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
+		else
 		BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
 
 		WorkBuffer2.Bind();
@@ -1161,6 +1227,9 @@ void Game::draw()
 		//Vertical Blur
 		BlurVertical.Bind();
 		BlurVertical.SendUniform("uTex", 0);
+		if(FULLSCREEN)
+			BlurVertical.SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
+		else
 		BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
 
 		WorkBuffer1.Bind();
@@ -1178,6 +1247,9 @@ void Game::draw()
 
 
 	/// Composite To Back Buffer ///
+	if (FULLSCREEN)
+		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	else
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	BloomComposite.Bind();
@@ -1216,6 +1288,9 @@ void Game::drawHUD()
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
 	//gluOrtho2D(0.0, 1.0, 0.0, 1.0);//create ortho
+	if (FULLSCREEN)
+		gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
+	else
 	gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();//save old state
@@ -1233,9 +1308,15 @@ void Game::drawHUD()
 	//Draw Player 1 HUD
 	///draw quad for p1 pic
 	Transform hudLoc = Transform::Identity();
-	hudLoc.Scale(100.0f);
+	if (FULLSCREEN) {
+		hudLoc.Scale(150.0f);
+		hudLoc.Translate(glm::vec3(-675, -540, 0));
+	}
+	else {
+		hudLoc.Scale(100.0f);
+		hudLoc.Translate(glm::vec3(-450, -360, 0));
+	}
 	hudLoc.RotateY(90.0f);
-	hudLoc.Translate(glm::vec3(-450, -360, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P1Hud.Bind();
@@ -1244,9 +1325,16 @@ void Game::drawHUD()
 
 	///draw quad for p1 bar
 	hudLoc = Transform::Identity();
-	hudLoc.Scale(glm::vec3(100.0f * (playerOne->getMeter() / 200.0f), 100.0f, 100));
+	
+	if (FULLSCREEN) {
+		hudLoc.Scale(glm::vec3(150.0f * (playerOne->getMeter() / 200.0f), 150.0f, 150.0f));
+		hudLoc.Translate(glm::vec3(-675 - 1.05*(200.0f - playerOne->getMeter()), -540, 0));
+	}
+	else {
+		hudLoc.Scale(glm::vec3(100.0f * (playerOne->getMeter() / 200.0f), 100.0f, 100));
+		hudLoc.Translate(glm::vec3(-450 - 0.7*(200.0f - playerOne->getMeter()), -360, 0));
+	}
 	hudLoc.RotateY(90.0f);
-	hudLoc.Translate(glm::vec3(-450 - 0.7*(200.0f - playerOne->getMeter()), -360, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P1Bar.Bind();
@@ -1256,9 +1344,15 @@ void Game::drawHUD()
 	//Draw Player 2 HUD
 	///draw quad for p2 pic
 	hudLoc = Transform::Identity();
-	hudLoc.Scale(100.0f);
+	if (FULLSCREEN) {
+		hudLoc.Scale(150.0f);
+		hudLoc.Translate(glm::vec3(675, -540, 0));
+	}
+	else {
+		hudLoc.Scale(100.0f);
+		hudLoc.Translate(glm::vec3(450, -360, 0));
+	}
 	hudLoc.RotateY(90.0f);
-	hudLoc.Translate(glm::vec3(450, -360 , 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P2Hud.Bind();
@@ -1267,9 +1361,15 @@ void Game::drawHUD()
 
 	///draw quad for p2 bar
 	hudLoc = Transform::Identity();
-	hudLoc.Scale(glm::vec3(100.0f * (playerTwo->getMeter() / 200.0f), 100.0f, 100));
+	if (FULLSCREEN) {
+		hudLoc.Scale(glm::vec3(150.0f * (playerTwo->getMeter() / 200.0f), 150.0f, 150.0f));
+		hudLoc.Translate(glm::vec3(675 + 1.05*(200.0f - playerTwo->getMeter()), -540, 0));
+	}
+	else {
+		hudLoc.Scale(glm::vec3(100.0f * (playerTwo->getMeter() / 200.0f), 100.0f, 100));
+		hudLoc.Translate(glm::vec3(450 + 0.7*(200.0f - playerTwo->getMeter()), -360, 0));
+	}
 	hudLoc.RotateY(90.0f);
-	hudLoc.Translate(glm::vec3(450 + 0.7*(200.0f - playerTwo->getMeter()), -360, 0));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	P2Bar.Bind();
@@ -1317,7 +1417,7 @@ void Game::drawScore() {
 	hudLoc.Scale(2.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(-1, 15, -17));
+	hudLoc.Translate(glm::vec3(-1, 4, -12));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[score1 % 10]->Bind();
 	glBindVertexArray(HudObj.VAO);
@@ -1327,7 +1427,7 @@ void Game::drawScore() {
 	hudLoc.Scale(2.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(2, 15, -17.1f));
+	hudLoc.Translate(glm::vec3(2, 4, -12.1f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[10]->Bind();
 	glBindVertexArray(HudObj.VAO);
@@ -1337,7 +1437,7 @@ void Game::drawScore() {
 	hudLoc.Scale(2.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(5, 15, -17));
+	hudLoc.Translate(glm::vec3(5, 4, -12));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[score2 % 10]->Bind();
 	glBindVertexArray(HudObj.VAO);
@@ -1371,6 +1471,9 @@ void Game::drawTime()
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
 	//gluOrtho2D(0.0, 1.0, 0.0, 1.0);//create ortho
+	if (FULLSCREEN)
+		gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
+	else
 	gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();//save old state
@@ -1397,10 +1500,16 @@ void Game::drawTime()
 	//Draw Time
 	///min
 	Transform hudLoc;
-	hudLoc.Scale(40.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(-50, 280, 0));
+	if (FULLSCREEN) {
+		hudLoc.Translate(glm::vec3(-75, 420, 0));
+		hudLoc.Scale(60.0f);
+	}
+	else {
+		hudLoc.Translate(glm::vec3(-50, 280, 0));
+		hudLoc.Scale(40.0f);
+	}
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[min]->Bind();
@@ -1409,10 +1518,16 @@ void Game::drawTime()
 
 	///speerate
 	hudLoc = Transform();
-	hudLoc.Scale(40.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(0, 280, 0));
+	if (FULLSCREEN) {
+		hudLoc.Translate(glm::vec3(0, 420, 0));
+		hudLoc.Scale(60.0f);
+	}
+	else {
+		hudLoc.Translate(glm::vec3(0, 280, 0));
+		hudLoc.Scale(40.0f);
+	}
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[10]->Bind();
@@ -1421,10 +1536,16 @@ void Game::drawTime()
 
 	///sec tens
 	hudLoc = Transform();
-	hudLoc.Scale(40.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(50, 280, 0));
+	if (FULLSCREEN) {
+		hudLoc.Translate(glm::vec3(75, 420, 0));
+		hudLoc.Scale(60.0f);
+	}
+	else {
+		hudLoc.Translate(glm::vec3(50, 280, 0));
+		hudLoc.Scale(40.0f);
+	}
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[secT]->Bind();
@@ -1433,10 +1554,16 @@ void Game::drawTime()
 
 	///sec ones
 	hudLoc = Transform();
-	hudLoc.Scale(40.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(120 , 280, 0));
+	if (FULLSCREEN) {
+		hudLoc.Translate(glm::vec3(180, 420, 0));
+		hudLoc.Scale(60.0f);
+	}
+	else {
+		hudLoc.Translate(glm::vec3(120, 280, 0));
+		hudLoc.Scale(40.0f);
+	}
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[secO]->Bind();
@@ -1559,6 +1686,7 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		//inputs2[3] = false;
 		break;
 	case '.': //a
+		//PointLight.ReloadShader();
 		//inputs2[4] = false;
 		break;
 	case '/': //b

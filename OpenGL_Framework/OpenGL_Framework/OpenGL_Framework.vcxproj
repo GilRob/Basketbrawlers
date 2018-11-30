@@ -110,11 +110,14 @@
     <None Include="Assets\Shaders\DeferredLighting.frag" />
     <None Include="Assets\Shaders\GBufferPass.frag" />
     <None Include="Assets\Shaders\GreyScalePost.frag" />
+    <None Include="Assets\Shaders\HudShader.frag" />
     <None Include="Assets\Shaders\Particles\BillBoard.frag" />
     <None Include="Assets\Shaders\Particles\BillBoard.geom" />
     <None Include="Assets\Shaders\Particles\BillBoard.vert" />
     <None Include="Assets\Shaders\PassThrough.vert" />
+    <None Include="Assets\Shaders\PassThroughLight.vert" />
     <None Include="Assets\Shaders\Phong.frag" />
+    <None Include="Assets\Shaders\PointLight.frag" />
     <None Include="Assets\Shaders\StaticGeometry.vert" />
     <None Include="Assets\Shaders\Toon\Sobel.frag" />
   </ItemGroup>

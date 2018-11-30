@@ -20,6 +20,8 @@
 
 #define WINDOW_WIDTH			1280
 #define WINDOW_HEIGHT			720
+#define FULLSCREEN_WIDTH		1920
+#define FULLSCREEN_HEIGHT		1080
 #define FRAMES_PER_SECOND		60
 #define BLOOM_THRESHOLD			0.33f
 #define BLOOM_DOWNSCALE			3.0f
@@ -97,6 +99,8 @@ public:
 	Texture adTexture;
 	Mesh Bottle;
 	Texture bottleTexture;
+	Texture ScoreTexture;
+	Mesh ScoreBoard;
 
 	/// FRAMEBUFFERS ///
 	FrameBuffer GBuffer; //Utility buffer to hold positions and normals

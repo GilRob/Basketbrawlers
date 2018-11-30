@@ -102,16 +102,17 @@ public:
 	void comboAdd() {
 		if (comboTimer < comboMaxTime) {
 			comboCount++;
-			comboMeter += (2 + (int)(comboCount));//amount added to combo
+			//comboMeter += (2 + (int)(comboCount));//amount added to combo
 			resetTimer();
 		}
 		else {
 			comboClear();
 			resetTimer();
 		}
+		comboMeter += (2 + (int)(comboCount));//amount added to combo
 		std::cout << "Count: " << comboCount << " Meter: " << comboMeter << std::endl;
 	}
-	void comboClear() { comboCount = 0; std::cout << comboCount << std::endl; }
+	void comboClear() { comboCount = 0; }
 	void resetMeter() { comboMeter = 0; comboClear(); }
 	void comboTick() {
 		if (comboMeter < 0) {

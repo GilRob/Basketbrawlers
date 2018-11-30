@@ -1,10 +1,10 @@
 #include "character.h"
 
 //new push
-#define BASE_ANI_TOGGLE true//non-offensive animations
-#define G_ATK_ANI_TOGGLE true//ground attacks
-#define A_ATK_ANI_TOGGLE true//aerials
-#define S_ATK_ANI_TOGGLE true//specials
+#define BASE_ANI_TOGGLE false//non-offensive animations
+#define G_ATK_ANI_TOGGLE false//ground attacks
+#define A_ATK_ANI_TOGGLE false//aerials
+#define S_ATK_ANI_TOGGLE false//specials
 #define HITBOX_TOGGLE false//visual hitboxes
 #define HURTBOX_TOGGLE false//visual hurtboxes
 
@@ -467,8 +467,12 @@ void Character::update(int t, std::vector<bool> inputs) {
 		velocity.x = (0 - runSpeed);
 
 	//friction
-	if (position.y <= 0.0f && (((int)inputs[1] - (int)inputs[3]) == 0 || (action != ACTION_WALK && action != ACTION_RUN && action != ACTION_INTIAL_DASH && action != ACTION_PREJUMP && action != ACTION_JUMP && action != ACTION_SIDE_ATTACK))) {
-		velocity.x = velocity.x * 0.7f;
+	if (position.y <= 0.0f && (((int)inputs[1] - (int)inputs[3]) == 0 || (action != ACTION_WALK && action != ACTION_RUN && action != ACTION_INTIAL_DASH && action != ACTION_PREJUMP && action != ACTION_JUMP))) {
+		if (action != ACTION_SIDE_ATTACK)
+			velocity.x = velocity.x * 0.7f;
+		else
+			velocity.x = velocity.x * 0.95f;
+
 	}
 	if (position.y > 0.0f && !inputs[1] && !inputs[3]) {
 		velocity.x = velocity.x * 0.95f;
@@ -793,6 +797,10 @@ Transform Character::atkInputHandler(std::vector<bool> inputs)
 		if (inputs[7] || inputs[8])
 			force.x *= 2.0f;
 	}
+	///SHIELD
+	else if (((inputs[9] && (action < 8)) || action == ACTION_BLOCK)) {//just r
+		result = block(inputs[9]);
+	}
 	///fall
 	else if (action == ACTION_FALL) {
 		result = fall();
@@ -803,10 +811,6 @@ Transform Character::atkInputHandler(std::vector<bool> inputs)
 	///prejump
 	else if ((inputs[6] && (action == ACTION_IDLE || action == ACTION_RUN || action == ACTION_WALK || action == ACTION_INTIAL_DASH)) || action == ACTION_PREJUMP) {
 		result = prejump();
-	}
-	///SHIELD
-	else if (((inputs[9] && (action < 10)) || action == ACTION_BLOCK)) {//just B = Neutral Special
-		result = block(inputs[9]);
 	}
 	//GROUNDED
 	else if ((inputs[2] && inputs[4]) || action == ACTION_DOWN_ATTACK) {//down & A = Dtilt
@@ -1522,7 +1526,7 @@ Transform Character::nSpecial(bool charging)
 {
 	//CHARGABLE SPECIAL
 	int maxCharge = 170;
-	int endlag = 30;
+	int endlag = 33;
 	int startLag = 10;
 
 	Transform result;
@@ -1557,13 +1561,17 @@ Transform Character::nSpecial(bool charging)
 			index = 7;
 		}
 		//if still charging
-		else if (charging && currentFrame > (unsigned int)startLag && activeFrames < (unsigned int)maxCharge) {
+		else if (charging && currentFrame > (unsigned int)startLag && activeFrames == (unsigned int)maxCharge) {
 			comboMeter--;
+			if (index > 7) {
+				index = 7;
+				aniTimer = 0;
+			}
 		}
 		//max charge move
 		if (currentFrame >= activeFrames && activeFrames == maxCharge) {
 			//create hitbox
-			float _kb = 20.5f + (10.0f * (currentFrame * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			float _kb = 20.5f + (15.0f * (currentFrame * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			unsigned int angle = 45;
 			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 2.2f, 0.1f), 2.6f, _kb, (float)angle, 7, 0, glm::vec3((-0.5f + (int)facingRight)*2.0f, -0.4f, 0.0f));
 			newAtk->spline = true;
@@ -1588,16 +1596,10 @@ Transform Character::nSpecial(bool charging)
 			action = ACTION_PLACEHOLDER;
 			return idle();
 		}
-		else {
-			if (index > 7) {
-				index = 7;
-				aniTimer = 0;
-			}
-		}
 
 		//animation every frame
 		//glm::rotate(result, (float)currentFrame * 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-		result.RotateY( currentFrame * 1.0f);
+		//result.RotateY( currentFrame * 1.0f);
 
 		currentFrame++;
 	}
@@ -1620,7 +1622,9 @@ Transform Character::sSpecial()
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
 
-		if(currentFrame < 31)
+		if(currentFrame > 7 && currentFrame < 20)
+			position.x += (-0.5f + (int)facingRight)*0.7f;
+		else if(currentFrame > 3 && currentFrame < 28)
 			position.x += (-0.5f + (int)facingRight)*0.3f;
 
 		if (currentFrame == 5) {
@@ -1633,7 +1637,7 @@ Transform Character::sSpecial()
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == 28) {
-			float _kb = 12.5f + (6.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			float _kb = 12.5f + (12.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.5f, 0.6f, 0.1f), 3.8f, _kb, 75, 7, 0, glm::vec3((-0.5f + (int)facingRight)*1.95f, 0.5f, 0.0f));
 			newAtk->spline = true;
 			newAtk->facingRight = facingRight;
@@ -1676,7 +1680,7 @@ Transform Character::dSpecial()
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
 		if (currentFrame == 8) {
-			float _kb = 11.5f + (6.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			float _kb = 11.5f + (11.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(glm::vec3(0.05f, 1.0f, 0.1f), 2.7f, _kb, 75, 5, 0, glm::vec3(0.3f, 0.0f, 0.0f));
 			Hitbox *newAtk2 = new Hitbox(glm::vec3(-0.05f, 1.0f, 0.1f), 2.7f, _kb, 75, 5, 0, glm::vec3(-0.3f, 0.0f, 0.0f));
 			newAtk->facingRight = facingRight;
@@ -1719,7 +1723,7 @@ Transform Character::uSpecial()
 			//velocity.y = jumpForce * 1.1f;
 		}
 		if (currentFrame == 8) {
-			float _kb = 15.0f + (6.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			float _kb = 15.0f + (16.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 0.7f, 0.1f), 2.9f, _kb, 88, 7, 0, glm::vec3((-0.5f + (int)facingRight)*1.9f, 0.55f, 0.0f));
 			newAtk->spline = true;
 			newAtk->facingRight = facingRight;
