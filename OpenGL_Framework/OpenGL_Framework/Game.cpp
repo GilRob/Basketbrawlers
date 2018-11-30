@@ -982,9 +982,9 @@ void Game::draw()
 	//DeferredLighting.SendUniform("uStepTexture", 4);
 
 	DeferredLighting.SendUniform("LightDirection", glm::vec3(CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
-	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.8f, 0.8f, 0.8f)); //You can LERP through colours to make night to day cycles
-	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.8f, 0.8f, 0.8f));
+	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
+	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
 	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
 
 	DeferredComposite.Bind();
@@ -1598,8 +1598,9 @@ void Game::keyboardDown(unsigned char key, int mouseX, int mouseY)
 	//std::cout << key << " : " << (int)key << std::endl;
 	switch (key)
 	{
-	//case 27: // the escape key
-		//break;
+	case 27: // the escape key
+		exit(0);
+		break;
 	case 'w': //w
 		//inputs[0] = true;
 		break;
