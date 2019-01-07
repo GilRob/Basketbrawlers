@@ -79,6 +79,7 @@
     <ClCompile Include="hitbox.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="object.cpp" />
     <ClCompile Include="ParticleEffect.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
@@ -93,6 +94,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="hitbox.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="object.h" />
     <ClInclude Include="ParticleEffect.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="ShaderProgram.h" />

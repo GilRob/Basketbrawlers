@@ -28,23 +28,11 @@ Game::~Game()
 	ParticleProgram.UnLoad();
 	boxMesh.Unload();
 	boxTexture.Unload();
-	Court.Unload();
-	CourtTexture.Unload();
 	HudObj.Unload();
 	P1Hud.Unload();
 	P1Bar.Unload();
 	P2Hud.Unload();
 	P2Bar.Unload();
-	Chairs.Unload();
-	ChairTexture.Unload();
-	Nets.Unload();
-	NetTexture.Unload();
-	lightJumbo.Unload();
-	lightJumboTexture.Unload();
-	adRot.Unload();
-	adTexture.Unload();
-	Bottle.Unload();
-	bottleTexture.Unload();
 }
 
 void Game::initializeGame()
@@ -58,84 +46,19 @@ void Game::initializeGame()
 	if (FULLSCREEN)
 		glutFullScreen();
 
-	//Load All Textures
-	if (!bottleTexture.Load("./Assets/Textures/bottleTex.png"))
-	{
-		std::cout << "bottle Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-	if (!adTexture.Load("./Assets/Textures/words.png"))
-	{
-		std::cout << "lightJumbo Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-	if (!lightJumboTexture.Load("./Assets/Textures/lightJumboTex.png"))
-	{
-		std::cout << "lightJumbo Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-	if (!NetTexture.Load("./Assets/Textures/net.png"))
-	{
-		std::cout << "net Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-	if (!ChairTexture.Load("./Assets/Textures/chair.png"))
-	{
-		std::cout << "Chair Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-	if (!CourtTexture.Load("./Assets/Textures/court.png"))
-	{
-		std::cout << "Court Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-	if (!ScoreTexture.Load("./Assets/Textures/score.png"))
-	{
-		std::cout << "bottle Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-
 //=================================================================//
-	//Load models
+	//Load All Objects
+	///Object(*mesh path*, *texture path*, *enable blending?*);
+	gameObjects.push_back(new Object("./Assets/Models/nets.obj", "./Assets/Textures/net.png", "net", true));
+	gameObjects.push_back(new Object("./Assets/Models/chairs.obj", "./Assets/Textures/chair.png", "chairs"));
+	gameObjects.push_back(new Object("./Assets/Models/lightsJumbo.obj", "./Assets/Textures/lightJumboTex.png", "jumbotron", true));
+	gameObjects.push_back(new Object("./Assets/Models/ad.obj", "./Assets/Textures/words.png", "words"));
+	gameObjects.push_back(new Object("./Assets/Models/bottles.obj", "./Assets/Textures/bottleTex.png","bottles", true));
+	gameObjects.push_back(new Object("./Assets/Models/court.obj", "./Assets/Textures/court.png", "court"));
+	gameObjects.push_back(new Object("./Assets/Models/score.obj", "./Assets/Textures/score.png", "score"));
 
-	std::vector<std::string> chairs;
-	chairs.push_back("./Assets/Models/chairs.obj");
-	Chairs.LoadFromFile(chairs);
 
-	std::vector<std::string> nets;
-	nets.push_back("./Assets/Models/nets.obj");
-	Nets.LoadFromFile(nets);
-
-	std::vector<std::string> lJ;
-	lJ.push_back("./Assets/Models/lightsJumbo.obj");
-	lightJumbo.LoadFromFile(lJ);
-
-	std::vector<std::string> ad;
-	ad.push_back("./Assets/Models/ad.obj");
-	adRot.LoadFromFile(ad);
-
-	std::vector<std::string> bottles;
-	bottles.push_back("./Assets/Models/bottles.obj");
-	Bottle.LoadFromFile(bottles);
-
-	std::vector<std::string> court;
-	court.push_back("./Assets/Models/court.obj");
-	Court.LoadFromFile(court);
-
-	std::vector<std::string> hitBox;
-	hitBox.push_back("./Assets/Models/Hitbox.obj");
-	boxMesh.LoadFromFile(hitBox);
-
-	std::vector<std::string> scoreb;
-	scoreb.push_back("./Assets/Models/score.obj");
-	ScoreBoard.LoadFromFile(scoreb);
+	hitboxObj = new Object("./Assets/Models/Hitbox.obj", "./Assets/Textures/redclear.png", "hitbox", true);
 
 //================================================================//
 	//Load Hud Obj and Texture
@@ -165,13 +88,6 @@ void Game::initializeGame()
 	if (!P2Bar.Load("./Assets/Textures/PlayerTwoBar.png"))
 	{
 		std::cout << "BKG Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-
-	if (!(boxTexture.Load("./Assets/Textures/redclear.png")))
-	{
-		std::cout << "Character Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
@@ -674,8 +590,10 @@ void Game::draw()
 
 	ShadowMap.Bind();
 
-	glBindVertexArray(Court.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, Court.GetNumVertices());
+	Object* temp = findObjects("court");
+
+	glBindVertexArray(temp->body.VAO);
+	glDrawArrays(GL_TRIANGLES, 0, temp->body.GetNumVertices());
 
 	//glBindVertexArray(Background.VAO);
 	//glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
@@ -808,9 +726,9 @@ void Game::draw()
 	glBindVertexArray(Sphere.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, Sphere.GetNumVertices());*/
 
-	CourtTexture.Bind();
-	glBindVertexArray(Court.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, Court.GetNumVertices());
+	//CourtTexture.Bind();
+	//glBindVertexArray(Court.VAO);
+	//glDrawArrays(GL_TRIANGLES, 0, Court.GetNumVertices());
 
 	//BackgroundTexture.Bind();
 	//glBindVertexArray(Background.VAO);
@@ -819,34 +737,11 @@ void Game::draw()
 	//GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
 	//glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
 
-	ChairTexture.Bind();
-	glBindVertexArray(Chairs.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, Chairs.GetNumVertices());
-
-
-	adTexture.Bind();
-	glBindVertexArray(adRot.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, adRot.GetNumVertices());
-
-	ScoreTexture.Bind();
-	glBindVertexArray(ScoreBoard.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, ScoreBoard.GetNumVertices());
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_CULL_FACE);
-
-	bottleTexture.Bind();
-	glBindVertexArray(Bottle.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, Bottle.GetNumVertices());
-
-	lightJumboTexture.Bind();
-	glBindVertexArray(lightJumbo.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, lightJumbo.GetNumVertices());
-
-	NetTexture.Bind();
-	glBindVertexArray(Nets.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, Nets.GetNumVertices());
+	//draws everything in scene
+	sortObjects();
+	for (int i = 0; i < (int)gameObjects.size(); i++) {
+		gameObjects[i]->draw(GBufferPass, 1);
+	}
 
 	glDisable(GL_BLEND);
 	glEnable(GL_CULL_FACE);
@@ -876,8 +771,6 @@ void Game::draw()
 	glBindVertexArray(0);
 
 	//GBuffer.UnBind();
-
-	CourtTexture.UnBind();
 
 	//DRAW NET HITBOX CODE
 	//	for (unsigned int i = 0; i < Netbox.size(); i++) {
@@ -2004,4 +1897,33 @@ void Game::loadTime() {
 		}
 		time.push_back(temp);
 	}
+}
+
+void Game::sortObjects() {
+	//go through list
+	for (int i = 0; i < (int)(gameObjects.size() - 1); i++) {
+		for (int j = i + 1; j < (int)gameObjects.size(); j++) {
+
+			float dist1 = (float)(CameraTransform.GetTranslation() - gameObjects[i]->transform.GetTranslation()).length();
+			float dist2 = (float)(CameraTransform.GetTranslation() - gameObjects[j]->transform.GetTranslation()).length();
+
+			if ((dist1 < dist2 && gameObjects[i]->blending) || (gameObjects[i]->blending && !gameObjects[j]->blending)) {
+				Object* temp = gameObjects[i];
+				gameObjects[i] = gameObjects[j];
+				gameObjects[j] = temp;
+			}
+
+		}
+	}
+}
+
+Object* Game::findObjects(std::string _name)
+{
+	for (int i = 0; i < (int)gameObjects.size(); i++) {
+
+		if (gameObjects[i]->name == _name)
+			return gameObjects[i];
+
+	}
+	return nullptr;
 }

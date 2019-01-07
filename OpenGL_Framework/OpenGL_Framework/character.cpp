@@ -1,10 +1,10 @@
 #include "character.h"
 
 //new push
-#define BASE_ANI_TOGGLE true//non-offensive animations
-#define G_ATK_ANI_TOGGLE true//ground attacks
-#define A_ATK_ANI_TOGGLE true//aerials
-#define S_ATK_ANI_TOGGLE true//specials
+#define BASE_ANI_TOGGLE false//non-offensive animations
+#define G_ATK_ANI_TOGGLE false//ground attacks
+#define A_ATK_ANI_TOGGLE false//aerials
+#define S_ATK_ANI_TOGGLE false//specials
 #define HITBOX_TOGGLE false//visual hitboxes
 #define HURTBOX_TOGGLE false//visual hurtboxes
 
@@ -679,37 +679,6 @@ void Character::drawBoxes(ShaderProgram GBufferPass) {
 		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 	}
 	shieldTexture.UnBind();
-}
-
-void Character::drawShadow(ShaderProgram shader, float dt) //DO NOT USE
-{
-	if (action == ACTION_IDLE) {
-		aniTimer += dt / 6.0f;
-		if (aniTimer > 1.0f)
-		{
-			aniTimer = 0.0f;
-			index = (index + 1) % (aniFrames[ACTION_IDLE].size());//9 total frames
-		}
-		if (index >= aniFrames[ACTION_IDLE].size())
-			index = 0;
-		// Ask for the handles identfying the uniform variables in our shader.
-		shader.SendUniformMat4("uModel", transform.data, true);
-		shader.SendUniform("interp", aniTimer);
-
-		int modelLoc = glGetUniformLocation(shader.getProgram(), "uModel");
-		glUniformMatrix4fv(modelLoc, 1, false, transform.data);
-
-		texture.Bind();
-		glBindVertexArray(aniFrames[ACTION_IDLE][index]->VAO);
-
-		// Adjust model matrix for next object's location
-		glDrawArrays(GL_TRIANGLES, 0, aniFrames[ACTION_IDLE][index]->GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
-	}
-	else {
-		glBindVertexArray(body.VAO);
-		glDrawArrays(GL_TRIANGLES, 0, body.GetNumVertices());
-	}
 }
 
 //Sets player position

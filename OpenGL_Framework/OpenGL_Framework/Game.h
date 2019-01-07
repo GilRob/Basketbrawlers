@@ -7,6 +7,7 @@
 #include "Texture.h"
 #include "FrameBuffer.h"
 #include "ParticleEffect.h"
+#include "Object.h"
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -33,6 +34,8 @@ class Game
 public:
 	Game();
 	~Game();
+	void sortObjects();
+	Object* findObjects(std::string _name);
 
 	void initializeGame();
 	void update();
@@ -74,9 +77,9 @@ public:
 	std::vector<bool> inputs;
 
 	/// ENTITIES ///
+	std::vector<Object*> gameObjects;
+	Object* hitboxObj;
 
-	Mesh Court;
-	Texture CourtTexture;
 	Mesh HudObj;
 	Texture P1Hud;
 	Texture P1Bar;
@@ -89,18 +92,6 @@ public:
 	ParticleEffect ConfettiEffectRedLeft;
 	std::vector<Texture*> time;
 	std::vector<Hitbox*>Netbox;//2
-	Mesh Chairs;
-	Texture ChairTexture;
-	Mesh Nets;
-	Texture NetTexture;
-	Mesh lightJumbo;
-	Texture lightJumboTexture;
-	Mesh adRot;
-	Texture adTexture;
-	Mesh Bottle;
-	Texture bottleTexture;
-	Texture ScoreTexture;
-	Mesh ScoreBoard;
 
 	/// FRAMEBUFFERS ///
 	FrameBuffer GBuffer; //Utility buffer to hold positions and normals
@@ -111,9 +102,6 @@ public:
 	FrameBuffer WorkBuffer1;
 	FrameBuffer WorkBuffer2;
 	FrameBuffer HudMap;
-
-
-	Transform StoneTransform;
 
 	Transform CameraTransform;
 	Transform CameraProjection;
