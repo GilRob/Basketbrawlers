@@ -8,6 +8,7 @@
 #include "FrameBuffer.h"
 #include "ParticleEffect.h"
 #include "Object.h"
+#include "PointLightObj.h"
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -36,6 +37,7 @@ public:
 	~Game();
 	void sortObjects();
 	Object* findObjects(std::string _name);
+	PointLightObj* findLight(std::string _name);
 
 	void initializeGame();
 	void update();
@@ -78,6 +80,7 @@ public:
 
 	/// ENTITIES ///
 	std::vector<Object*> gameObjects;
+	std::vector<PointLightObj*> pointLights;
 	Object* hitboxObj;
 
 	Mesh HudObj;

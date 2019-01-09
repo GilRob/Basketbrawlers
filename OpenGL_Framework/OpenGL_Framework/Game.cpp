@@ -48,7 +48,7 @@ void Game::initializeGame()
 
 //=================================================================//
 	//Load All Objects
-	///Object(*mesh path*, *texture path*, *enable blending?*);
+	///Object(*mesh path*, *texture path*, *enable blending?* = false by deafult);
 	gameObjects.push_back(new Object("./Assets/Models/nets.obj", "./Assets/Textures/net.png", "net", true));
 	gameObjects.push_back(new Object("./Assets/Models/chairs.obj", "./Assets/Textures/chair.png", "chairs"));
 	gameObjects.push_back(new Object("./Assets/Models/lightsJumbo.obj", "./Assets/Textures/lightJumboTex.png", "jumbotron", true));
@@ -59,6 +59,14 @@ void Game::initializeGame()
 
 
 	hitboxObj = new Object("./Assets/Models/Hitbox.obj", "./Assets/Textures/redclear.png", "hitbox", true);
+
+
+//================================================================//
+	//Init PointLights
+	///PointLightObj(*position*, *color*, *name*, *active?* = false by default);
+	pointLights.push_back(new PointLightObj(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), "p1Score", false));
+	pointLights.push_back(new PointLightObj(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), "p2Score", false));
+
 
 //================================================================//
 	//Load Hud Obj and Texture
@@ -372,6 +380,8 @@ void Game::initializeGame()
 	//start timer
 	updateTimer = new Timer();
 
+
+
 }
 
 void Game::update()
@@ -555,8 +565,30 @@ void Game::update()
 	{
 		ConfettiEffectRedLeft.Update(deltaTime);
 	}
-	
 
+	//draw additional lights
+	if (p1Score == true)
+	{
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+		bool temp = false;
+
+		float check = (timer - (int)timer);
+		temp = (bool)(check >= 0.5f && check < 1.0f);
+
+		findLight("p1Score")->active = temp;
+	}
+	if (p2Score == true)
+	{
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+		bool temp = false;
+
+		float check = (timer - (int)timer);
+		temp = (bool)(check >= 0.5f && check < 1.0f);
+
+		findLight("p2Score")->active = temp;
+	}
 }
 /*
 ***Always remember to ask the three questions***
@@ -894,108 +926,24 @@ void Game::draw()
 
 	DrawFullScreenQuad();
 
+	//draw additional lights
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 
-	if (p1Score == true)
-	{
-		PointLight.Bind();
+	PointLight.Bind();
+	PointLight.SendUniform("uSceneAlbedo", 0);
+	PointLight.SendUniform("uNormalMap", 2);
+	PointLight.SendUniform("uPositionMap", 3);
 
-		PointLight.SendUniform("uSceneAlbedo", 0);
-		PointLight.SendUniform("uNormalMap", 2);
-		PointLight.SendUniform("uPositionMap", 3);
-		glm::vec4 lightPos = CameraTransform.GetInverse().matData * glm::vec4(0.0f, 5.0f, 0.0f, 1.0f);
-		PointLight.SendUniform("uLightPosition", glm::vec3(lightPos));
-		PointLight.SendUniform("uLightColor", glm::vec3(1.0f, 0.0f, 0.0f));
+	for (int i = 0; i < (int)pointLights.size(); i++) {
 
-		static float timer;
-		timer += updateTimer->getElapsedTimeSeconds();
-		//std::cout << timer << std::endl;
-		if (timer >= 0.5 && timer < 1)
+		if (pointLights[i]->active == true)
 		{
-			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
+			pointLights[i]->draw(PointLight, CameraTransform);
+			DrawFullScreenQuad();
 		}
-		else if (timer >= 1 && timer < 1.5)
-		{
-			PointLight.SendUniform("uLightColor", glm::vec3(1.0f, 0.0f, 0.0f));
-		}
-		else if (timer >= 1.5 && timer < 2)
-		{
-			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
-		}
-		else if (timer >= 2 && timer < 2.5)
-		{
-			PointLight.SendUniform("uLightColor", glm::vec3(1.0f, 0.0f, 0.0f));
-		}
-		else if (timer >= 2.5 && timer < 3)
-		{
-			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
-		}
-		else if (timer >= 3 && timer < 3.5)
-		{
-			PointLight.SendUniform("uLightColor", glm::vec3(1.0f, 0.0f, 0.0f));
-		}
-		else if (timer >= 3.5 && timer < 4)
-		{
-			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
-		}
-		else if (timer >= 4.1)
-			timer = 0;
-
-		DrawFullScreenQuad();
-
-		PointLight.UnBind();
 	}
-
-	if (p2Score == true)
-	{
-		PointLight.Bind();
-
-		PointLight.SendUniform("uSceneAlbedo", 0);
-		PointLight.SendUniform("uNormalMap", 2);
-		PointLight.SendUniform("uPositionMap", 3);
-		glm::vec4 lightPos = CameraTransform.GetInverse().matData * glm::vec4(0.0f, 5.0f, 0.0f, 1.0f);
-		PointLight.SendUniform("uLightPosition", glm::vec3(lightPos));
-		PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 1.0f));
-
-		static float timer;
-		timer += updateTimer->getElapsedTimeSeconds();
-		//std::cout << timer << std::endl;
-		if (timer >= 0.5 && timer < 1)
-		{
-			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
-		}
-		else if (timer >= 1 && timer < 1.5)
-		{
-			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 1.0f));
-		}
-		else if (timer >= 1.5 && timer < 2)
-		{
-			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
-		}
-		else if (timer >= 2 && timer < 2.5)
-		{
-			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 1.0f));
-		}
-		else if (timer >= 2.5 && timer < 3)
-		{
-			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
-		}
-		else if (timer >= 3 && timer < 3.5)
-		{
-			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 1.0f));
-		}
-		else if (timer >= 3.5 && timer < 4)
-		{
-			PointLight.SendUniform("uLightColor", glm::vec3(0.0f, 0.0f, 0.0f));
-		}
-		else if (timer >= 4.1)
-			timer = 0;
-
-		DrawFullScreenQuad();
-
-		PointLight.UnBind();
-	}
+	PointLight.UnBind();
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_BLEND);
@@ -1923,6 +1871,17 @@ Object* Game::findObjects(std::string _name)
 
 		if (gameObjects[i]->name == _name)
 			return gameObjects[i];
+
+	}
+	return nullptr;
+}
+
+PointLightObj* Game::findLight(std::string _name)
+{
+	for (int i = 0; i < (int)pointLights.size(); i++) {
+
+		if (pointLights[i]->name == _name)
+			return pointLights[i];
 
 	}
 	return nullptr;
