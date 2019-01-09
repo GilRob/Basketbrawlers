@@ -25,6 +25,7 @@ public:
 
 	void Update(float elapsed);
 	void Render();
+	void Reset();
 
 	Transform transform;
 

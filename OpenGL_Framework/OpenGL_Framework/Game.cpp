@@ -262,6 +262,7 @@ void Game::initializeGame()
 	ConfettiEffectRedLeft.Mass = 2.0f;
 	ConfettiEffectRedLeft.Gravity = 0.2f;
 
+
 //=======================================================================//
 	//Init Scene & Frame Buffers
 	if (FULLSCREEN) {
@@ -483,6 +484,8 @@ void Game::update()
 				score1++;
 				//i = 100;
 				p1Score = true;
+				ConfettiEffectBlueRight.Reset();
+				ConfettiEffectBlueLeft.Reset();
 				j = 100;
 
 			}
@@ -496,6 +499,8 @@ void Game::update()
 				score2++;
 				//i = 100;
 				p2Score = true;
+				ConfettiEffectRedRight.Reset();
+				ConfettiEffectRedLeft.Reset();
 				j = 100;
 
 			}
@@ -640,59 +645,33 @@ void Game::draw()
 
 	GBufferPass.UnBind();
 	//draw p1 shadow
-	if (playerOne->action < 2 || (playerOne->action >= ACTION_JAB && playerOne->action <= ACTION_UP_ATTACK))
-	{
-		AniShader.Bind();
-		AniShader.SendUniformMat4("uModel", Transform().data, true);
-		AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
-		AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
+	AniShader.Bind();
+	AniShader.SendUniformMat4("uModel", Transform().data, true);
+	AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
+	AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
+	AniShader.SendUniformMat4("uModel", playerOne->transform.data, true);
+	playerOne->draw(AniShader, 0);
+	AniShader.SendUniformMat4("uModel", Transform().data, true);
 
-		AniShader.SendUniformMat4("uModel", playerOne->transform.data, true);
-		playerOne->draw(AniShader, 0);
-
-		AniShader.SendUniformMat4("uModel", Transform().data, true);
-	}
-	else {
-		GBufferPass.Bind();
-		GBufferPass.SendUniformMat4("uModel", Transform().data, true);
-		GBufferPass.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
-		GBufferPass.SendUniformMat4("uProj", ShadowProjection.data, true);
-		GBufferPass.SendUniformMat4("uModel", playerOne->transform.data, true);
-		playerOne->draw(GBufferPass, 0);
-		GBufferPass.SendUniformMat4("uModel", Transform().data, true);
-	}
 	//draw p2 shadow
-	if (playerTwo->action < 2 || (playerTwo->action >= ACTION_JAB && playerTwo->action <= ACTION_UP_ATTACK))
-	{
-		AniShader.Bind();
-		AniShader.SendUniformMat4("uModel", Transform().data, true);
-		AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
-		AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
+	AniShader.Bind();
+	AniShader.SendUniformMat4("uModel", Transform().data, true);
+	AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
+	AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
+	AniShader.SendUniformMat4("uModel", playerTwo->transform.data, true);
+	playerTwo->draw(AniShader, 0);
+	AniShader.SendUniformMat4("uModel", Transform().data, true);
 
-		AniShader.SendUniformMat4("uModel", playerTwo->transform.data, true);
-		playerTwo->draw(AniShader, 0);
-
-		AniShader.SendUniformMat4("uModel", Transform().data, true);
-	}
-	else {
-		GBufferPass.Bind();
-		GBufferPass.SendUniformMat4("uModel", Transform().data, true);
-		GBufferPass.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
-		GBufferPass.SendUniformMat4("uProj", ShadowProjection.data, true);
-		GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
-		playerTwo->draw(GBufferPass, 0);
-		GBufferPass.SendUniformMat4("uModel", Transform().data, true);
-	}
 	glBindVertexArray(0);
 
 	ShadowMap.UnBind();
 	AniShader.UnBind();
 
 	/// Generate The Scene ///
-	if(FULLSCREEN)
-		glViewport(0, 0,FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	if (FULLSCREEN)
+		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
 	else
-	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	GBufferPass.Bind();
 	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
@@ -723,51 +702,6 @@ void Game::draw()
 
 	///playerOne->draw(GBufferPass);
 	///playerTwo->draw(GBufferPass);
-
-	/*SwordTexture.Bind();
-	glBindVertexArray(Sword.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, Sword.GetNumVertices());
-	//Not sure if this is how to do this***
-	//NormalSword.Bind();
-	//glDrawArrays(GL_TRIANGLES, 1, Sword.GetNumVertices());
-
-	int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
-	glUniformMatrix4fv(modelLoc, 1, false, StoneTransform.data);
-
-	StoneTexture.Bind();
-	glBindVertexArray(Stone.VAO);
-
-	// Adjust model matrix for next object's location
-	glDrawArrays(GL_TRIANGLES, 0, Stone.GetNumVertices());
-	glUniformMatrix4fv(modelLoc, 1, false, mat4().data);
-
-	//Not sure if this is how to do this***
-	//NormalStone.Bind();
-	//glDrawArrays(GL_TRIANGLES, 1, Stone.GetNumVertices());
-
-	//glUniformMatrix4fv(modelLoc, 1, false, 0);
-
-	HouseTexture.Bind();
-	glBindVertexArray(House.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, House.GetNumVertices());
-
-	GroundTexture.Bind();
-	glBindVertexArray(Ground.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, Ground.GetNumVertices());
-	//Using ground texture
-	glBindVertexArray(Sphere.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, Sphere.GetNumVertices());*/
-
-	//CourtTexture.Bind();
-	//glBindVertexArray(Court.VAO);
-	//glDrawArrays(GL_TRIANGLES, 0, Court.GetNumVertices());
-
-	//BackgroundTexture.Bind();
-	//glBindVertexArray(Background.VAO);
-	//GBufferPass.SendUniformMat4("uModel", BGTransform.data, true);
-	//GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-	//GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
-	//glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
 
 	//draws everything in scene
 	sortObjects();
@@ -817,7 +751,7 @@ void Game::draw()
 	//		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 	//	}
 	//	boxTexture.UnBind();
-	
+
 
 	playerOne->drawBoxes(GBufferPass);
 	playerTwo->drawBoxes(GBufferPass);
@@ -936,9 +870,7 @@ void Game::draw()
 	PointLight.SendUniform("uPositionMap", 3);
 
 	for (int i = 0; i < (int)pointLights.size(); i++) {
-
-		if (pointLights[i]->active == true)
-		{
+		if (pointLights[i]->active == true){
 			pointLights[i]->draw(PointLight, CameraTransform);
 			DrawFullScreenQuad();
 		}
@@ -1023,7 +955,7 @@ void Game::draw()
 	if (FULLSCREEN)
 		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
 	else
-	glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
 
 	//Moving data to the back buffer, at the same time as our last post process
 	BloomHighPass.Bind();
@@ -1041,10 +973,10 @@ void Game::draw()
 	BloomHighPass.UnBind();
 
 	/// Compute Blur ///
-	if(FULLSCREEN)
+	if (FULLSCREEN)
 		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
 	else
-	glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
 	for (int i = 0; i < BLOOM_BLUR_PASSES; i++)
 	{
 		//Horizontal Blur
@@ -1053,7 +985,7 @@ void Game::draw()
 		if (FULLSCREEN)
 			BlurHorizontal.SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
 		else
-		BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
+			BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
 
 		WorkBuffer2.Bind();
 
@@ -1068,10 +1000,10 @@ void Game::draw()
 		//Vertical Blur
 		BlurVertical.Bind();
 		BlurVertical.SendUniform("uTex", 0);
-		if(FULLSCREEN)
+		if (FULLSCREEN)
 			BlurVertical.SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
 		else
-		BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
+			BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
 
 		WorkBuffer1.Bind();
 
@@ -1091,7 +1023,7 @@ void Game::draw()
 	if (FULLSCREEN)
 		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
 	else
-	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	BloomComposite.Bind();
 	BloomComposite.SendUniform("uScene", 0);

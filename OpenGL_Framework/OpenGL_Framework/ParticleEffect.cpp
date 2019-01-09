@@ -95,17 +95,17 @@ void ParticleEffect::Update(float elapsed)
 {
 	int NumToSpawn = (int)_Rate;
 
-	/// Create new particles ///
+		/// Create new particles ///
 	while (
 		//We have not reached the particle cap and...
 		_NumCurrentParticles < _MaxParticles &&
 		//We have more particles to generate this frame...
 		NumToSpawn > 0)
 	{
-		_Particles.Alpha[_NumCurrentParticles]		= RandomRangef(LerpAlpha.x, LerpAlpha.y);
-		_Particles.Ages[_NumCurrentParticles]		= 0.0f;
-		_Particles.Lifetimes[_NumCurrentParticles]	= RandomRangef(RangeLifetime.x, RangeLifetime.y);
-		_Particles.Size[_NumCurrentParticles]		= RandomRangef(LerpSize.x, LerpSize.y);
+		_Particles.Alpha[_NumCurrentParticles] = RandomRangef(LerpAlpha.x, LerpAlpha.y);
+		_Particles.Ages[_NumCurrentParticles] = 0.0f;
+		_Particles.Lifetimes[_NumCurrentParticles] = RandomRangef(RangeLifetime.x, RangeLifetime.y);
+		_Particles.Size[_NumCurrentParticles] = RandomRangef(LerpSize.x, LerpSize.y);
 		//Missing .Set which is what the video uses
 		//_Particles.Positions[_NumCurrentParticles] = vec3((RandomRangef(RangeX.x, RangeX.y), RandomRangef(RangeY.x, RangeY.y), RandomRangef(RangeZ.x, RangeZ.y)));
 		_Particles.Positions[_NumCurrentParticles].x = RandomRangef(RangeX.x, RangeX.y);
@@ -125,6 +125,7 @@ void ParticleEffect::Update(float elapsed)
 		_NumCurrentParticles++;
 		NumToSpawn--;
 	}
+	
 
 	/// Update existing particles ///
 	for (unsigned i = 0; i < _NumCurrentParticles; i++)
@@ -199,4 +200,47 @@ void ParticleEffect::Render()
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 	_Texture.UnBind();
+}
+
+void ParticleEffect::Reset()
+{
+	for (unsigned i = 0; i < _NumCurrentParticles; i++)
+	{
+		//remove the particle by replacing it with the one at the top of the stack
+		_Particles.Alpha[i] = _Particles.Alpha[_NumCurrentParticles - 1];
+		_Particles.Ages[i] = _Particles.Ages[_NumCurrentParticles - 1];
+		_Particles.Lifetimes[i] = _Particles.Lifetimes[_NumCurrentParticles - 1];
+		_Particles.Positions[i] = _Particles.Positions[_NumCurrentParticles - 1];
+		_Particles.Size[i] = _Particles.Size[_NumCurrentParticles - 1];
+		_Particles.Velocities[i] = _Particles.Velocities[_NumCurrentParticles - 1];
+
+		_NumCurrentParticles--;
+	}
+	while (
+		//We have not reached the particle cap and...
+		_NumCurrentParticles < _MaxParticles)
+	{
+		_Particles.Alpha[_NumCurrentParticles] = RandomRangef(LerpAlpha.x, LerpAlpha.y);
+		_Particles.Ages[_NumCurrentParticles] = 0.0f;
+		_Particles.Lifetimes[_NumCurrentParticles] = RandomRangef(RangeLifetime.x, RangeLifetime.y);
+		_Particles.Size[_NumCurrentParticles] = RandomRangef(LerpSize.x, LerpSize.y);
+		//Missing .Set which is what the video uses
+		//_Particles.Positions[_NumCurrentParticles] = vec3((RandomRangef(RangeX.x, RangeX.y), RandomRangef(RangeY.x, RangeY.y), RandomRangef(RangeZ.x, RangeZ.y)));
+		_Particles.Positions[_NumCurrentParticles].x = RandomRangef(RangeX.x, RangeX.y);
+		_Particles.Positions[_NumCurrentParticles].y = RandomRangef(RangeY.x, RangeY.y);
+		_Particles.Positions[_NumCurrentParticles].z = RandomRangef(RangeZ.x, RangeZ.y);
+
+		//send the particle in a random direction, with a velocity between our range
+		//Missing .Set which is what the video uses
+		//_Particles.Velocities[_NumCurrentParticles] = vec3((RandomRangef(-1.0f, 1.0f), RandomRangef(-1.0f, 1.0f), RandomRangef(-1.0f, 1.0f)));
+		_Particles.Velocities[_NumCurrentParticles].x = RandomRangef(-1.0f, 1.0f);
+		_Particles.Velocities[_NumCurrentParticles].y = RandomRangef(-1.0f, 1.0f);
+		_Particles.Velocities[_NumCurrentParticles].z = RandomRangef(-1.0f, 1.0f);
+		_Particles.Velocities[_NumCurrentParticles] = glm::normalize(_Particles.Velocities[_NumCurrentParticles]);
+		_Particles.Velocities[_NumCurrentParticles] *= RandomRangef(RangeVelocity.x, RangeVelocity.y);
+
+		//counters...
+		_NumCurrentParticles++;
+		continue;
+	}
 }
