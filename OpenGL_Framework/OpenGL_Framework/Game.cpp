@@ -57,8 +57,25 @@ void Game::initializeGame()
 	gameObjects.push_back(new Object("./Assets/Models/court.obj", "./Assets/Textures/court.png", "court"));
 	gameObjects.push_back(new Object("./Assets/Models/score.obj", "./Assets/Textures/score.png", "score"));
 
-
 	hitboxObj = new Object("./Assets/Models/Hitbox.obj", "./Assets/Textures/redclear.png", "hitbox", true);
+
+
+	menuObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/PlayerOneHud.png", "button1", true));
+	menuObjects[0]->setPosition(glm::vec3(0, 100, 0));
+	if (FULLSCREEN) 
+		menuObjects[0]->transform.Scale(150.0f);
+	else 
+		menuObjects[0]->transform.Scale(100.0f);
+	menuObjects[0]->transform.RotateY(90);
+
+
+	menuObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/PlayerOneHud.png", "button2", true));
+	menuObjects[1]->setPosition(glm::vec3(0, -100, 0));
+	if (FULLSCREEN)
+		menuObjects[1]->transform.Scale(150.0f);
+	else
+		menuObjects[1]->transform.Scale(100.0f);
+	menuObjects[1]->transform.RotateY(90);
 
 
 //================================================================//
@@ -105,13 +122,13 @@ void Game::initializeGame()
 	//Init Controls and Players
 
 
-	inputs2 = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A
+	inputs = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R
 
-	playerOne = new Character("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png");
+	playerOne = new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png");
 
-	inputs = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A
+	inputs = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R
 
-	playerTwo = new Character("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png");
+	playerTwo = new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png");
 
 
 //====================================================================//
@@ -385,7 +402,38 @@ void Game::initializeGame()
 
 }
 
+
 void Game::update()
+{
+	if (fighting) {
+		updateScene();
+	}
+	else {
+		updateMenu();
+	}
+}
+
+void Game::updateMenu()
+{
+	// update our clock so we have the delta time since the last update
+	updateTimer->tick();
+
+	float deltaTime = updateTimer->getElapsedTimeSeconds();
+	TotalGameTime += deltaTime;
+
+	updateInputs();
+
+
+	if (FULLSCREEN) {
+		menuObjects[1]->transform.Scale(150.0f);
+	}
+	else {
+		menuObjects[1]->transform.Scale(100.0f);
+	}
+
+}
+
+void Game::updateScene()
 {
 	// update our clock so we have the delta time since the last update
 	updateTimer->tick();
@@ -423,9 +471,7 @@ void Game::update()
 					j = 100;
 				}
 			}
-
 		}
-
 	}
 
 	
@@ -463,16 +509,6 @@ void Game::update()
 	playerOne->update((int)deltaTime, inputs);
 	playerTwo->update((int)deltaTime, inputs2);
 
-	////score
-	//if (abs(abs(playerOne->getPosition().x) - 26) < 1.3f && abs(playerOne->getPosition().y - 10) < 1.3f) {
-	//	playerOne->respawn();
-	//	std::cout << std::endl << "Player 2 Scored" << std::endl;
-	//}
-	//if (abs(abs(playerTwo->getPosition().x) - 26) < 1.3f && abs(playerTwo->getPosition().y - 10) < 1.3f) {
-	//	playerTwo->respawn();
-	//	std::cout << std::endl << "Player 1 Scored" << std::endl;
-	//}
-
 	//new score code
 	for (unsigned int i = 0; i < Netbox.size(); i++) {
 		for (unsigned int j = 0; j < playerTwo->getHurtboxes().size(); j++) {
@@ -506,9 +542,6 @@ void Game::update()
 			}
 		}
 	}
-
-	
-	//inputs = { false, false, false, false, false, false }; //up, left, down, right, A, B
 
 	//DYNAMIC CAM
 	//camera control
@@ -571,7 +604,7 @@ void Game::update()
 		ConfettiEffectRedLeft.Update(deltaTime);
 	}
 
-	//draw additional lights
+	//additional lights
 	if (p1Score == true)
 	{
 		static float timer;
@@ -601,7 +634,18 @@ What are we rendering
 Where are we rendering it to
 How are we rendering it
 */
+
 void Game::draw()
+{
+	if (fighting) {
+		drawScene();
+	}
+	else {
+		drawMenu();
+	}
+}
+
+void Game::drawScene()
 {
 	/// Clear Buffers ///
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -627,7 +671,7 @@ void Game::draw()
 
 	ShadowMap.Bind();
 
-	Object* temp = findObjects("court");
+	Object* temp = findObjects(true, "court");
 
 	glBindVertexArray(temp->body.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, temp->body.GetNumVertices());
@@ -704,7 +748,7 @@ void Game::draw()
 	///playerTwo->draw(GBufferPass);
 
 	//draws everything in scene
-	sortObjects();
+	sortObjects(true);
 	for (int i = 0; i < (int)gameObjects.size(); i++) {
 		gameObjects[i]->draw(GBufferPass, 1);
 	}
@@ -870,7 +914,7 @@ void Game::draw()
 	PointLight.SendUniform("uPositionMap", 3);
 
 	for (int i = 0; i < (int)pointLights.size(); i++) {
-		if (pointLights[i]->active == true){
+		if (pointLights[i]->active == true) {
 			pointLights[i]->draw(PointLight, CameraTransform);
 			DrawFullScreenQuad();
 		}
@@ -889,7 +933,7 @@ void Game::draw()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
 
-	if (p1Score == true)
+	if (p1Score)
 	{
 		ParticleProgram.Bind();
 		ParticleProgram.SendUniform("uTex", 0);
@@ -917,7 +961,7 @@ void Game::draw()
 		}
 	}
 
-	if (p2Score == true)
+	if (p2Score)
 	{
 		ParticleProgram.Bind();
 		ParticleProgram.SendUniform("uTex", 0);
@@ -1055,7 +1099,7 @@ void Game::drawHUD()
 	glDisable(GL_DEPTH_TEST);  // disable depth-testing
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_LIGHTING);
-	
+
 	//new projection
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();//save old state
@@ -1064,7 +1108,7 @@ void Game::drawHUD()
 	if (FULLSCREEN)
 		gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
 	else
-	gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
+		gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
@@ -1098,7 +1142,7 @@ void Game::drawHUD()
 
 	///draw quad for p1 bar
 	hudLoc = Transform::Identity();
-	
+
 	if (FULLSCREEN) {
 		hudLoc.Scale(glm::vec3(150.0f * (playerOne->getMeter() / 200.0f), 150.0f, 150.0f));
 		hudLoc.Translate(glm::vec3(-675 - 1.05*(200.0f - playerOne->getMeter()), -540, 0));
@@ -1167,9 +1211,6 @@ void Game::drawHUD()
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
-
-	
-
 }
 
 void Game::drawScore() {
@@ -1225,6 +1266,218 @@ void Game::drawScore() {
 
 	GBufferPass.UnBind();
 	GBuffer.UnBind();
+}
+
+void Game::drawMenu()
+{
+	//menu
+
+	/// Clear Buffers ///
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glClearColor(0.1f, 0.2f, 0.3f, 0);
+	DeferredComposite.Clear();
+
+	glClearColor(0.0f, 0.0f, 0.0f, 0);
+	GBuffer.Clear();
+	ShadowMap.Clear();
+	HudMap.Clear();
+	WorkBuffer1.Clear();
+	WorkBuffer2.Clear();
+
+	/// Create Scene From GBuffer ///
+	if (FULLSCREEN)
+		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	else
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	DeferredLighting.Bind();
+	DeferredLighting.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
+	DeferredLighting.SendUniform("uScene", 0);
+	DeferredLighting.SendUniform("uShadowMap", 1);
+	DeferredLighting.SendUniform("uNormalMap", 2);
+	DeferredLighting.SendUniform("uPositionMap", 3);
+	//DeferredLighting.SendUniform("uEdgeMap", 4);
+	//DeferredLighting.SendUniform("uStepTexture", 4);
+
+	DeferredLighting.SendUniform("LightDirection", glm::vec3(CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
+	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
+
+	DeferredComposite.Bind();
+
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
+
+
+
+	DrawFullScreenQuad();
+
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
+
+	DeferredComposite.UnBind();
+	DeferredLighting.UnBind();
+
+//===============================================================
+	//DeferredComposite.Bind();
+	DeferredComposite.Bind();
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask(GL_FALSE);  // disable writes to Z-Buffer
+	glDisable(GL_DEPTH_TEST);  // disable depth-testing
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_LIGHTING);
+
+	//new projection
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();//save old state
+	glLoadIdentity();//reset
+	if (FULLSCREEN)
+		gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
+	else
+		gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();//save old state
+	glLoadIdentity();//reset
+
+	//////////////////////////
+	//now ready to draw 2d
+	//////////////////////////
+	GBufferPass.Bind();
+	hudTransform = Transform::Identity();
+	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+
+	//draws everything in menu
+	sortObjects(false);
+	for (int i = 0; i < (int)menuObjects.size(); i++) {
+		menuObjects[i]->draw(GBufferPass, 1);
+	}
+
+	GBufferPass.UnBind();
+
+	//restore projection matrix
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();//restore state
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();//restore state
+
+	//DeferredComposite.UnBind();
+	DeferredComposite.UnBind();
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_LIGHTING);
+	glDisable(GL_BLEND);
+
+//===============================================================
+
+	/// Compute High Pass ///
+	if (FULLSCREEN)
+		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
+	else
+		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+
+	//Moving data to the back buffer, at the same time as our last post process
+	BloomHighPass.Bind();
+	BloomHighPass.SendUniform("uTex", 0);
+	BloomHighPass.SendUniform("uThreshold", BLOOM_THRESHOLD);
+
+	WorkBuffer1.Bind();
+
+	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	DrawFullScreenQuad();
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+	WorkBuffer1.UnBind();
+
+	BloomHighPass.UnBind();
+
+	/// Compute Blur ///
+	if (FULLSCREEN)
+		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
+	else
+		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+	for (int i = 0; i < BLOOM_BLUR_PASSES; i++)
+	{
+		//Horizontal Blur
+		BlurHorizontal.Bind();
+		BlurHorizontal.SendUniform("uTex", 0);
+		if (FULLSCREEN)
+			BlurHorizontal.SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
+		else
+			BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
+
+		WorkBuffer2.Bind();
+
+		glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+		WorkBuffer2.UnBind();
+
+		BlurHorizontal.UnBind();
+
+		//Vertical Blur
+		BlurVertical.Bind();
+		BlurVertical.SendUniform("uTex", 0);
+		if (FULLSCREEN)
+			BlurVertical.SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
+		else
+			BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
+
+		WorkBuffer1.Bind();
+
+		glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+		WorkBuffer1.UnBind();
+
+		BlurVertical.UnBind();
+	}
+
+	//drawHUD();
+
+
+	/// Composite To Back Buffer ///
+	if (FULLSCREEN)
+		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	else
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	BloomComposite.Bind();
+	BloomComposite.SendUniform("uScene", 0);
+	BloomComposite.SendUniform("uBloom", 1);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+	DrawFullScreenQuad();
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+	BloomComposite.UnBind();
+
+
+	glutSwapBuffers();
 }
 
 void Game::drawTime()
@@ -1374,6 +1627,9 @@ void Game::keyboardDown(unsigned char key, int mouseX, int mouseY)
 	case 27: // the escape key
 		exit(0);
 		break;
+	case 'q': 
+		
+		break;
 	case 'w': //w
 		//inputs[0] = true;
 		break;
@@ -1410,10 +1666,6 @@ void Game::keyboardDown(unsigned char key, int mouseX, int mouseY)
 	case '/': //b
 		//inputs2[5] = true;
 		break;
-	case 'q': // the 'q' key
-		//exit(1);
-		//std::cout << playerOne->getPosition().x << " , " << playerOne->getPosition().y * 2;
-		break;
 	}
 }
 
@@ -1423,6 +1675,8 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 	{
 	case 'R': //w
 	case 'r': //w
+		fighting = true;
+		gameDone = false;
 		score1 = 0;
 		score2 = 0;
 		playerOne->respawn();
@@ -1431,6 +1685,14 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		playerTwo->setPosition(glm::vec3(5, 0, 0));
 		//updateTimer = new Timer();
 		TotalGameTime = 0.0f;
+		break;
+	case 'Q': //w
+	case 'q': //w
+		fighting = !fighting;
+		break;
+	case 'W': //w
+	case 'w': //w
+		gameDone = !gameDone;
 		break;
 	case 'd': //d
 		//inputs[1] = false;
@@ -1465,9 +1727,6 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		break;
 	case '/': //b
 		//inputs2[5] = false;
-		break;
-	case 'q': // the 'q' key
-		//exit(1);
 		break;
 	}
 }
@@ -1634,7 +1893,7 @@ void Game::updateInputs()
 	}
 	else {
 
-		inputs = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A
+		inputs = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R
 	}
 
 	//PLAYER 2
@@ -1760,7 +2019,7 @@ void Game::updateInputs()
 	else {
 
 
-		inputs2 = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A
+		inputs2 = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R
 	}
 }
 
@@ -1779,31 +2038,60 @@ void Game::loadTime() {
 	}
 }
 
-void Game::sortObjects() {
-	//go through list
-	for (int i = 0; i < (int)(gameObjects.size() - 1); i++) {
-		for (int j = i + 1; j < (int)gameObjects.size(); j++) {
+void Game::sortObjects(bool sceneObjects) {
+	if (sceneObjects) {
+		//go through list
+		for (int i = 0; i < (int)(gameObjects.size() - 1); i++) {
+			for (int j = i + 1; j < (int)gameObjects.size(); j++) {
 
-			float dist1 = (float)(CameraTransform.GetTranslation() - gameObjects[i]->transform.GetTranslation()).length();
-			float dist2 = (float)(CameraTransform.GetTranslation() - gameObjects[j]->transform.GetTranslation()).length();
+				float dist1 = (float)(CameraTransform.GetTranslation() - gameObjects[i]->transform.GetTranslation()).length();
+				float dist2 = (float)(CameraTransform.GetTranslation() - gameObjects[j]->transform.GetTranslation()).length();
 
-			if ((dist1 < dist2 && gameObjects[i]->blending) || (gameObjects[i]->blending && !gameObjects[j]->blending)) {
-				Object* temp = gameObjects[i];
-				gameObjects[i] = gameObjects[j];
-				gameObjects[j] = temp;
+				if ((dist1 < dist2 && gameObjects[i]->blending) || (gameObjects[i]->blending && !gameObjects[j]->blending)) {
+					Object* temp = gameObjects[i];
+					gameObjects[i] = gameObjects[j];
+					gameObjects[j] = temp;
+				}
+
 			}
+		}
+	}
+	else {
+		//go through list
+		for (int i = 0; i < (int)(menuObjects.size() - 1); i++) {
+			for (int j = i + 1; j < (int)menuObjects.size(); j++) {
 
+				float dist1 = (float)(CameraTransform.GetTranslation() - menuObjects[i]->transform.GetTranslation()).length();
+				float dist2 = (float)(CameraTransform.GetTranslation() - menuObjects[j]->transform.GetTranslation()).length();
+
+				if ((dist1 < dist2 && menuObjects[i]->blending) || (menuObjects[i]->blending && !menuObjects[j]->blending)) {
+					Object* temp = menuObjects[i];
+					menuObjects[i] = menuObjects[j];
+					menuObjects[j] = temp;
+				}
+
+			}
 		}
 	}
 }
 
-Object* Game::findObjects(std::string _name)
+Object* Game::findObjects(bool sceneObjects, std::string _name)
 {
-	for (int i = 0; i < (int)gameObjects.size(); i++) {
+	if (sceneObjects) {
+		for (int i = 0; i < (int)gameObjects.size(); i++) {
 
-		if (gameObjects[i]->name == _name)
-			return gameObjects[i];
+			if (gameObjects[i]->name == _name)
+				return gameObjects[i];
 
+		}
+	}
+	else {
+		for (int i = 0; i < (int)menuObjects.size(); i++) {
+
+			if (menuObjects[i]->name == _name)
+				return menuObjects[i];
+
+		}
 	}
 	return nullptr;
 }

@@ -14,7 +14,8 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
-#include "character.h"
+#include "char_knight.h"
+#include "char_ninja.h"
 #include "controller.h"
 #pragma comment( lib, "Xinput9_1_0.lib" ) 
 
@@ -35,17 +36,21 @@ class Game
 public:
 	Game();
 	~Game();
-	void sortObjects();
-	Object* findObjects(std::string _name);
+	void sortObjects(bool sceneObjects);
+	Object* findObjects(bool sceneObjects, std::string _name);
 	PointLightObj* findLight(std::string _name);
 
 	void initializeGame();
 	void update();
+	void updateScene();
+	void updateMenu();
 	void draw();
+	void drawScene();
 	void drawHUD();
-	void loadTime();
 	void drawTime();
 	void drawScore();
+	void drawMenu();
+	void loadTime();
 	/* input callback functions */
 	void keyboardDown(unsigned char key, int mouseX, int mouseY);
 	void keyboardUp(unsigned char key, int mouseX, int mouseY);
@@ -73,15 +78,21 @@ public:
 	Mesh boxMesh;
 	Texture boxTexture;
 
-	Character* playerOne;
+	Knight* playerOne;
 	std::vector<bool> inputs2;
-	Character* playerTwo;
+	Ninja* playerTwo;
 	std::vector<bool> inputs;
 
 	/// ENTITIES ///
 	std::vector<Object*> gameObjects;
 	std::vector<PointLightObj*> pointLights;
 	Object* hitboxObj;
+	std::vector<Object*> menuObjects;
+
+
+	bool fighting = false;
+	bool gameDone = false;
+	unsigned int menuLayer = 0;
 
 	Mesh HudObj;
 	Texture P1Hud;

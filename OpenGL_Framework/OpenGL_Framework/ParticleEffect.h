@@ -41,7 +41,7 @@ public:
 	bool HaveGravity = false;
 	bool Playing = false;
 	float Mass;
-	float Gravity;
+	float Gravity = 0.0f;
 	glm::vec3 force;
 	glm::vec3 acceleration;
 

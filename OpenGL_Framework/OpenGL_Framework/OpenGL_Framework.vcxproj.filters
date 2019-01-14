@@ -74,6 +74,12 @@
     <ClCompile Include="PointLightObj.cpp">
       <Filter>GameFunctions</Filter>
     </ClCompile>
+    <ClCompile Include="char_knight.cpp">
+      <Filter>GameFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="char_ninja.cpp">
+      <Filter>GameFunctions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -119,6 +125,12 @@
       <Filter>GameFunctions</Filter>
     </ClInclude>
     <ClInclude Include="PointLightObj.h">
+      <Filter>GameFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="char_knight.h">
+      <Filter>GameFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="char_ninja.h">
       <Filter>GameFunctions</Filter>
     </ClInclude>
   </ItemGroup>

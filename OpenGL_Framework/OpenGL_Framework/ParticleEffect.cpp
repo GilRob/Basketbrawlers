@@ -5,8 +5,8 @@
 
 ParticleEffect::ParticleEffect()
 {
-	Gravity = 0.5;
-	Mass = 2;
+	Gravity = 0.0f;
+	Mass = 2.0f;
 }
 
 ParticleEffect::~ParticleEffect()
@@ -136,32 +136,27 @@ void ParticleEffect::Update(float elapsed)
 		if (_Particles.Ages[i] > _Particles.Lifetimes[i])
 		{
 			//remove the particle by replacing it with the one at the top of the stack
-			_Particles.Alpha[i]		= _Particles.Alpha[_NumCurrentParticles - 1];
-			_Particles.Ages[i]		= _Particles.Ages[_NumCurrentParticles - 1];
+			_Particles.Alpha[i] = _Particles.Alpha[_NumCurrentParticles - 1];
+			_Particles.Ages[i] = _Particles.Ages[_NumCurrentParticles - 1];
 			_Particles.Lifetimes[i] = _Particles.Lifetimes[_NumCurrentParticles - 1];
 			_Particles.Positions[i] = _Particles.Positions[_NumCurrentParticles - 1];
-			_Particles.Size[i]		= _Particles.Size[_NumCurrentParticles - 1];
+			_Particles.Size[i] = _Particles.Size[_NumCurrentParticles - 1];
 			_Particles.Velocities[i] = _Particles.Velocities[_NumCurrentParticles - 1];
 
 			_NumCurrentParticles--;
 			continue;
 		}
 
-		if (HaveGravity)
-		{
-			//physics update
-			force = glm::vec3(0, 0 - Gravity, 0);
-			acceleration = force / Mass;
-			_Particles.Velocities[i] += acceleration;
-			_Particles.Positions[i] += _Particles.Velocities[i] * elapsed;
-		}
-		else
-			_Particles.Positions[i] += _Particles.Velocities[i] * elapsed;
+		//physics update
+		force = glm::vec3(0, 0 - Gravity, 0);
+		acceleration = force / Mass;
+		_Particles.Velocities[i] += acceleration;
+		_Particles.Positions[i] += _Particles.Velocities[i] * elapsed;
 
 		float interp = _Particles.Ages[i] / _Particles.Lifetimes[i];
-		
+
 		_Particles.Alpha[i] = glm::mix(LerpAlpha.x, LerpAlpha.y, interp);
-		_Particles.Size[i]	= glm::mix(LerpSize.x, LerpSize.y, interp);
+		_Particles.Size[i] = glm::mix(LerpSize.x, LerpSize.y, interp);
 	}
 
 	//Update OpenGL on the changes
@@ -215,32 +210,6 @@ void ParticleEffect::Reset()
 		_Particles.Velocities[i] = _Particles.Velocities[_NumCurrentParticles - 1];
 
 		_NumCurrentParticles--;
-	}
-	while (
-		//We have not reached the particle cap and...
-		_NumCurrentParticles < _MaxParticles)
-	{
-		_Particles.Alpha[_NumCurrentParticles] = RandomRangef(LerpAlpha.x, LerpAlpha.y);
-		_Particles.Ages[_NumCurrentParticles] = 0.0f;
-		_Particles.Lifetimes[_NumCurrentParticles] = RandomRangef(RangeLifetime.x, RangeLifetime.y);
-		_Particles.Size[_NumCurrentParticles] = RandomRangef(LerpSize.x, LerpSize.y);
-		//Missing .Set which is what the video uses
-		//_Particles.Positions[_NumCurrentParticles] = vec3((RandomRangef(RangeX.x, RangeX.y), RandomRangef(RangeY.x, RangeY.y), RandomRangef(RangeZ.x, RangeZ.y)));
-		_Particles.Positions[_NumCurrentParticles].x = RandomRangef(RangeX.x, RangeX.y);
-		_Particles.Positions[_NumCurrentParticles].y = RandomRangef(RangeY.x, RangeY.y);
-		_Particles.Positions[_NumCurrentParticles].z = RandomRangef(RangeZ.x, RangeZ.y);
-
-		//send the particle in a random direction, with a velocity between our range
-		//Missing .Set which is what the video uses
-		//_Particles.Velocities[_NumCurrentParticles] = vec3((RandomRangef(-1.0f, 1.0f), RandomRangef(-1.0f, 1.0f), RandomRangef(-1.0f, 1.0f)));
-		_Particles.Velocities[_NumCurrentParticles].x = RandomRangef(-1.0f, 1.0f);
-		_Particles.Velocities[_NumCurrentParticles].y = RandomRangef(-1.0f, 1.0f);
-		_Particles.Velocities[_NumCurrentParticles].z = RandomRangef(-1.0f, 1.0f);
-		_Particles.Velocities[_NumCurrentParticles] = glm::normalize(_Particles.Velocities[_NumCurrentParticles]);
-		_Particles.Velocities[_NumCurrentParticles] *= RandomRangef(RangeVelocity.x, RangeVelocity.y);
-
-		//counters...
-		_NumCurrentParticles++;
 		continue;
 	}
 }

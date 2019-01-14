@@ -1,3 +1,4 @@
+#pragma once
 //#include <SDL/SDL.h>
 #include <glm/glm.hpp>
 #include <GLM\gtx\transform.hpp>

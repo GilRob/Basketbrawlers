@@ -1,432 +1,16 @@
 #include "character.h"
 
 //new push
-#define BASE_ANI_TOGGLE false//non-offensive animations
-#define G_ATK_ANI_TOGGLE false//ground attacks
-#define A_ATK_ANI_TOGGLE false//aerials
-#define S_ATK_ANI_TOGGLE false//specials
-#define HITBOX_TOGGLE false//visual hitboxes
-#define HURTBOX_TOGGLE false//visual hurtboxes
+#define BASE_ANI_TOGGLE		false	//non-offensive animations
+#define G_ATK_ANI_TOGGLE	false	//ground attacks
+#define A_ATK_ANI_TOGGLE	false	//aerials
+#define S_ATK_ANI_TOGGLE	false	//specials
+#define HITBOX_TOGGLE		false	//visual hitboxes
+#define HURTBOX_TOGGLE		false	//visual hurtboxes
 
 Character::Character(const std::string& bodyName, const std::string& textureName){
 
-	if (!(texture.Load(textureName)))//"./Assets/Textures/Sword.png"))
-	{
-		std::cout << "Character Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-
-	aniTimer = 0.f;
-	index = 0;
-//======================================================//
-	//ANIMATIONS
-	///IDLE
-	int length = 9;
-	if (BASE_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)//9
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string((int)((c+1) % length)) + ".obj");
-
-		Mesh* idle = new Mesh();
-		idle->LoadFromFile(frame);
-		aniFrames[ACTION_IDLE].push_back(idle);
-	}
-	///WALK
-	length = 14;
-	if (BASE_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)//14
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/WalkPoses/Walk" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/WalkPoses/Walk" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* walk = new Mesh();
-		walk->LoadFromFile(frame);
-		aniFrames[ACTION_WALK].push_back(walk);
-	}
-	///pre jump
-	length = 2;
-	if (BASE_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/PreJumpPose/Ascent" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/PreJumpPose/Ascent" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_PREJUMP].push_back(jab);
-	}
-	///fall
-	length = 1;
-	if (BASE_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/FallPoses/Fall" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/FallPoses/Fall" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_FALL].push_back(jab);
-	}
-	///jump
-	length = 1;
-	if (BASE_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/JumpPoses/JumpAir" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/JumpPoses/JumpAir" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_JUMP].push_back(jab);
-
-		Mesh* jab2 = new Mesh();
-		jab2->LoadFromFile(frame);
-		aniFrames[ACTION_JUMP2].push_back(jab2);
-	}
-	///hurt
-	length = 1;
-	if (BASE_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/HurtPoses/Hurt" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/HurtPoses/Hurt" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_HIT].push_back(jab);
-	}
-	///initial dash && dash
-	length = 8;
-	if (BASE_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_INTIAL_DASH].push_back(jab);
-
-		Mesh* jab2 = new Mesh();
-		jab2->LoadFromFile(frame);
-		aniFrames[ACTION_DASH].push_back(jab2);
-
-	}
-	///run
-	length = 6;
-	if (BASE_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/RunPoses/Run" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/RunPoses/Run" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_RUN].push_back(jab);
-
-	}
-	///block
-	length = 14;
-	if (BASE_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/BlockPoses/Block" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/BlockPoses/Block" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_BLOCK].push_back(jab);
-	}
-//==================================================================//
-	//ATTACKS
-	///JAB
-	length = 11;
-	if (G_ATK_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)//14
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/JabPoses/Jab" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/JabPoses/Jab" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_JAB].push_back(jab);
-	}
-	///SIDE ATTACK
-	length = 10;
-	if (G_ATK_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)//14
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/SideAttackPoses/SideAttack" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/SideAttackPoses/SideAttack" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_SIDE_ATTACK].push_back(jab);
-	}
-	///UP ATTACK
-	length = 18;
-	if (G_ATK_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)//14
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/UpAttackPoses/UpAttack" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/UpAttackPoses/UpAttack" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_UP_ATTACK].push_back(jab);
-	}
-	///DOWN ATTACK
-	length = 10;
-	if (G_ATK_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)//14
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/DownAttackPoses/DownAttack" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/DownAttackPoses/DownAttack" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_DOWN_ATTACK].push_back(jab);
-	}
-//==================================================================//
-	//AERIALS
-	///NeutralAir
-	length = 8;
-	if (A_ATK_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/NeutralAirPoses/NeutralAir" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/NeutralAirPoses/NeutralAir" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_NEUTRAL_AERIAL].push_back(jab);
-	}
-	///side air
-	length = 11;
-	if (A_ATK_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/SideAirPoses/SideAir" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/SideAirPoses/SideAir" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_SIDE_AERIAL].push_back(jab);
-	}
-	///down aair
-	length = 15;
-	if (A_ATK_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/DownAirPoses/DownAir" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/DownAirPoses/DownAir" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_DOWN_AERIAL].push_back(jab);
-	}
-	///up air
-	length = 7;
-	if (A_ATK_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/UpAirPoses/UpAir" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/UpAirPoses/UpAir" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_UP_AERIAL].push_back(jab);
-	}
-//====================================================================//
-	//SPECIALS
-	///Neutral special
-	length = 20;
-	if (S_ATK_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/NeutralSpecialPoses/NeutralSpecial" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/NeutralSpecialPoses/NeutralSpecial" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_NEUTRAL_SPECIAL].push_back(jab);
-	}
-	///down special
-	length = 13;
-	if (S_ATK_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/DownSpecial/DownSpecial" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/DownSpecial/DownSpecial" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_DOWN_SPECIAL].push_back(jab);
-	}
-	///side special
-	length = 11;
-	if (S_ATK_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/SideSpecialPoses/SideSpecial" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/SideSpecialPoses/SideSpecial" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_SIDE_SPECIAL].push_back(jab);
-	}
-	///up apecial
-	length = 8;
-	if (S_ATK_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/UpSpecialPoses/UpSpecial" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/UpSpecialPoses/UpSpecial" + std::to_string((int)((c + 1) % length)) + ".obj");
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_UP_SPECIAL].push_back(jab);
-	}
-
-	//extra
-	std::vector<std::string> file;
-	file.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string(0) + ".obj");
-	body.LoadFromFile(file);
-
-	//Set Physics
-	position = glm::vec3(0, 0, 0);
-	velocity = glm::vec3(0, 0, 0);
-	acceleration = glm::vec3(0, 0, 0);
-	force = glm::vec3(0, 0, 0);
-	facingRight = true;
-	blocking = false;
-	blockSuccessful = false;
-	//scaling
-	scaleX = 1.1f;
-	scaleY = 1.15f;
-	scaleZ = 1.1f;
-
-	//apply Scale && Rotation
-	//glm::scale(transform, glm::vec3(scaleX, scaleY, scaleZ));
-	transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
-	//glm::rotate(transform, 90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-	transform.RotateY(90);
-
-///==============================================================
-
-	//Set Attributes
-	///-------------
-	///Mass
-	mass = 9;
-	///Gravity Force on Character
-	gravity = 0.5f;
-	///Multiplier for directional influence while character is in hitstun
-	diMultiplier = 0.1f;
-	///max run speed
-	runSpeed = 0.33f;
-	///force applied for running
-	runAccel = 0.75f;//0.52f;
-	///force appplied for directional movement in air
-	airAccel = 0.18f;
-	///upwards force for jump
-	jumpForce = 0.65f;//0.44f;
-	///amount of frames jump last for
-	jumpFrames = 8;//12;
-	///Dash length (in frames)
-	dashLength = 8;
-	///number of frames before character leaves ground after jump input
-	prejumpLength =3;
-	///total number of air/double jumps
-	airJumps = jumpsLeft = 1;
-	///amount of frames character is stunned after being launched
-	hitstun = 18;//10;
-	///amount of frames character is launched for when hit
-	hitframes = 12;
-
-	//set combo stuff
-	comboCount = 0;
-	comboMeter = 0;
-	comboTimer = 0;
-	comboMaxTime = 120;//1 seconds times 60fps
-
-	//Set Starting Action
-	action = ACTION_FALL;//0 idle, 1 jumping
-	idle();
-
-
-	std::vector<std::string> hitBox;
-	hitBox.push_back("./Assets/Models/Hitbox.obj");
-	boxMesh.LoadFromFile(hitBox);
-	/*{
-		std::cout << "Character Model failed to load.\n";
-		system("pause");
-		exit(0);
-	}*/
-	if (!(boxTexture.Load("./Assets/Textures/redclear.png")))
-	{
-		std::cout << "Character Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-	if (!(shieldTexture.Load("./Assets/Textures/shield.png")))
-	{
-		std::cout << "Character Texture failed to load.\n";
-		system("pause");
-		exit(0);
-	}
-
-	comboMeter = 50;
-
-	Hitbox *hurt1 = new Hitbox(glm::vec3(0.0f, 3.0f, 0.0f), 3.0f);
-	hurtbox.push_back(hurt1);
-	Hitbox *hurt2 = new Hitbox(glm::vec3(0.0f, 1.0f, 0.0f), 3.0f);
-	hurtbox.push_back(hurt2);
+	//Nothing Here.  DO NOT MAKE CHARACTER
 
 }
 
@@ -454,28 +38,33 @@ void Character::update(int t, std::vector<bool> inputs) {
 	force.x = 0;
 	transform = atkInputHandler(inputs);
 
-	//physics update
-	force = glm::vec3(force.x, 0 - gravity, 0);
-	acceleration = force / mass;
-	velocity = velocity + (acceleration);
+	if (action != ACTION_DASH) {
 
-	//max speed
-	float mag = velocity.x;
-	if (velocity.x > runSpeed)
-		velocity.x = runSpeed;
-	if (velocity.x < (0 - runSpeed))
-		velocity.x = (0 - runSpeed);
+		//physics update
+		force = glm::vec3(force.x, 0 - gravity, 0);
+		acceleration = force / mass;
+		velocity = velocity + (acceleration);
 
-	//friction
-	if (position.y <= 0.0f && (((int)inputs[1] - (int)inputs[3]) == 0 || (action != ACTION_WALK && action != ACTION_RUN && action != ACTION_INTIAL_DASH && action != ACTION_PREJUMP && action != ACTION_JUMP))) {
-		if (action != ACTION_SIDE_ATTACK)
-			velocity.x = velocity.x * 0.7f;
-		else
+		//max speed
+		if (velocity.x > runSpeed)
+			velocity.x = runSpeed;
+		if (velocity.x < (0 - runSpeed))
+			velocity.x = (0 - runSpeed);
+
+		//friction
+		if (position.y <= 0.0f && (((int)inputs[1] - (int)inputs[3]) == 0 || (action != ACTION_WALK && action != ACTION_RUN && action != ACTION_INTIAL_DASH && action != ACTION_PREJUMP && action != ACTION_JUMP))) {
+			if (action != ACTION_SIDE_ATTACK)
+				velocity.x = velocity.x * 0.7f;
+			else
+				velocity.x = velocity.x * 0.95f;
+
+		}
+		if (position.y > 0.0f && !inputs[1] && !inputs[3]) {
 			velocity.x = velocity.x * 0.95f;
-
-	}
-	if (position.y > 0.0f && !inputs[1] && !inputs[3]) {
-		velocity.x = velocity.x * 0.95f;
+		}
+		
+		if (dashTimer < 100)
+			dashTimer++;
 	}
 
 	//Update Position
@@ -585,7 +174,7 @@ glm::vec3 Character::getPosition()
 }
 
 void Character::draw(ShaderProgram shader, float dt) {
-	if (action < ACTION_DASH) {
+	if (action <= ACTION_DASH) {
 		if (action == ACTION_IDLE || action == ACTION_SIDE_SPECIAL || action == ACTION_UP_SPECIAL)
 			aniTimer += dt / 5.0f;
 		else
@@ -738,6 +327,11 @@ Transform Character::atkInputHandler(std::vector<bool> inputs)
 		else
 			result.RotateY(45.0f);
 		currentFrame++;
+	}
+	///dash
+	else if ((inputs[9] && (action == ACTION_IDLE || action == ACTION_WALK || action == ACTION_RUN || action == ACTION_INTIAL_DASH || action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2)) || action == ACTION_DASH) {
+
+		result = dash(inputs[1], inputs[3]);
 	}
 	//AIR
 	else if ((inputs[2] && inputs[4] && (action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2)) || action == ACTION_DOWN_AERIAL) {//down & A and in air = Dair
@@ -991,6 +585,61 @@ Transform Character::initialDash(bool right, bool left)
 		}
 
 		force.x = direction * runAccel;
+
+		currentFrame++;
+		//std::cout << " dash" << std::endl;
+	}
+	return result;
+}
+
+
+Transform Character::dash(bool right, bool left)
+{
+	Transform result = Transform();
+	//if (interuptable == true && action != ACTION_DASH) {
+	if (action != ACTION_DASH && dashTimer > 30) {
+		action = ACTION_DASH;
+		activeFrames = 10;
+		currentFrame = 1;
+
+		dashTimer = 0;
+		
+		interuptable = true;
+
+		//decide which way youll dash
+		if (left) {
+			velocity.y = 0.0f;
+			velocity.x = runSpeed * -2.0f;
+			facingRight = false;
+		}
+		else if (right) {
+			velocity.y = 0.0f;
+			velocity.x = runSpeed * 2.0f;
+			facingRight = true;
+		}
+	}
+	else if (action == ACTION_DASH && currentFrame <= activeFrames) {
+
+		if (currentFrame >= activeFrames) {
+			//if action over, goto run
+			interuptable = true;
+			action = ACTION_PLACEHOLDER;
+			if (position.y > 0.0f)
+				return fall();
+			else
+				return idle();
+		}
+
+		//stuff goes here
+		int direction = (int)facingRight;
+		if (facingRight == 0)
+			direction = -1;
+
+		velocity.y = 0.0f;
+		velocity.x = direction * runSpeed * dashMultiplier;
+
+
+		//force.x = direction * runAccel;
 
 		currentFrame++;
 		//std::cout << " dash" << std::endl;

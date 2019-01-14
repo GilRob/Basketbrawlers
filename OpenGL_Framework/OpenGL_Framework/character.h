@@ -1,4 +1,4 @@
-
+#pragma once
 //#include <SDL/SDL.h>
 //#include <glm/glm.hpp>
 //#include <GL/freeglut.h>
@@ -15,35 +15,6 @@
 #include "hitbox.h"
 #include <iostream>
 #include "Transform.h"
-
-
-#define ACTION_IDLE				0
-#define ACTION_WALK				1
-#define ACTION_RUN				2
-#define ACTION_INTIAL_DASH		3
-#define ACTION_PREJUMP			4
-#define ACTION_JUMP				5
-#define ACTION_JUMP2			6
-#define ACTION_FALL				7
-#define ACTION_HIT				8
-#define ACTION_PLACEHOLDER		23
-
-#define ACTION_JAB				10
-#define ACTION_SIDE_ATTACK		11
-#define ACTION_DOWN_ATTACK		12
-#define ACTION_UP_ATTACK		13
-#define ACTION_NEUTRAL_SPECIAL	14
-#define ACTION_SIDE_SPECIAL		15
-#define ACTION_DOWN_SPECIAL		16
-#define ACTION_UP_SPECIAL		17
-
-#define ACTION_NEUTRAL_AERIAL	18
-#define ACTION_SIDE_AERIAL		19
-#define ACTION_DOWN_AERIAL		20
-#define ACTION_UP_AERIAL		21
-
-#define ACTION_BLOCK			9
-#define ACTION_DASH				22
 
 
 //Will be the parent class for all other charcaters
@@ -77,24 +48,25 @@ public:
 	Transform idle();
 	Transform walk(bool held);
 	Transform run(bool held);
+	Transform dash(bool left, bool right);
 	Transform initialDash(bool left, bool right);
 	Transform prejump();
 	Transform jump();
 	Transform jump2();
 	Transform fall();
 	void hit(Hitbox* hitBy);
-	Transform jab();
-	Transform sAttack();
-	Transform dAttack();
-	Transform uAttack();
-	Transform nSpecial(bool charging);
-	Transform sSpecial();
-	Transform dSpecial();
-	Transform uSpecial();
-	Transform nAir();
-	Transform sAir();
-	Transform dAir();
-	Transform uAir();
+	virtual Transform jab();
+	virtual Transform sAttack();
+	virtual Transform dAttack();
+	virtual Transform uAttack();
+	virtual Transform nSpecial(bool charging);
+	virtual Transform sSpecial();
+	virtual Transform dSpecial();
+	virtual Transform uSpecial();
+	virtual Transform nAir();
+	virtual Transform sAir();
+	virtual Transform dAir();
+	virtual Transform uAir();
 	Transform block(bool held);
 
 	//----------------------------------------------------------
@@ -137,7 +109,7 @@ public:
 
 	Transform transform;
 	Mesh body;
-	std::vector<Mesh*> aniFrames[22];
+	std::vector<Mesh*> aniFrames[23];
 	Texture texture;
 	float aniTimer;
 	unsigned int index;
@@ -159,6 +131,7 @@ protected:
 	float airAccel;
 	float jumpForce;
 	float diMultiplier;
+	float dashMultiplier;
 	unsigned int jumpFrames;
 	unsigned int dashLength;
 	unsigned int prejumpLength;
@@ -174,6 +147,8 @@ protected:
 	unsigned int comboMaxTime;//2 seconds times 60fps
 	float comboHitMult;//multipy combo meter value by this to get knockback
 
+	unsigned int dashTimer;//counts time since last hit in combo
+
 	//scaling
 	float scaleX;
 	float scaleY;
@@ -188,6 +163,35 @@ protected:
 	Mesh boxMesh;
 	Texture boxTexture;
 	Texture shieldTexture;
+
+//===================================================//
+	//ACTION ID's
+//===================================================//
+unsigned int ACTION_IDLE			=0;
+unsigned int ACTION_WALK			=1;
+unsigned int ACTION_RUN				=2;
+unsigned int ACTION_INTIAL_DASH		=3;
+unsigned int ACTION_PREJUMP			=4;
+unsigned int ACTION_JUMP			=5;
+unsigned int ACTION_JUMP2			=6;
+unsigned int ACTION_FALL			=7;
+unsigned int ACTION_HIT				=8;
+unsigned int ACTION_PLACEHOLDER		=23;
+unsigned int ACTION_JAB				=10;
+unsigned int ACTION_SIDE_ATTACK		=11;
+unsigned int ACTION_DOWN_ATTACK		=12;
+unsigned int ACTION_UP_ATTACK		=13;
+unsigned int ACTION_NEUTRAL_SPECIAL	=14;
+unsigned int ACTION_SIDE_SPECIAL	=15;
+unsigned int ACTION_DOWN_SPECIAL	=16;
+unsigned int ACTION_UP_SPECIAL		=17;
+unsigned int ACTION_NEUTRAL_AERIAL	=18;
+unsigned int ACTION_SIDE_AERIAL		=19;
+unsigned int ACTION_DOWN_AERIAL		=20;
+unsigned int ACTION_UP_AERIAL		=21;
+unsigned int ACTION_BLOCK			=9;
+unsigned int ACTION_DASH			=22;
+//===================================================//
 
 private:
 };
