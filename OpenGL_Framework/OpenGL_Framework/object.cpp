@@ -94,4 +94,5 @@ void Object::draw(ShaderProgram shader, float dt) {
 //Sets player position
 void Object::setPosition(glm::vec3 pos) {
 	position = pos;
+	transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
 }

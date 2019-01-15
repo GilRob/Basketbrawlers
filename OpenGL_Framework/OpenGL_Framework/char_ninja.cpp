@@ -1,10 +1,10 @@
 #include "char_ninja.h"
 
 //new push
-#define BASE_ANI_TOGGLE		true	//non-offensive animations
-#define G_ATK_ANI_TOGGLE	true	//ground attacks
-#define A_ATK_ANI_TOGGLE	true	//aerials
-#define S_ATK_ANI_TOGGLE	true	//specials
+#define BASE_ANI_TOGGLE		false	//non-offensive animations
+#define G_ATK_ANI_TOGGLE	false	//ground attacks
+#define A_ATK_ANI_TOGGLE	false	//aerials
+#define S_ATK_ANI_TOGGLE	false	//specials
 #define HITBOX_TOGGLE		false	//visual hitboxes
 #define HURTBOX_TOGGLE		false	//visual hurtboxes
 

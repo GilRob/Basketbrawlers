@@ -58,24 +58,33 @@ void Game::initializeGame()
 	gameObjects.push_back(new Object("./Assets/Models/score.obj", "./Assets/Textures/score.png", "score"));
 
 	hitboxObj = new Object("./Assets/Models/Hitbox.obj", "./Assets/Textures/redclear.png", "hitbox", true);
+	
 
-
-	menuObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/PlayerOneHud.png", "button1", true));
-	menuObjects[0]->setPosition(glm::vec3(0, 100, 0));
-	if (FULLSCREEN) 
-		menuObjects[0]->transform.Scale(150.0f);
-	else 
-		menuObjects[0]->transform.Scale(100.0f);
-	menuObjects[0]->transform.RotateY(90);
-
-
-	menuObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/PlayerOneHud.png", "button2", true));
-	menuObjects[1]->setPosition(glm::vec3(0, -100, 0));
+	menuObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/menuback.png", "background", true));
 	if (FULLSCREEN)
-		menuObjects[1]->transform.Scale(150.0f);
+		menuObjects[0]->transform.Scale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.5f, 1));
 	else
+		menuObjects[0]->transform.Scale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.5f, 1));
+	menuObjects[0]->transform.RotateY(90);
+	menuObjects[0]->setPosition(glm::vec3(0, -550, -1));
+
+
+	menuObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/button.png", "button1", true));
+	if (FULLSCREEN) 
+		menuObjects[1]->transform.Scale(150.0f);
+	else 
 		menuObjects[1]->transform.Scale(100.0f);
 	menuObjects[1]->transform.RotateY(90);
+	menuObjects[1]->setPosition(glm::vec3(-500, -100, 0));
+
+
+	menuObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/button.png", "button2", true));
+	if (FULLSCREEN)
+		menuObjects[2]->transform.Scale(150.0f);
+	else
+		menuObjects[2]->transform.Scale(100.0f);
+	menuObjects[2]->transform.RotateY(90);
+	menuObjects[2]->setPosition(glm::vec3(-500, -400, 0));
 
 
 //================================================================//
@@ -423,13 +432,57 @@ void Game::updateMenu()
 
 	updateInputs();
 
+	//if moved
+	if (inputs[0] || inputs2[0]) {
+		if (selectedButton != 1) {
+			menuObjects[1]->transform.Scale(1.1f);
+			menuObjects[2]->transform.Scale(1.0f / 1.1f);
+			if (selectedButton != 0) {
+				menuObjects[1]->transform.Scale(1.1f);
+				menuObjects[2]->transform.Scale(1.0f / 1.1f);
+			}
+			selectedButton = 1;
+		}
+	}
+	else if (inputs[2] || inputs2[2]) {
+		if (selectedButton != 2) {
+			menuObjects[2]->transform.Scale(1.1f);
+			menuObjects[1]->transform.Scale(1.0f / 1.1f);
+			if (selectedButton != 0) {
+				menuObjects[2]->transform.Scale(1.1f);
+				menuObjects[1]->transform.Scale(1.0f / 1.1f);
+			}
+			selectedButton = 2;
+		}
+	}
 
-	if (FULLSCREEN) {
-		menuObjects[1]->transform.Scale(150.0f);
+	//press
+	if (inputs[6] || inputs2[6]) {
+		if (selectedButton == 1) {
+			fighting = true;
+			gameDone = false;
+			score1 = 0;
+			score2 = 0;
+			playerOne->respawn();
+			playerTwo->respawn();
+			playerOne->setPosition(glm::vec3(-5, 0, 0));
+			playerTwo->setPosition(glm::vec3(5, 0, 0));
+			//updateTimer = new Timer();
+			TotalGameTime = 0.0f;
+			inputs[6] = 0;
+			inputs2[6] = 0;
+		}
+		else if (selectedButton == 2) {
+			exit(0);
+		}
 	}
-	else {
-		menuObjects[1]->transform.Scale(100.0f);
-	}
+
+	//if (FULLSCREEN) {
+	//	menuObjects[1]->transform.Scale(150.0f);
+	//}
+	//else {
+	//	menuObjects[1]->transform.Scale(100.0f);
+	//}
 
 }
 
@@ -1270,6 +1323,8 @@ void Game::drawScore() {
 
 void Game::drawMenu()
 {
+	//menu
+	//menu
 	//menu
 
 	/// Clear Buffers ///

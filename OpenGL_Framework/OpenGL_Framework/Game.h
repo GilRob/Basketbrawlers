@@ -89,10 +89,9 @@ public:
 	Object* hitboxObj;
 	std::vector<Object*> menuObjects;
 
-
 	bool fighting = false;
 	bool gameDone = false;
-	unsigned int menuLayer = 0;
+	unsigned int selectedButton = 0;
 
 	Mesh HudObj;
 	Texture P1Hud;
