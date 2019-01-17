@@ -28,6 +28,10 @@ Object::Object(const std::string& bodyName, const std::string& textureName, std:
 	scaleX = 1.0f;
 	scaleY = 1.0f;
 	scaleZ = 1.0f;
+	//rotate
+	rotX = 0.0f;
+	rotY = 0.0f;
+	rotZ = 0.0f;
 	transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
 
 	blending = _blend;
@@ -52,8 +56,10 @@ void Object::update(int t, std::vector<bool> inputs) {
 	//Update Position
 	position = position + (velocity);
 
-	transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
+	transform.RotateY(rotY);
+
 	transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
+	transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
 
 }
 
@@ -94,5 +100,42 @@ void Object::draw(ShaderProgram shader, float dt) {
 //Sets player position
 void Object::setPosition(glm::vec3 pos) {
 	position = pos;
+
+	transform = Transform::Identity();
+	transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
+	transform.RotateY(rotY);
 	transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
 }
+//Sets player scale
+void Object::setScale(glm::vec3 scale) {
+	scaleX = scale.x;
+	scaleY = scale.y;
+	scaleZ = scale.z;
+
+	transform = Transform::Identity();
+	transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
+	transform.RotateY(rotY);
+	transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
+}
+//Sets player scale
+void Object::setScale(float scale) {
+	scaleX = scale;
+	scaleY = scale;
+	scaleZ = scale;
+
+	transform = Transform::Identity();
+	transform.Scale(glm::vec3(scale));
+	transform.RotateY(rotY);
+	transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
+}
+
+//Sets player scale
+void Object::RotateY(float rot) {
+	rotY = rot;
+
+	transform = Transform::Identity();
+	transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
+	transform.RotateY(rotY);
+	transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
+}
+

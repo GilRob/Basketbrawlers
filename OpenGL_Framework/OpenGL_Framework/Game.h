@@ -36,16 +36,18 @@ class Game
 public:
 	Game();
 	~Game();
-	void sortObjects(bool sceneObjects);
-	Object* findObjects(bool sceneObjects, std::string _name);
+	void sortObjects(unsigned int scene);
+	Object* findObjects(unsigned int scene, std::string _name);
 	PointLightObj* findLight(std::string _name);
 
 	void initializeGame();
 	void update();
 	void updateScene();
 	void updateMenu();
+	void updateSelect();
 	void draw();
 	void drawScene();
+	void drawSelect();
 	void drawHUD();
 	void drawTime();
 	void drawScore();
@@ -78,20 +80,33 @@ public:
 	Mesh boxMesh;
 	Texture boxTexture;
 
-	Knight* playerOne;
+	//Knight* playerOne;
 	std::vector<bool> inputs2;
-	Ninja* playerTwo;
+	//Ninja* playerTwo;
 	std::vector<bool> inputs;
+
+	Character* players[2];
 
 	/// ENTITIES ///
 	std::vector<Object*> gameObjects;
 	std::vector<PointLightObj*> pointLights;
 	Object* hitboxObj;
 	std::vector<Object*> menuObjects;
+	std::vector<Object*> selectObjects;
 
-	bool fighting = false;
+	unsigned int scene = 0; //0=menu, 1=selecting, 2=fighting
 	bool gameDone = false;
+
+	//Menu
 	unsigned int selectedButton = 0;
+	float lastInputTime = 0.0f;
+
+	//CSS
+	unsigned int p1Char = 0;
+	unsigned int p2Char = 0;
+	bool p1Done = false;
+	bool p2Done = false;
+
 
 	Mesh HudObj;
 	Texture P1Hud;

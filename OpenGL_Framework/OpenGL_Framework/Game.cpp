@@ -47,7 +47,7 @@ void Game::initializeGame()
 		glutFullScreen();
 
 //=================================================================//
-	//Load All Objects
+	//Load All Game Objects
 	///Object(*mesh path*, *texture path*, *enable blending?* = false by deafult);
 	gameObjects.push_back(new Object("./Assets/Models/nets.obj", "./Assets/Textures/net.png", "net", true));
 	gameObjects.push_back(new Object("./Assets/Models/chairs.obj", "./Assets/Textures/chair.png", "chairs"));
@@ -60,32 +60,88 @@ void Game::initializeGame()
 	hitboxObj = new Object("./Assets/Models/Hitbox.obj", "./Assets/Textures/redclear.png", "hitbox", true);
 	
 
+	//Load All Main Menu Objects
 	menuObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/menuback.png", "background", true));
 	if (FULLSCREEN)
-		menuObjects[0]->transform.Scale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.5f, 1));
+		menuObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.5f, 1));
 	else
-		menuObjects[0]->transform.Scale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.5f, 1));
-	menuObjects[0]->transform.RotateY(90);
+		menuObjects[0]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.5f, 1));
+	menuObjects[0]->RotateY(90);
 	menuObjects[0]->setPosition(glm::vec3(0, -550, -1));
-
+	
 
 	menuObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/button.png", "button1", true));
 	if (FULLSCREEN) 
-		menuObjects[1]->transform.Scale(150.0f);
+		menuObjects[1]->setScale(150.0f);
 	else 
-		menuObjects[1]->transform.Scale(100.0f);
-	menuObjects[1]->transform.RotateY(90);
-	menuObjects[1]->setPosition(glm::vec3(-500, -100, 0));
+		menuObjects[1]->setScale(100.0f);
+	menuObjects[1]->RotateY(90.0f);
+	menuObjects[1]->setPosition(glm::vec3(-500, 0, 0));
 
 
 	menuObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/button.png", "button2", true));
 	if (FULLSCREEN)
-		menuObjects[2]->transform.Scale(150.0f);
+		menuObjects[2]->setScale(150.0f);
 	else
-		menuObjects[2]->transform.Scale(100.0f);
-	menuObjects[2]->transform.RotateY(90);
-	menuObjects[2]->setPosition(glm::vec3(-500, -400, 0));
+		menuObjects[2]->setScale(100.0f);
+	menuObjects[2]->RotateY(90.0f);
+	menuObjects[2]->setPosition(glm::vec3(-500, -250, 0));
 
+	menuObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/button.png", "button3", true));
+	if (FULLSCREEN)
+		menuObjects[3]->setScale(150.0f);
+	else
+		menuObjects[3]->setScale(100.0f);
+	menuObjects[3]->RotateY(90.0f);
+	menuObjects[3]->setPosition(glm::vec3(-500, -500, 0));
+
+
+	//Load All Character Select Objects
+
+	///background image
+	selectObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/selectback.png", "background", true));
+	if (FULLSCREEN)
+		selectObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.5f, 1));
+	else
+		selectObjects[0]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.5f, 1));
+	selectObjects[0]->RotateY(90);
+	selectObjects[0]->setPosition(glm::vec3(0, -550, -1));
+
+	///knight Icon
+	selectObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/KnightIcon.png", "knightIcon", true));
+	if (FULLSCREEN)
+		selectObjects[1]->setScale(120.0f);
+	else
+		selectObjects[1]->setScale(80.0f);
+	selectObjects[1]->RotateY(90.0f);
+	selectObjects[1]->setPosition(glm::vec3(-200, -100, 0));
+
+	///ninja Icon
+	selectObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/NinjaIcon.png", "ninjaIcon", true));
+	if (FULLSCREEN)
+		selectObjects[2]->setScale(120.0f);
+	else
+		selectObjects[2]->setScale(80.0f);
+	selectObjects[2]->RotateY(90.0f);
+	selectObjects[2]->setPosition(glm::vec3(200, -100, 0));
+
+	///p1 Icon
+	selectObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/p1select.png", "p1Select", true));
+	if (FULLSCREEN)
+		selectObjects[3]->setScale(120.0f);
+	else
+		selectObjects[3]->setScale(80.0f);
+	selectObjects[3]->RotateY(90.0f);
+	selectObjects[3]->setPosition(glm::vec3(-200, -100, 2));
+
+	///p2 Icon
+	selectObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/p2select.png", "p2Select", true));
+	if (FULLSCREEN)
+		selectObjects[4]->setScale(120.0f);
+	else
+		selectObjects[4]->setScale(80.0f);
+	selectObjects[4]->RotateY(90.0f);
+	selectObjects[4]->setPosition(glm::vec3(200, -100, 1));
 
 //================================================================//
 	//Init PointLights
@@ -133,11 +189,13 @@ void Game::initializeGame()
 
 	inputs = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R
 
-	playerOne = new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png");
+	//player1
+	players[0] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png"));
 
-	inputs = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R
+	inputs2 = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R
 
-	playerTwo = new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png");
+	//player2
+	players[1] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png"));
 
 
 //====================================================================//
@@ -401,8 +459,8 @@ void Game::initializeGame()
 
 
 	loadTime();//load time gui textures and obj
-	playerOne->setPosition(glm::vec3(-5, 0, 0));
-	playerTwo->setPosition(glm::vec3(5, 0, 0));
+	players[0]->setPosition(glm::vec3(-5, 0, 0));
+	players[1]->setPosition(glm::vec3(5, 0, 0));
 
 	//start timer
 	updateTimer = new Timer();
@@ -414,8 +472,11 @@ void Game::initializeGame()
 
 void Game::update()
 {
-	if (fighting) {
+	if (scene == 2) {
 		updateScene();
+	}
+	else if (scene == 1) {
+		updateSelect();
 	}
 	else {
 		updateMenu();
@@ -426,64 +487,195 @@ void Game::updateMenu()
 {
 	// update our clock so we have the delta time since the last update
 	updateTimer->tick();
-
 	float deltaTime = updateTimer->getElapsedTimeSeconds();
 	TotalGameTime += deltaTime;
 
 	updateInputs();
 
-	//if moved
+	//check if move input
+	unsigned int oldButton = selectedButton;
+	if(TotalGameTime - lastInputTime > 0.2f)
 	if (inputs[0] || inputs2[0]) {
-		if (selectedButton != 1) {
-			menuObjects[1]->transform.Scale(1.1f);
-			menuObjects[2]->transform.Scale(1.0f / 1.1f);
-			if (selectedButton != 0) {
-				menuObjects[1]->transform.Scale(1.1f);
-				menuObjects[2]->transform.Scale(1.0f / 1.1f);
-			}
-			selectedButton = 1;
-		}
+		selectedButton--;
 	}
 	else if (inputs[2] || inputs2[2]) {
-		if (selectedButton != 2) {
-			menuObjects[2]->transform.Scale(1.1f);
-			menuObjects[1]->transform.Scale(1.0f / 1.1f);
-			if (selectedButton != 0) {
-				menuObjects[2]->transform.Scale(1.1f);
-				menuObjects[1]->transform.Scale(1.0f / 1.1f);
+		selectedButton++;
+	}
+
+	//correction
+	if (selectedButton < 1)
+		selectedButton = 1;
+	else if (selectedButton > 3)
+			selectedButton = 3;
+
+	//change button sizes
+	if (selectedButton != oldButton) {
+		lastInputTime = TotalGameTime;
+		if (selectedButton == 1) {
+			if (FULLSCREEN) {
+				findObjects(0, "button1")->setScale(1.1f * 150.0f);
+				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 150.0f);
+				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 150.0f);
 			}
-			selectedButton = 2;
+			else {
+				findObjects(0, "button1")->setScale(1.1f * 100.0f);
+				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 100.0f);
+				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 100.0f);
+			}
 		}
+		else if (selectedButton == 2) {
+			if (FULLSCREEN) {
+				findObjects(0, "button2")->setScale(1.1f * 150.0f);
+				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 150.0f);
+				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 150.0f);
+			}
+			else {
+				findObjects(0, "button2")->setScale(1.1f * 100.0f);
+				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 100.0f);
+				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 100.0f);
+			}
+		}
+		else if (selectedButton == 3) {
+			if (FULLSCREEN) {
+				findObjects(0, "button3")->setScale(1.1f * 150.0f);
+				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 150.0f);
+				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 150.0f);
+			}
+			else {
+				findObjects(0, "button3")->setScale(1.1f * 100.0f);
+				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 100.0f);
+				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 100.0f);
+			}
+		}
+
 	}
 
 	//press
 	if (inputs[6] || inputs2[6]) {
 		if (selectedButton == 1) {
-			fighting = true;
-			gameDone = false;
-			score1 = 0;
-			score2 = 0;
-			playerOne->respawn();
-			playerTwo->respawn();
-			playerOne->setPosition(glm::vec3(-5, 0, 0));
-			playerTwo->setPosition(glm::vec3(5, 0, 0));
-			//updateTimer = new Timer();
-			TotalGameTime = 0.0f;
+			scene = 1;
+			lastInputTime = 0.0f;
 			inputs[6] = 0;
 			inputs2[6] = 0;
 		}
-		else if (selectedButton == 2) {
+		else if (selectedButton == 3) {
 			exit(0);
 		}
 	}
 
-	//if (FULLSCREEN) {
-	//	menuObjects[1]->transform.Scale(150.0f);
-	//}
-	//else {
-	//	menuObjects[1]->transform.Scale(100.0f);
-	//}
+}
 
+void Game::updateSelect()
+{
+	// update our clock so we have the delta time since the last update
+	updateTimer->tick();
+	float deltaTime = updateTimer->getElapsedTimeSeconds();
+	TotalGameTime += deltaTime;
+
+	updateInputs();
+
+	//check inputs
+	if (!p1Done) {
+		if (inputs[8]) 
+			p1Char--;
+		else if (inputs[7]) 
+			p1Char++;
+	}
+
+	if (!p2Done) {
+		if (inputs2[8]) 
+			p2Char--;
+		else if (inputs2[7]) 
+			p2Char++;
+	}
+
+	//correction
+	if (p1Char < 1)
+		p1Char = 1;
+	else if (p1Char > 2)
+		p1Char = 2;
+	if (p2Char < 1)
+		p2Char = 1;
+	else if (p2Char > 2)
+		p2Char = 2;
+
+	//move curser
+	if (p1Char == 1) {
+		findObjects(1, "p1Select")->setPosition(
+			findObjects(1, "knightIcon")->getPosition());
+	}
+	else if (p1Char == 2) {
+		findObjects(1, "p1Select")->setPosition(
+			findObjects(1, "ninjaIcon")->getPosition());
+	}
+	if (p2Char == 1) {
+		findObjects(1, "p2Select")->setPosition(
+			findObjects(1, "knightIcon")->getPosition());
+	}
+	else if (p2Char == 2) {
+		findObjects(1, "p2Select")->setPosition(
+			findObjects(1, "ninjaIcon")->getPosition());
+	}
+
+
+	//press
+	if (!p1Done) {
+		if (inputs[6]) {
+			if (p1Char == 1) {
+				//make p1 knight
+				//players[0] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png"));
+
+				p1Done = true;
+			}
+			else if (p1Char == 2) {
+				//make p1 ninja
+				//players[0] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player1ninja.png"));
+				p1Done = true;
+			}
+		}
+	}
+	if (!p2Done) {
+		if (inputs2[6]) {
+			if (p2Char == 1) {
+				//make p2 knight
+				//players[1] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png"));
+				p2Done = true;
+			}
+			else if (p2Char == 2) {
+				//make p2 ninja
+				//players[1] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player2ninja.png"));
+				p2Done = true;
+			}
+		}
+	}
+
+	//Both Done
+	if (p1Done && p2Done) {
+
+		if (p1Char == 1)
+			players[0] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png"));
+		else if (p1Char == 2) 
+			players[0] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player1ninja.png"));
+
+		if (p2Char == 1)
+			players[1] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png"));
+		else if (p2Char == 2) 
+			players[1] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player2ninja.png"));
+
+
+		scene = 2;
+		gameDone = false;
+		score1 = 0;
+		score2 = 0;
+		players[0]->respawn();
+		players[1]->respawn();
+		players[0]->setPosition(glm::vec3(-5, 0, 0));
+		players[1]->setPosition(glm::vec3(5, 0, 0));
+		//updateTimer = new Timer();
+		TotalGameTime = 0.0f;
+		deltaTime = 0;
+		updateTimer = new Timer();
+	}
 }
 
 void Game::updateScene()
@@ -495,31 +687,31 @@ void Game::updateScene()
 	TotalGameTime += deltaTime;
 	//character collisions
 		///Allow Player to pass through one another, but will disallow them to stand in the same spot, will slowly push eachother awayy
-	float diffx = (playerOne->getPosition().x) - (playerTwo->getPosition().x);//difference between characters x
-	float diffy = (playerOne->getPosition().y) - (playerTwo->getPosition().y);//difference between characters y
+	float diffx = (players[0]->getPosition().x) - (players[1]->getPosition().x);//difference between characters x
+	float diffy = (players[0]->getPosition().y) - (players[1]->getPosition().y);//difference between characters y
 	if (abs(diffx) < 0.6f && abs(diffx) != 0 && abs(diffy) < 1.5f) {//if they are touching
 		//push them off
-		playerOne->setPosition(playerOne->getPosition() + glm::vec3(((diffx / abs(diffx))*0.01f), 0, 0));
-		playerTwo->setPosition(playerTwo->getPosition() + glm::vec3(((diffx / abs(diffx))*-0.01f), 0, 0));
+		players[0]->setPosition(players[0]->getPosition() + glm::vec3(((diffx / abs(diffx))*0.01f), 0, 0));
+		players[1]->setPosition(players[1]->getPosition() + glm::vec3(((diffx / abs(diffx))*-0.01f), 0, 0));
 	}
 
 	//new hitbox collisions
-	for (unsigned int i = 0; i < playerOne->getHitboxes().size(); i++) {
-		for (unsigned int j = 0; j < playerTwo->getHurtboxes().size(); j++) {
+	for (unsigned int i = 0; i < players[0]->getHitboxes().size(); i++) {
+		for (unsigned int j = 0; j < players[1]->getHurtboxes().size(); j++) {
 
-			glm::vec3 diff = playerOne->getHitboxes()[i]->getPosition() - playerTwo->getHurtboxes()[j]->getPosition();
-			float size = (playerOne->getHitboxes()[i]->getSize() + playerTwo->getHurtboxes()[j]->getSize()) *0.5f;
+			glm::vec3 diff = players[0]->getHitboxes()[i]->getPosition() - players[1]->getHurtboxes()[j]->getPosition();
+			float size = (players[0]->getHitboxes()[i]->getSize() + players[1]->getHurtboxes()[j]->getSize()) *0.5f;
 			if (/*diff.Length()*/ glm::length(diff) < size) {
-				if (playerTwo->blocking && (playerOne->facingRight != playerTwo->facingRight)) {//add only in front condition
-					playerTwo->blockSuccessful = true;
-					playerOne->getHitboxes()[i]->setDone();
+				if (players[1]->blocking && (players[0]->facingRight != players[1]->facingRight)) {//add only in front condition
+					players[1]->blockSuccessful = true;
+					players[0]->getHitboxes()[i]->setDone();
 					i = 100;
 					j = 100;
 				}
 				else {
-					playerTwo->hit(playerOne->getHitboxes()[i]);
-					playerOne->comboAdd();
-					playerOne->getHitboxes()[i]->setDone();
+					players[1]->hit(players[0]->getHitboxes()[i]);
+					players[0]->comboAdd();
+					players[0]->getHitboxes()[i]->setDone();
 					i = 100;
 					j = 100;
 				}
@@ -528,22 +720,22 @@ void Game::updateScene()
 	}
 
 	
-	for (unsigned int i = 0; i < playerTwo->getHitboxes().size(); i++) {
-		for (unsigned int j = 0; j < playerOne->getHurtboxes().size(); j++) {
+	for (unsigned int i = 0; i < players[1]->getHitboxes().size(); i++) {
+		for (unsigned int j = 0; j < players[0]->getHurtboxes().size(); j++) {
 
-			glm::vec3 diff = playerTwo->getHitboxes()[i]->getPosition() - playerOne->getHurtboxes()[j]->getPosition();
-			float size = (playerTwo->getHitboxes()[i]->getSize() + playerOne->getHurtboxes()[j]->getSize()) *0.5f;
+			glm::vec3 diff = players[1]->getHitboxes()[i]->getPosition() - players[0]->getHurtboxes()[j]->getPosition();
+			float size = (players[1]->getHitboxes()[i]->getSize() + players[0]->getHurtboxes()[j]->getSize()) *0.5f;
 			if (/*diff.Length()*/ glm::length(diff) < size) {
-				if (playerOne->blocking && (playerOne->facingRight != playerTwo->facingRight)) {//add only in front condition
-					playerOne->blockSuccessful = true;
-					playerTwo->getHitboxes()[i]->setDone();
+				if (players[0]->blocking && (players[0]->facingRight != players[1]->facingRight)) {//add only in front condition
+					players[0]->blockSuccessful = true;
+					players[1]->getHitboxes()[i]->setDone();
 					i = 100;
 					j = 100;
 				}
 				else {
-					playerOne->hit(playerTwo->getHitboxes()[i]);
-					playerTwo->comboAdd();
-					playerTwo->getHitboxes()[i]->setDone();
+					players[0]->hit(players[1]->getHitboxes()[i]);
+					players[1]->comboAdd();
+					players[1]->getHitboxes()[i]->setDone();
 					i = 100;
 					j = 100;
 				}
@@ -559,16 +751,16 @@ void Game::updateScene()
 	}
 
 	updateInputs();
-	playerOne->update((int)deltaTime, inputs);
-	playerTwo->update((int)deltaTime, inputs2);
+	players[0]->update((int)deltaTime, inputs);
+	players[1]->update((int)deltaTime, inputs2);
 
 	//new score code
 	for (unsigned int i = 0; i < Netbox.size(); i++) {
-		for (unsigned int j = 0; j < playerTwo->getHurtboxes().size(); j++) {
-			glm::vec3 diff = Netbox[i]->getPosition() - playerTwo->getHurtboxes()[j]->getPosition();
-			float size = (Netbox[i]->getSize() + playerTwo->getHurtboxes()[j]->getSize()) *0.5f;
+		for (unsigned int j = 0; j < players[1]->getHurtboxes().size(); j++) {
+			glm::vec3 diff = Netbox[i]->getPosition() - players[1]->getHurtboxes()[j]->getPosition();
+			float size = (Netbox[i]->getSize() + players[1]->getHurtboxes()[j]->getSize()) *0.5f;
 			if (/*diff.Length()*/ glm::length(diff) < size) {
-				playerTwo->respawn();
+				players[1]->respawn();
 				std::cout << std::endl << "Player 1 Scored" << std::endl;
 				score1++;
 				//i = 100;
@@ -579,11 +771,11 @@ void Game::updateScene()
 
 			}
 		}
-		for (unsigned int j = 0; j < playerOne->getHurtboxes().size(); j++) {
-			glm::vec3 diff = Netbox[i]->getPosition() - playerOne->getHurtboxes()[j]->getPosition();
-			float size = (Netbox[i]->getSize() + playerOne->getHurtboxes()[j]->getSize()) *0.5f;
+		for (unsigned int j = 0; j < players[0]->getHurtboxes().size(); j++) {
+			glm::vec3 diff = Netbox[i]->getPosition() - players[0]->getHurtboxes()[j]->getPosition();
+			float size = (Netbox[i]->getSize() + players[0]->getHurtboxes()[j]->getSize()) *0.5f;
 			if (/*diff.Length()*/ glm::length(diff) < size) {
-				playerOne->respawn();
+				players[0]->respawn();
 				std::cout << std::endl << "Player 2 Scored" << std::endl;
 				score2++;
 				//i = 100;
@@ -598,7 +790,7 @@ void Game::updateScene()
 
 	//DYNAMIC CAM
 	//camera control
-	float dist = abs(playerOne->getPosition().x - playerTwo->getPosition().x) * 1.0f;
+	float dist = abs(players[0]->getPosition().x - players[1]->getPosition().x) * 1.0f;
 	if (dist < 10)
 		dist = 10;
 	//camera->setPositionXY((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, abs(dist*0.1f) + 1.5f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f));
@@ -615,7 +807,7 @@ void Game::updateScene()
 		glm::vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, 
 			abs(sqrtf(dist*0.01f)*20.0f) + 10.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), 
 			dist + 10));*/
-	CameraTransform.Translate(glm::vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, abs(sqrtf(dist*0.01f)*18.5f) + 10.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), (dist* 0.75f)+9));
+	CameraTransform.Translate(glm::vec3((players[1]->getPosition().x + players[0]->getPosition().x) / 2.0f, abs(sqrtf(dist*0.01f)*18.5f) + 10.0f + ((players[1]->getPosition().y + players[0]->getPosition().y) / 2.0f), (dist* 0.75f)+9));
 	//glm::rotate(CameraTransform, 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	CameraTransform.RotateY(0.0f);
 	//CameraTransform.RotateZ(180.0f);
@@ -690,8 +882,11 @@ How are we rendering it
 
 void Game::draw()
 {
-	if (fighting) {
+	if (scene == 2) {
 		drawScene();
+	}
+	else if(scene == 1) {
+		drawSelect();
 	}
 	else {
 		drawMenu();
@@ -724,7 +919,7 @@ void Game::drawScene()
 
 	ShadowMap.Bind();
 
-	Object* temp = findObjects(true, "court");
+	Object* temp = findObjects(2, "court");
 
 	glBindVertexArray(temp->body.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, temp->body.GetNumVertices());
@@ -746,8 +941,8 @@ void Game::drawScene()
 	AniShader.SendUniformMat4("uModel", Transform().data, true);
 	AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 	AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
-	AniShader.SendUniformMat4("uModel", playerOne->transform.data, true);
-	playerOne->draw(AniShader, 0);
+	AniShader.SendUniformMat4("uModel", players[0]->transform.data, true);
+	players[0]->draw(AniShader, 0);
 	AniShader.SendUniformMat4("uModel", Transform().data, true);
 
 	//draw p2 shadow
@@ -755,8 +950,8 @@ void Game::drawScene()
 	AniShader.SendUniformMat4("uModel", Transform().data, true);
 	AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
 	AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
-	AniShader.SendUniformMat4("uModel", playerTwo->transform.data, true);
-	playerTwo->draw(AniShader, 0);
+	AniShader.SendUniformMat4("uModel", players[1]->transform.data, true);
+	players[1]->draw(AniShader, 0);
 	AniShader.SendUniformMat4("uModel", Transform().data, true);
 
 	glBindVertexArray(0);
@@ -801,7 +996,7 @@ void Game::drawScene()
 	///playerTwo->draw(GBufferPass);
 
 	//draws everything in scene
-	sortObjects(true);
+	sortObjects(2);
 	for (int i = 0; i < (int)gameObjects.size(); i++) {
 		gameObjects[i]->draw(GBufferPass, 1);
 	}
@@ -850,8 +1045,8 @@ void Game::drawScene()
 	//	boxTexture.UnBind();
 
 
-	playerOne->drawBoxes(GBufferPass);
-	playerTwo->drawBoxes(GBufferPass);
+	players[0]->drawBoxes(GBufferPass);
+	players[1]->drawBoxes(GBufferPass);
 	//playerOne->draw(GBufferPass);
 	//playerTwo->draw(GBufferPass);
 
@@ -881,12 +1076,12 @@ void Game::drawScene()
 	AniShader.Bind();
 	AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
-	playerOne->draw(AniShader, 1);
+	players[0]->draw(AniShader, 1);
 
 	AniShader.Bind();
 	AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
-	playerTwo->draw(AniShader, 1);
+	players[1]->draw(AniShader, 1);
 
 
 	drawScore();
@@ -1141,6 +1336,193 @@ void Game::drawScene()
 	glutSwapBuffers();
 }
 
+void Game::drawSelect()
+{
+	/// Clear Buffers ///
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glClearColor(0.1f, 0.2f, 0.3f, 0);
+	DeferredComposite.Clear();
+
+	glClearColor(0.0f, 0.0f, 0.0f, 0);
+	GBuffer.Clear();
+	ShadowMap.Clear();
+	HudMap.Clear();
+	WorkBuffer1.Clear();
+	WorkBuffer2.Clear();
+
+	/// Create Scene From GBuffer ///
+	if (FULLSCREEN)
+		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	else
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	DeferredLighting.Bind();
+	DeferredLighting.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
+	DeferredLighting.SendUniform("uScene", 0);
+	DeferredLighting.SendUniform("uShadowMap", 1);
+	DeferredLighting.SendUniform("uNormalMap", 2);
+	DeferredLighting.SendUniform("uPositionMap", 3);
+	//DeferredLighting.SendUniform("uEdgeMap", 4);
+	//DeferredLighting.SendUniform("uStepTexture", 4);
+
+	DeferredLighting.SendUniform("LightDirection", glm::vec3(CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
+	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
+
+	DeferredComposite.Bind();
+
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
+
+
+
+	DrawFullScreenQuad();
+
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
+
+	DeferredComposite.UnBind();
+	DeferredLighting.UnBind();
+
+	//===============================================================
+		//DeferredComposite.Bind();
+	DeferredComposite.Bind();
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask(GL_FALSE);  // disable writes to Z-Buffer
+	glDisable(GL_DEPTH_TEST);  // disable depth-testing
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_LIGHTING);
+
+	//new projection
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();//save old state
+	glLoadIdentity();//reset
+	if (FULLSCREEN)
+		gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
+	else
+		gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();//save old state
+	glLoadIdentity();//reset
+
+//////////////////////////
+	//now ready to draw 2d
+//////////////////////////
+	GBufferPass.Bind();
+	hudTransform = Transform::Identity();
+	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+
+//draws everything in menu
+	sortObjects(1);
+	for (int i = 0; i < (int)selectObjects.size(); i++) {
+		selectObjects[i]->draw(GBufferPass, 1);
+	}
+
+	GBufferPass.UnBind();
+
+	//restore projection matrix
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();//restore state
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();//restore state
+
+	DeferredComposite.UnBind();
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_LIGHTING);
+	glDisable(GL_BLEND);
+	//===============================================================
+
+		/// Compute High Pass ///
+	if (FULLSCREEN)
+		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
+	else
+		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+	//Moving data to the back buffer, at the same time as our last post process
+	BloomHighPass.Bind();
+	BloomHighPass.SendUniform("uTex", 0);
+	BloomHighPass.SendUniform("uThreshold", BLOOM_THRESHOLD);
+	WorkBuffer1.Bind();
+	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	DrawFullScreenQuad();
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	WorkBuffer1.UnBind();
+	BloomHighPass.UnBind();
+
+	/// Compute Blur ///
+	if (FULLSCREEN)
+		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
+	else
+		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+	for (int i = 0; i < BLOOM_BLUR_PASSES; i++)
+	{
+		//Horizontal Blur
+		BlurHorizontal.Bind();
+		BlurHorizontal.SendUniform("uTex", 0);
+		if (FULLSCREEN)
+			BlurHorizontal.SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
+		else
+			BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
+		WorkBuffer2.Bind();
+		glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+		WorkBuffer2.UnBind();
+		BlurHorizontal.UnBind();
+
+		//Vertical Blur
+		BlurVertical.Bind();
+		BlurVertical.SendUniform("uTex", 0);
+		if (FULLSCREEN)
+			BlurVertical.SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
+		else
+			BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
+		WorkBuffer1.Bind();
+		glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+		WorkBuffer1.UnBind();
+		BlurVertical.UnBind();
+	}
+
+	/// Composite To Back Buffer ///
+	if (FULLSCREEN)
+		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	else
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	BloomComposite.Bind();
+	BloomComposite.SendUniform("uScene", 0);
+	BloomComposite.SendUniform("uBloom", 1);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+	DrawFullScreenQuad();
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	BloomComposite.UnBind();
+
+	glutSwapBuffers();
+}
+
 void Game::drawHUD()
 {
 	//DeferredComposite.Bind();
@@ -1197,12 +1579,12 @@ void Game::drawHUD()
 	hudLoc = Transform::Identity();
 
 	if (FULLSCREEN) {
-		hudLoc.Scale(glm::vec3(150.0f * (playerOne->getMeter() / 200.0f), 150.0f, 150.0f));
-		hudLoc.Translate(glm::vec3(-675 - 1.05*(200.0f - playerOne->getMeter()), -540, 0));
+		hudLoc.Scale(glm::vec3(150.0f * (players[0]->getMeter() / 200.0f), 150.0f, 150.0f));
+		hudLoc.Translate(glm::vec3(-675 - 1.05*(200.0f - players[0]->getMeter()), -540, 0));
 	}
 	else {
-		hudLoc.Scale(glm::vec3(100.0f * (playerOne->getMeter() / 200.0f), 100.0f, 100));
-		hudLoc.Translate(glm::vec3(-450 - 0.7*(200.0f - playerOne->getMeter()), -360, 0));
+		hudLoc.Scale(glm::vec3(100.0f * (players[0]->getMeter() / 200.0f), 100.0f, 100));
+		hudLoc.Translate(glm::vec3(-450 - 0.7*(200.0f - players[0]->getMeter()), -360, 0));
 	}
 	hudLoc.RotateY(90.0f);
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
@@ -1232,12 +1614,12 @@ void Game::drawHUD()
 	///draw quad for p2 bar
 	hudLoc = Transform::Identity();
 	if (FULLSCREEN) {
-		hudLoc.Scale(glm::vec3(150.0f * (playerTwo->getMeter() / 200.0f), 150.0f, 150.0f));
-		hudLoc.Translate(glm::vec3(675 + 1.05*(200.0f - playerTwo->getMeter()), -540, 0));
+		hudLoc.Scale(glm::vec3(150.0f * (players[1]->getMeter() / 200.0f), 150.0f, 150.0f));
+		hudLoc.Translate(glm::vec3(675 + 1.05*(200.0f - players[1]->getMeter()), -540, 0));
 	}
 	else {
-		hudLoc.Scale(glm::vec3(100.0f * (playerTwo->getMeter() / 200.0f), 100.0f, 100));
-		hudLoc.Translate(glm::vec3(450 + 0.7*(200.0f - playerTwo->getMeter()), -360, 0));
+		hudLoc.Scale(glm::vec3(100.0f * (players[1]->getMeter() / 200.0f), 100.0f, 100));
+		hudLoc.Translate(glm::vec3(450 + 0.7*(200.0f - players[1]->getMeter()), -360, 0));
 	}
 	hudLoc.RotateY(90.0f);
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
@@ -1323,10 +1705,6 @@ void Game::drawScore() {
 
 void Game::drawMenu()
 {
-	//menu
-	//menu
-	//menu
-
 	/// Clear Buffers ///
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -1418,7 +1796,7 @@ void Game::drawMenu()
 	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
 
 	//draws everything in menu
-	sortObjects(false);
+	sortObjects(0);
 	for (int i = 0; i < (int)menuObjects.size(); i++) {
 		menuObjects[i]->draw(GBufferPass, 1);
 	}
@@ -1730,24 +2108,40 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 	{
 	case 'R': //w
 	case 'r': //w
-		fighting = true;
-		gameDone = false;
-		score1 = 0;
-		score2 = 0;
-		playerOne->respawn();
-		playerTwo->respawn();
-		playerOne->setPosition(glm::vec3(-5, 0, 0));
-		playerTwo->setPosition(glm::vec3(5, 0, 0));
-		//updateTimer = new Timer();
-		TotalGameTime = 0.0f;
+		if (scene == 2) {
+			scene = 2;
+			gameDone = false;
+			score1 = 0;
+			score2 = 0;
+			players[0]->respawn();
+			players[0]->setPosition(glm::vec3(-5, 0, 0));
+			players[1]->respawn();
+			players[1]->setPosition(glm::vec3(5, 0, 0));
+			//updateTimer = new Timer();
+			TotalGameTime = 0.0f;
+			lastInputTime = 0.0f;
+		}
 		break;
 	case 'Q': //w
 	case 'q': //w
-		fighting = !fighting;
+		scene = 0;
+		TotalGameTime = 0.0f;
+		lastInputTime = 0.0f;
+		p1Done = false;
+		p2Done = false;
+		p1Char = 0;
+		p2Char = 0;
 		break;
 	case 'W': //w
 	case 'w': //w
-		gameDone = !gameDone;
+		scene = 1;
+		TotalGameTime = 0.0f;
+		lastInputTime = 0.0f;
+		p1Done = false;
+		p2Done = false;
+		p1Char = 0;
+		p2Char = 0;
+
 		break;
 	case 'd': //d
 		//inputs[1] = false;
@@ -1916,6 +2310,7 @@ void Game::updateInputs()
 			inputs[5] = true;
 		if (Anew == true && Aold == false)
 			inputs[6] = true;
+		else inputs[6] = false;//A = only on pressed not held
 		if (RBnew == true && RBold == false)
 			inputs[9] = true;
 
@@ -2042,6 +2437,7 @@ void Game::updateInputs()
 			inputs2[5] = true;
 		if (Anew2 == true && Aold2 == false)
 			inputs2[6] = true;
+		else inputs2[6] = false;//A = only on pressed not held
 		if (RBnew2 == true && RBold2 == false)
 			inputs2[9] = true;
 
@@ -2074,7 +2470,7 @@ void Game::updateInputs()
 	else {
 
 
-		inputs2 = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R
+	inputs2 = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R
 	}
 }
 
@@ -2093,8 +2489,8 @@ void Game::loadTime() {
 	}
 }
 
-void Game::sortObjects(bool sceneObjects) {
-	if (sceneObjects) {
+void Game::sortObjects(unsigned int scene) {
+	if (scene == 2) {
 		//go through list
 		for (int i = 0; i < (int)(gameObjects.size() - 1); i++) {
 			for (int j = i + 1; j < (int)gameObjects.size(); j++) {
@@ -2111,7 +2507,7 @@ void Game::sortObjects(bool sceneObjects) {
 			}
 		}
 	}
-	else {
+	else if (scene == 0){
 		//go through list
 		for (int i = 0; i < (int)(menuObjects.size() - 1); i++) {
 			for (int j = i + 1; j < (int)menuObjects.size(); j++) {
@@ -2128,11 +2524,28 @@ void Game::sortObjects(bool sceneObjects) {
 			}
 		}
 	}
+	else if (scene == 1) {
+		//go through list
+		for (int i = 0; i < (int)(selectObjects.size() - 1); i++) {
+			for (int j = i + 1; j < (int)selectObjects.size(); j++) {
+
+				float dist1 = (float)(CameraTransform.GetTranslation() - selectObjects[i]->transform.GetTranslation()).length();
+				float dist2 = (float)(CameraTransform.GetTranslation() - selectObjects[j]->transform.GetTranslation()).length();
+
+				if ((dist1 < dist2 && selectObjects[i]->blending) || (selectObjects[i]->blending && !selectObjects[j]->blending)) {
+					Object* temp = selectObjects[i];
+					selectObjects[i] = selectObjects[j];
+					selectObjects[j] = temp;
+				}
+
+			}
+		}
+	}
 }
 
-Object* Game::findObjects(bool sceneObjects, std::string _name)
+Object* Game::findObjects(unsigned int scene, std::string _name)
 {
-	if (sceneObjects) {
+	if (scene == 2) {
 		for (int i = 0; i < (int)gameObjects.size(); i++) {
 
 			if (gameObjects[i]->name == _name)
@@ -2140,11 +2553,19 @@ Object* Game::findObjects(bool sceneObjects, std::string _name)
 
 		}
 	}
-	else {
+	else if (scene == 0){
 		for (int i = 0; i < (int)menuObjects.size(); i++) {
 
 			if (menuObjects[i]->name == _name)
 				return menuObjects[i];
+
+		}
+	}
+	else if (scene == 1) {
+		for (int i = 0; i < (int)selectObjects.size(); i++) {
+
+			if (selectObjects[i]->name == _name)
+				return selectObjects[i];
 
 		}
 	}

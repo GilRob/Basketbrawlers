@@ -23,6 +23,9 @@ public:
 
 	glm::vec3 getPosition();
 	void setPosition(glm::vec3 pos);
+	void setScale(glm::vec3 scale);
+	void setScale(float scale);
+	void RotateY(float rot);
 
 	std::string name;
 	//model
@@ -43,6 +46,10 @@ protected:
 	float scaleX;
 	float scaleY;
 	float scaleZ;
+	//rotation
+	float rotX;
+	float rotY;
+	float rotZ;
 
 private:
 };
