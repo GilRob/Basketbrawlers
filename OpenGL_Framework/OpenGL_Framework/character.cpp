@@ -316,20 +316,28 @@ Transform Character::atkInputHandler(std::vector<bool> inputs)
 	///hit
 	if (action == ACTION_HIT) {
 		//If in Hitstun reduce directional influence
-		force.x = (inputs[1] - inputs[3]) *  diMultiplier;
-		if (currentFrame < (unsigned int)hitframes)//only launched for hitframes, character will just be stunned for the remaining frames (hitstun + moves kb)
-			velocity = hitForce;
-		else
-			result.RotateZ((float)(currentFrame - hitframes)*(-0.5f + (int)facingRight));
+		if (currentFrame != 1) {
+			force.x = (inputs[1] - inputs[3]) *  diMultiplier;
+			if (currentFrame < (unsigned int)hitframes)//only launched for hitframes, character will just be stunned for the remaining frames (hitstun + moves kb)
+				velocity = hitForce = hitForce * 0.99f;
+			else
+				result.RotateZ((float)(currentFrame - hitframes)*(-0.5f + (int)facingRight));
+		}
+		else {//on first frame pause
+			force = glm::vec3(0, 0, 0);
+			acceleration = glm::vec3(0, 0, 0);
+			velocity = glm::vec3(0, 0, 0);
+		}
 
 		if (facingRight)
 			result.RotateY(-45.0f);
 		else
 			result.RotateY(45.0f);
+
 		currentFrame++;
 	}
 	///dash
-	else if ((inputs[9] && (action == ACTION_IDLE || action == ACTION_WALK || action == ACTION_RUN || action == ACTION_INTIAL_DASH || action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2)) || action == ACTION_DASH) {
+	else if ((inputs[10] && (action == ACTION_IDLE || action == ACTION_WALK || action == ACTION_RUN || action == ACTION_INTIAL_DASH || action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2)) || action == ACTION_DASH) {
 
 		result = dash(inputs[1], inputs[3]);
 	}

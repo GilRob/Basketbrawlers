@@ -187,15 +187,15 @@ void Game::initializeGame()
 	//Init Controls and Players
 
 
-	inputs = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R
+	inputs = { false, false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R, B
 
 	//player1
-	players[0] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png"));
+	//players[0] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png"));
 
-	inputs2 = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R
+	inputs2 = { false, false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R, B
 
 	//player2
-	players[1] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png"));
+	//players[1] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png"));
 
 
 //====================================================================//
@@ -459,8 +459,8 @@ void Game::initializeGame()
 
 
 	loadTime();//load time gui textures and obj
-	players[0]->setPosition(glm::vec3(-5, 0, 0));
-	players[1]->setPosition(glm::vec3(5, 0, 0));
+	//players[0]->setPosition(glm::vec3(-5, 0, 0));
+	//players[1]->setPosition(glm::vec3(5, 0, 0));
 
 	//start timer
 	updateTimer = new Timer();
@@ -695,6 +695,18 @@ void Game::updateScene()
 		players[1]->setPosition(players[1]->getPosition() + glm::vec3(((diffx / abs(diffx))*-0.01f), 0, 0));
 	}
 
+	//rumble when hit;
+	for (int i = 0; i < 2; i++) {
+		if (players[i]->isHit() && players[i]->currentFrame < 5) {
+			XBoxController.SetVibration(0, 10, 10);
+			XBoxController.SetVibration(1, 10, 10);
+		}
+		else if (players[i]->isHit() && players[i]->currentFrame == 5) {
+			XBoxController.SetVibration(0, 0, 0);
+			XBoxController.SetVibration(1, 0, 0);
+		}
+	}
+
 	//new hitbox collisions
 	for (unsigned int i = 0; i < players[0]->getHitboxes().size(); i++) {
 		for (unsigned int j = 0; j < players[1]->getHurtboxes().size(); j++) {
@@ -702,6 +714,13 @@ void Game::updateScene()
 			glm::vec3 diff = players[0]->getHitboxes()[i]->getPosition() - players[1]->getHurtboxes()[j]->getPosition();
 			float size = (players[0]->getHitboxes()[i]->getSize() + players[1]->getHurtboxes()[j]->getSize()) *0.5f;
 			if (/*diff.Length()*/ glm::length(diff) < size) {
+
+				XBoxController.SetVibration(0, 10,10);
+				XBoxController.SetVibration(1, 10,10);
+				Sleep(50);
+				XBoxController.SetVibration(0, 0, 0);
+				XBoxController.SetVibration(1, 0, 0);
+
 				if (players[1]->blocking && (players[0]->facingRight != players[1]->facingRight)) {//add only in front condition
 					players[1]->blockSuccessful = true;
 					players[0]->getHitboxes()[i]->setDone();
@@ -718,14 +737,19 @@ void Game::updateScene()
 			}
 		}
 	}
-
-	
 	for (unsigned int i = 0; i < players[1]->getHitboxes().size(); i++) {
 		for (unsigned int j = 0; j < players[0]->getHurtboxes().size(); j++) {
 
 			glm::vec3 diff = players[1]->getHitboxes()[i]->getPosition() - players[0]->getHurtboxes()[j]->getPosition();
 			float size = (players[1]->getHitboxes()[i]->getSize() + players[0]->getHurtboxes()[j]->getSize()) *0.5f;
 			if (/*diff.Length()*/ glm::length(diff) < size) {
+
+				XBoxController.SetVibration(0, 10, 10);
+				XBoxController.SetVibration(1, 10, 10);
+				Sleep(50);
+				XBoxController.SetVibration(0, 0,0);
+				XBoxController.SetVibration(1, 0,0);
+
 				if (players[0]->blocking && (players[0]->facingRight != players[1]->facingRight)) {//add only in front condition
 					players[0]->blockSuccessful = true;
 					players[1]->getHitboxes()[i]->setDone();
@@ -751,8 +775,9 @@ void Game::updateScene()
 	}
 
 	updateInputs();
-	players[0]->update((int)deltaTime, inputs);
-	players[1]->update((int)deltaTime, inputs2);
+
+		players[0]->update((int)deltaTime, inputs);
+		players[1]->update((int)deltaTime, inputs2);
 
 	//new score code
 	for (unsigned int i = 0; i < Netbox.size(); i++) {
@@ -2115,8 +2140,27 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 			score2 = 0;
 			players[0]->respawn();
 			players[0]->setPosition(glm::vec3(-5, 0, 0));
+			players[0]->facingRight = true;
 			players[1]->respawn();
 			players[1]->setPosition(glm::vec3(5, 0, 0));
+			players[1]->facingRight = false;
+			//updateTimer = new Timer();
+			TotalGameTime = 0.0f;
+			lastInputTime = 0.0f;
+		}
+		else {
+			players[0] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png"));
+			players[1] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png"));
+			scene = 2;
+			gameDone = false;
+			score1 = 0;
+			score2 = 0;
+			players[0]->respawn();
+			players[0]->setPosition(glm::vec3(-5, 0, 0));
+			players[0]->facingRight = true;
+			players[1]->respawn();
+			players[1]->setPosition(glm::vec3(5, 0, 0));
+			players[1]->facingRight = false;
 			//updateTimer = new Timer();
 			TotalGameTime = 0.0f;
 			lastInputTime = 0.0f;
@@ -2311,6 +2355,8 @@ void Game::updateInputs()
 		if (Anew == true && Aold == false)
 			inputs[6] = true;
 		else inputs[6] = false;//A = only on pressed not held
+		if (Bnew == true && Bold == false)
+			inputs[10] = true;
 		if (RBnew == true && RBold == false)
 			inputs[9] = true;
 
@@ -2337,13 +2383,15 @@ void Game::updateInputs()
 			inputs[5] = false;
 		if (Anew == false && Aold == true)
 			inputs[6] = false;
+		if (Bnew == false && Bold == true)
+			inputs[10] = false;
 		if (RBnew == false && RBold == true)
 			inputs[9] = false;
 
 	}
 	else {
 
-		inputs = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R
+		inputs = { false, false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R, B
 	}
 
 	//PLAYER 2
@@ -2438,6 +2486,8 @@ void Game::updateInputs()
 		if (Anew2 == true && Aold2 == false)
 			inputs2[6] = true;
 		else inputs2[6] = false;//A = only on pressed not held
+		if (Bnew2 == true && Bold2 == false)
+			inputs2[10] = true;
 		if (RBnew2 == true && RBold2 == false)
 			inputs2[9] = true;
 
@@ -2464,13 +2514,15 @@ void Game::updateInputs()
 			inputs2[5] = false;
 		if (Anew2 == false && Aold2 == true)
 			inputs2[6] = false;
+		if (Bnew2 == false && Bold2 == true)
+			inputs2[10] = false;
 		if (RBnew2 == false && RBold2 == true)
 			inputs2[9] = false;
 	}
 	else {
 
 
-	inputs2 = { false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R
+		inputs2 = { false, false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R, B
 	}
 }
 

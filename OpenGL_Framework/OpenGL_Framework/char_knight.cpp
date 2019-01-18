@@ -798,17 +798,7 @@ Transform Knight::nSpecial(bool charging)
 
 		//if charge released early
 		if (!charging && currentFrame > (unsigned int)startLag && activeFrames == maxCharge) {
-			//create hitbox
-			float _kb = 11.0f + (10.0f * (currentFrame * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			unsigned int angle = 45;
-			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.1f, 2.9f, 0.1f), 3.1f, _kb, (float)angle, 7, 0, glm::vec3((-0.5f + (int)facingRight)*2.0f, -0.22f, 0.0f));
-			newAtk->spline = true;
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -20.0f, 4.5f, 0.0f));
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2.0f, 4.0f, 0.0f));
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2.0f, 0.0f, 0.0f));
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -30.0f, 0.5f, 0.0f));
-			newAtk->facingRight = facingRight;
-			activeHitboxes.push_back(newAtk);
+			storedCharge = currentFrame;
 			//start endlag
 			activeFrames = endlag;
 			currentFrame = 1;
@@ -823,12 +813,12 @@ Transform Knight::nSpecial(bool charging)
 				aniTimer = 0;
 			}
 		}
-		//max charge move
-		if (currentFrame >= activeFrames && activeFrames == maxCharge) {
+		//attack
+		else if (currentFrame == 10 && activeFrames == endlag) {//actually done endlag
 			//create hitbox
-			float _kb = 20.5f + (15.0f * (currentFrame * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			float _kb = 25.0f + (30.0f * (storedCharge * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			unsigned int angle = 45;
-			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 2.2f, 0.1f), 2.6f, _kb, (float)angle, 7, 0, glm::vec3((-0.5f + (int)facingRight)*2.0f, -0.4f, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.1f, 2.9f, 0.1f), 3.1f, _kb, (float)angle, 7, 0, glm::vec3((-0.5f + (int)facingRight)*2.0f, -0.22f, 0.0f));
 			newAtk->spline = true;
 			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -20.0f, 4.5f, 0.0f));
 			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2.0f, 4.0f, 0.0f));
@@ -836,6 +826,10 @@ Transform Knight::nSpecial(bool charging)
 			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -30.0f, 0.5f, 0.0f));
 			newAtk->facingRight = facingRight;
 			activeHitboxes.push_back(newAtk);
+		}
+		//max charge move
+		if (currentFrame >= activeFrames && activeFrames == maxCharge) {
+			storedCharge = currentFrame;
 			//start endlag
 			activeFrames = endlag;
 			currentFrame = 1;

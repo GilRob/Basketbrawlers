@@ -44,6 +44,10 @@ public:
 	unsigned int currentFrame;
 	bool interuptable;
 
+	bool isHit() {
+		return (action == ACTION_HIT);
+	}
+
 	//Actions
 	Transform idle();
 	Transform walk(bool held);

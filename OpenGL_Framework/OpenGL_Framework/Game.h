@@ -96,6 +96,7 @@ public:
 
 	unsigned int scene = 0; //0=menu, 1=selecting, 2=fighting
 	bool gameDone = false;
+	bool stun = true;
 
 	//Menu
 	unsigned int selectedButton = 0;
@@ -106,7 +107,6 @@ public:
 	unsigned int p2Char = 0;
 	bool p1Done = false;
 	bool p2Done = false;
-
 
 	Mesh HudObj;
 	Texture P1Hud;

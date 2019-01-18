@@ -9,6 +9,8 @@ public:
 	Knight() {}
 	Knight(const std::string& body, const std::string& texture);
 
+	int storedCharge;
+
 	Transform jab();
 	Transform sAttack();
 	Transform dAttack();
