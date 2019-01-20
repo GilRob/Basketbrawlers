@@ -22,6 +22,8 @@ public:
 
 	unsigned int GetNumFaces() const;
 	unsigned int GetNumVertices() const;
+	bool CreateBinary(const std::string &file);
+
 
 	//OpenGL buffers and objects
 	GLuint* VBO_Vertices = 0;
