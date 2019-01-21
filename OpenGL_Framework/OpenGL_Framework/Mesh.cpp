@@ -172,6 +172,9 @@ bool Mesh::CreateBinary(const std::string &file)
 		return false;
 	}
 
+	std::cout << "Creating Bin File..." << std::endl;
+
+
 	//parsing starts here @YOUTUBE
 #pragma region Parse
 	char inputString[CHAR_BUFFER_SIZE];
@@ -360,7 +363,6 @@ bool Mesh::LoadFromFile(const std::vector<std::string> &files)
 		if (!input)
 		{
 			return false;
-
 		}
 
 		MetaUnion metadata;
