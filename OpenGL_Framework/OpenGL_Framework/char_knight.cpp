@@ -1,10 +1,10 @@
 #include "char_knight.h"
 
 //new push
-#define BASE_ANI_TOGGLE		false	//non-offensive animations
-#define G_ATK_ANI_TOGGLE	false	//ground attacks
-#define A_ATK_ANI_TOGGLE	false	//aerials
-#define S_ATK_ANI_TOGGLE	false	//specials
+#define BASE_ANI_TOGGLE		true	//non-offensive animations
+#define G_ATK_ANI_TOGGLE	true	//ground attacks
+#define A_ATK_ANI_TOGGLE	true	//aerials
+#define S_ATK_ANI_TOGGLE	true	//specials
 #define HITBOX_TOGGLE		false	//visual hitboxes
 #define HURTBOX_TOGGLE		false	//visual hurtboxes
 
@@ -28,8 +28,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)//9
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* idle = new Mesh();
 		idle->LoadFromFile(frame);
@@ -42,8 +42,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)//14
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/WalkPoses/Walk" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/WalkPoses/Walk" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/WalkPoses/Walk" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/WalkPoses/Walk" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* walk = new Mesh();
 		walk->LoadFromFile(frame);
@@ -56,8 +56,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/PreJumpPose/Ascent" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/PreJumpPose/Ascent" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/PreJumpPose/Ascent" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/PreJumpPose/Ascent" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -70,8 +70,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/FallPoses/Fall" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/FallPoses/Fall" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/FallPoses/Fall" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/FallPoses/Fall" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -84,8 +84,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/JumpPoses/JumpAir" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/JumpPoses/JumpAir" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/JumpPoses/JumpAir" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/JumpPoses/JumpAir" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -102,8 +102,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/HurtPoses/Hurt" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/HurtPoses/Hurt" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/HurtPoses/Hurt" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/HurtPoses/Hurt" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -116,8 +116,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string((int)((c + 1) % length)));
 
 
 		Mesh* jab = new Mesh();
@@ -131,8 +131,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 8; c < 10; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string((int)((c + 1) % length)));
 
 
 		Mesh* jab = new Mesh();
@@ -146,8 +146,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/RunPoses/Run" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/RunPoses/Run" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/RunPoses/Run" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/RunPoses/Run" + std::to_string((int)((c + 1) % length)));
 
 
 		Mesh* jab = new Mesh();
@@ -162,8 +162,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/BlockPoses/Block" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/BlockPoses/Block" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/BlockPoses/Block" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/BlockPoses/Block" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -178,8 +178,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)//14
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/JabPoses/Jab" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/JabPoses/Jab" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/JabPoses/Jab" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/JabPoses/Jab" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -192,8 +192,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)//14
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/SideAttackPoses/SideAttack" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/SideAttackPoses/SideAttack" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/SideAttackPoses/SideAttack" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/SideAttackPoses/SideAttack" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -206,8 +206,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)//14
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/UpAttackPoses/UpAttack" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/UpAttackPoses/UpAttack" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/UpAttackPoses/UpAttack" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/UpAttackPoses/UpAttack" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -220,8 +220,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)//14
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/DownAttackPoses/DownAttack" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/DownAttackPoses/DownAttack" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/DownAttackPoses/DownAttack" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/DownAttackPoses/DownAttack" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -236,8 +236,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/NeutralAirPoses/NeutralAir" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/NeutralAirPoses/NeutralAir" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/NeutralAirPoses/NeutralAir" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/NeutralAirPoses/NeutralAir" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -250,8 +250,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/SideAirPoses/SideAir" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/SideAirPoses/SideAir" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/SideAirPoses/SideAir" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/SideAirPoses/SideAir" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -264,8 +264,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/DownAirPoses/DownAir" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/DownAirPoses/DownAir" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/DownAirPoses/DownAir" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/DownAirPoses/DownAir" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -278,8 +278,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/UpAirPoses/UpAir" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/UpAirPoses/UpAir" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/UpAirPoses/UpAir" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/UpAirPoses/UpAir" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -294,8 +294,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/NeutralSpecialPoses/NeutralSpecial" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/NeutralSpecialPoses/NeutralSpecial" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/NeutralSpecialPoses/NeutralSpecial" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/NeutralSpecialPoses/NeutralSpecial" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -308,8 +308,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/DownSpecial/DownSpecial" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/DownSpecial/DownSpecial" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/DownSpecial/DownSpecial" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/DownSpecial/DownSpecial" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -322,8 +322,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/SideSpecialPoses/SideSpecial" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/SideSpecialPoses/SideSpecial" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/SideSpecialPoses/SideSpecial" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/SideSpecialPoses/SideSpecial" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -336,8 +336,8 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/UpSpecialPoses/UpSpecial" + std::to_string(c) + ".obj");
-		frame.push_back("./Assets/Models/KnightAnimations/UpSpecialPoses/UpSpecial" + std::to_string((int)((c + 1) % length)) + ".obj");
+		frame.push_back("./Assets/Models/KnightAnimations/UpSpecialPoses/UpSpecial" + std::to_string(c));
+		frame.push_back("./Assets/Models/KnightAnimations/UpSpecialPoses/UpSpecial" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -346,7 +346,7 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 
 	//extra
 	std::vector<std::string> file;
-	file.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string(0) + ".obj");
+	file.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string(0));
 	body.LoadFromFile(file);
 
 	//Set Physics
@@ -413,7 +413,7 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 
 
 	std::vector<std::string> hitBox;
-	hitBox.push_back("./Assets/Models/Hitbox.obj");
+	hitBox.push_back("./Assets/Models/Hitbox");
 	boxMesh.LoadFromFile(hitBox);
 	/*{
 		std::cout << "Character Model failed to load.\n";
