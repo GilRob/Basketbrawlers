@@ -345,6 +345,9 @@ bool Mesh::LoadFromFile(const std::vector<std::string> &files)
 
 	for (unsigned int c = 0; c < _NumFrames; ++c)
 	{
+
+		std::cout << c;
+
 		glGenBuffers(1, &VBO_Vertices[c]);
 		glGenBuffers(1, &VBO_UVs[c]);
 		glGenBuffers(1, &VBO_Normals[c]);

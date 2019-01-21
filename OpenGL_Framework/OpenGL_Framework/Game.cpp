@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "Utilities.h"
 
-#define FULLSCREEN true
+#define FULLSCREEN false
 
 Game::Game()
 	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(1)
