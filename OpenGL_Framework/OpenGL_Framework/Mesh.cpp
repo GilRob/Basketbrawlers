@@ -266,8 +266,6 @@ bool Mesh::CreateBinary(const std::string &file)
 
 #pragma endregion Parse
 
-
-
 	//bin file creation starts here @BINARY LOADER
 
 	//create a file for writing
@@ -444,15 +442,15 @@ bool Mesh::LoadFromFile(const std::vector<std::string> &files)
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_Vertices[c]);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * inVertex.size(), &inVertex[0], GL_STATIC_DRAW);
-		glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, BUFFER_OFFSET(0));
+		glVertexAttribPointer((GLuint)0 + indexOffset, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, BUFFER_OFFSET(0));
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_UVs[c]);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * inTexture.size(), &inTexture[0], GL_STATIC_DRAW);
-		glVertexAttribPointer((GLuint)1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, BUFFER_OFFSET(0));
+		glVertexAttribPointer((GLuint)1 + indexOffset, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, BUFFER_OFFSET(0));
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO_Normals[c]);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * inNormal.size(), &inNormal[0], GL_STATIC_DRAW);
-		glVertexAttribPointer((GLuint)2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, BUFFER_OFFSET(0));
+		glVertexAttribPointer((GLuint)2 + indexOffset, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, BUFFER_OFFSET(0));
 
 		inVertex.clear();
 		inTexture.clear();
