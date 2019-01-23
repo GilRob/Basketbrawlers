@@ -70,30 +70,32 @@ glm::vec3 Object::getPosition()
 }
 
 void Object::draw(ShaderProgram shader, float dt) {
-	if (blending) {
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-	else {
-		glEnable(GL_CULL_FACE);
-	}
-	shader.SendUniformMat4("uModel", transform.data, true);
-	shader.SendUniform("interp", 0);
+	if (!hide) {
+		if (blending) {
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+		else {
+			glEnable(GL_CULL_FACE);
+		}
+		shader.SendUniformMat4("uModel", transform.data, true);
+		shader.SendUniform("interp", 0);
 
-	int modelLoc = glGetUniformLocation(shader.getProgram(), "uModel");
-	glUniformMatrix4fv(modelLoc, 1, false, transform.data);
+		int modelLoc = glGetUniformLocation(shader.getProgram(), "uModel");
+		glUniformMatrix4fv(modelLoc, 1, false, transform.data);
 
-	texture.Bind();
-	glBindVertexArray(body.VAO);
+		texture.Bind();
+		glBindVertexArray(body.VAO);
 
-	glDrawArrays(GL_TRIANGLES, 0, body.GetNumVertices());
-	glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
+		glDrawArrays(GL_TRIANGLES, 0, body.GetNumVertices());
+		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
 
-	if (blending) {
-		glDisable(GL_BLEND);
-	}
-	else {
-		glDisable(GL_CULL_FACE);
+		if (blending) {
+			glDisable(GL_BLEND);
+		}
+		else {
+			glDisable(GL_CULL_FACE);
+		}
 	}
 }
 

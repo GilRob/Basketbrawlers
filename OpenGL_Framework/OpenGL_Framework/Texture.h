@@ -18,7 +18,7 @@ public:
 	void UnBind();
 	void UnBind(int texSlot);
 
-	//- THe handle to the texture object
+	//- The handle to the texture object
 	GLuint TextObj = 0;
 
 private:
@@ -29,7 +29,7 @@ private:
 	GLenum _InternalFormat;
 	GLenum _Target;
 	GLenum _FilterMag = GL_LINEAR; // Filter parameter
-	GLenum _FilterMin = GL_LINEAR;// GL_LINEAR_MIPMAP_LINEAR;
+	GLenum _FilterMin = GL_LINEAR_MIPMAP_LINEAR;// GL_LINEAR;
 	GLenum _WrapU = GL_REPEAT; // Per axis Wrap parameter
 	GLenum _WrapV = GL_REPEAT;
 

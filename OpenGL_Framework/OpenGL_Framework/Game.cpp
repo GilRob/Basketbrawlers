@@ -49,66 +49,66 @@ void Game::initializeGame()
 //=================================================================//
 	//Load All Game Objects
 	///Object(*mesh path*, *texture path*, *enable blending?* = false by deafult);
-	gameObjects.push_back(new Object("./Assets/Models/nets.obj", "./Assets/Textures/net.png", "net", true));
-	gameObjects.push_back(new Object("./Assets/Models/chairs.obj", "./Assets/Textures/chair.png", "chairs"));
-	gameObjects.push_back(new Object("./Assets/Models/lightsJumbo.obj", "./Assets/Textures/lightJumboTex.png", "jumbotron", true));
-	gameObjects.push_back(new Object("./Assets/Models/ad.obj", "./Assets/Textures/words.png", "words"));
-	gameObjects.push_back(new Object("./Assets/Models/bottles.obj", "./Assets/Textures/bottleTex.png","bottles", true));
-	gameObjects.push_back(new Object("./Assets/Models/court.obj", "./Assets/Textures/court.png", "court"));
-	gameObjects.push_back(new Object("./Assets/Models/score.obj", "./Assets/Textures/score.png", "score"));
+	gameObjects.push_back(new Object("./Assets/Models/nets", "./Assets/Textures/net.png", "net", true));
+	gameObjects.push_back(new Object("./Assets/Models/chairs", "./Assets/Textures/chair.png", "chairs"));
+	gameObjects.push_back(new Object("./Assets/Models/lightsJumbo", "./Assets/Textures/lightJumboTex.png", "jumbotron", true));
+	gameObjects.push_back(new Object("./Assets/Models/ad", "./Assets/Textures/words.png", "words"));
+	gameObjects.push_back(new Object("./Assets/Models/bottles", "./Assets/Textures/bottleTex.png","bottles", true));
+	gameObjects.push_back(new Object("./Assets/Models/court", "./Assets/Textures/court.png", "court"));
+	gameObjects.push_back(new Object("./Assets/Models/score", "./Assets/Textures/score.png", "score"));
 
-	hitboxObj = new Object("./Assets/Models/Hitbox.obj", "./Assets/Textures/redclear.png", "hitbox", true);
+	hitboxObj = new Object("./Assets/Models/Hitbox", "./Assets/Textures/redclear.png", "hitbox", true);
 	
 
 	//Load All Main Menu Objects
-	menuObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/menuback.png", "background", true));
+	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/titleScreen.png", "background", true));
 	if (FULLSCREEN)
-		menuObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.5f, 1));
+		menuObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
 	else
-		menuObjects[0]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.5f, 1));
+		menuObjects[0]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
 	menuObjects[0]->RotateY(90);
-	menuObjects[0]->setPosition(glm::vec3(0, -550, -1));
+	menuObjects[0]->setPosition(glm::vec3(0, -555, -1));
 	
 
-	menuObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/button.png", "button1", true));
+	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/startButton.png", "button1", true));
 	if (FULLSCREEN) 
-		menuObjects[1]->setScale(150.0f);
+		menuObjects[1]->setScale(300.0f);
 	else 
-		menuObjects[1]->setScale(100.0f);
+		menuObjects[1]->setScale(200.0f);
 	menuObjects[1]->RotateY(90.0f);
-	menuObjects[1]->setPosition(glm::vec3(-500, 0, 0));
+	menuObjects[1]->setPosition(glm::vec3(570, -250, 0));
 
 
-	menuObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/button.png", "button2", true));
+	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/tutButton.png", "button2", true));
 	if (FULLSCREEN)
-		menuObjects[2]->setScale(150.0f);
+		menuObjects[2]->setScale(300.0f);
 	else
-		menuObjects[2]->setScale(100.0f);
+		menuObjects[2]->setScale(200.0f);
 	menuObjects[2]->RotateY(90.0f);
-	menuObjects[2]->setPosition(glm::vec3(-500, -250, 0));
+	menuObjects[2]->setPosition(glm::vec3(570, -450, 0));
 
-	menuObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/button.png", "button3", true));
+	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/creditsButton.png", "button3", true));
 	if (FULLSCREEN)
-		menuObjects[3]->setScale(150.0f);
+		menuObjects[3]->setScale(300.0f);
 	else
-		menuObjects[3]->setScale(100.0f);
+		menuObjects[3]->setScale(200.0f);
 	menuObjects[3]->RotateY(90.0f);
-	menuObjects[3]->setPosition(glm::vec3(-500, -500, 0));
+	menuObjects[3]->setPosition(glm::vec3(570, -650, 0));
 
 
 	//Load All Character Select Objects
 
 	///background image
-	selectObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/selectback.png", "background", true));
+	selectObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/selectback.png", "background", true));
 	if (FULLSCREEN)
-		selectObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.5f, 1));
+		selectObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
 	else
-		selectObjects[0]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.5f, 1));
+		selectObjects[0]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
 	selectObjects[0]->RotateY(90);
-	selectObjects[0]->setPosition(glm::vec3(0, -550, -1));
+	selectObjects[0]->setPosition(glm::vec3(0, -555, -1));
 
 	///knight Icon
-	selectObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/KnightIcon.png", "knightIcon", true));
+	selectObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/KnightIcon.png", "knightIcon", true));
 	if (FULLSCREEN)
 		selectObjects[1]->setScale(120.0f);
 	else
@@ -117,7 +117,7 @@ void Game::initializeGame()
 	selectObjects[1]->setPosition(glm::vec3(-200, -100, 0));
 
 	///ninja Icon
-	selectObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/NinjaIcon.png", "ninjaIcon", true));
+	selectObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/NinjaIcon.png", "ninjaIcon", true));
 	if (FULLSCREEN)
 		selectObjects[2]->setScale(120.0f);
 	else
@@ -126,7 +126,7 @@ void Game::initializeGame()
 	selectObjects[2]->setPosition(glm::vec3(200, -100, 0));
 
 	///p1 Icon
-	selectObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/p1select.png", "p1Select", true));
+	selectObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/p1select.png", "p1Select", true));
 	if (FULLSCREEN)
 		selectObjects[3]->setScale(120.0f);
 	else
@@ -135,13 +135,52 @@ void Game::initializeGame()
 	selectObjects[3]->setPosition(glm::vec3(-200, -100, 2));
 
 	///p2 Icon
-	selectObjects.push_back(new Object("./Assets/Models/UI_Object.obj", "./Assets/Textures/p2select.png", "p2Select", true));
+	selectObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/p2select.png", "p2Select", true));
 	if (FULLSCREEN)
 		selectObjects[4]->setScale(120.0f);
 	else
 		selectObjects[4]->setScale(80.0f);
 	selectObjects[4]->RotateY(90.0f);
 	selectObjects[4]->setPosition(glm::vec3(200, -100, 1));
+
+
+	///p1 knight pic
+	selectObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/P1KnightPic.png", "p1KnightPic", true));
+	if (FULLSCREEN)
+		selectObjects[5]->setScale(300.0f);
+	else
+		selectObjects[5]->setScale(200.0f);
+	selectObjects[5]->RotateY(90.0f);
+	selectObjects[5]->setPosition(glm::vec3(-530, -550, 2));
+
+	///p2 knight pic
+	selectObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/P2KnightPic.png", "p2KnightPic", true));
+	if (FULLSCREEN)
+		selectObjects[6]->setScale(300.0f);
+	else
+		selectObjects[6]->setScale(200.0f);
+	selectObjects[6]->RotateY(90.0f);
+	selectObjects[6]->setPosition(glm::vec3(530, -550, 1));
+
+	///p1 ninja pic
+	selectObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/P1NinjaPic.png", "p1NinjaPic", true));
+	if (FULLSCREEN)
+		selectObjects[7]->setScale(300.0f);
+	else
+		selectObjects[7]->setScale(200.0f);
+	selectObjects[7]->RotateY(90.0f);
+	selectObjects[7]->setPosition(glm::vec3(-530, -550, 2));
+	selectObjects[7]->hide = true;
+
+	///p2 nijna pic
+	selectObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/P2NinjaPic.png", "p2NinjaPic", true));
+	if (FULLSCREEN)
+		selectObjects[8]->setScale(300.0f);
+	else
+		selectObjects[8]->setScale(200.0f);
+	selectObjects[8]->RotateY(90.0f);
+	selectObjects[8]->setPosition(glm::vec3(530, -550, 1));
+	selectObjects[8]->hide = true;
 
 //================================================================//
 	//Init PointLights
@@ -154,7 +193,7 @@ void Game::initializeGame()
 	//Load Hud Obj and Texture
 
 	std::vector<std::string> hud1;
-	hud1.push_back("./Assets/Models/UI_Object.obj");
+	hud1.push_back("./Assets/Models/UI_Object");
 	HudObj.LoadFromFile(hud1);
 
 	if (!P1Hud.Load("./Assets/Textures/PlayerOneHud.png"))
@@ -189,6 +228,9 @@ void Game::initializeGame()
 
 	inputs = { false, false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R, B
 
+
+	knightTemp = (new Knight("./Assets/Models/Knight", "./Assets/Textures/player1.png"));
+	ninjaTemp = (new Ninja("./Assets/Models/Knight", "./Assets/Textures/player1ninja.png"));
 	//player1
 	//players[0] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png"));
 
@@ -513,41 +555,40 @@ void Game::updateMenu()
 		lastInputTime = TotalGameTime;
 		if (selectedButton == 1) {
 			if (FULLSCREEN) {
-				findObjects(0, "button1")->setScale(1.1f * 150.0f);
-				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 150.0f);
-				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 150.0f);
+				findObjects(0, "button1")->setScale(1.1f * 300.0f);
+				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 300.0f);
+				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 300.0f);
 			}
 			else {
-				findObjects(0, "button1")->setScale(1.1f * 100.0f);
-				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 100.0f);
-				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 100.0f);
+				findObjects(0, "button1")->setScale(1.1f * 200.0f);
+				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 200.0f);
+				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 200.0f);
 			}
 		}
 		else if (selectedButton == 2) {
 			if (FULLSCREEN) {
-				findObjects(0, "button2")->setScale(1.1f * 150.0f);
-				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 150.0f);
-				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 150.0f);
+				findObjects(0, "button2")->setScale(1.1f * 300.0f);
+				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 300.0f);
+				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 300.0f);
 			}
 			else {
-				findObjects(0, "button2")->setScale(1.1f * 100.0f);
-				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 100.0f);
-				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 100.0f);
+				findObjects(0, "button2")->setScale(1.1f * 200.0f);
+				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 200.0f);
+				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 200.0f);
 			}
 		}
 		else if (selectedButton == 3) {
 			if (FULLSCREEN) {
-				findObjects(0, "button3")->setScale(1.1f * 150.0f);
-				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 150.0f);
-				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 150.0f);
+				findObjects(0, "button3")->setScale(1.1f * 300.0f);
+				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 300.0f);
+				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 300.0f);
 			}
 			else {
-				findObjects(0, "button3")->setScale(1.1f * 100.0f);
-				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 100.0f);
-				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 100.0f);
+				findObjects(0, "button3")->setScale(1.1f * 200.0f);
+				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 200.0f);
+				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 200.0f);
 			}
 		}
-
 	}
 
 	//press
@@ -603,18 +644,30 @@ void Game::updateSelect()
 	if (p1Char == 1) {
 		findObjects(1, "p1Select")->setPosition(
 			findObjects(1, "knightIcon")->getPosition());
+
+		findObjects(1, "p1KnightPic")->hide = false;
+		findObjects(1, "p1NinjaPic")->hide = true;
 	}
 	else if (p1Char == 2) {
 		findObjects(1, "p1Select")->setPosition(
 			findObjects(1, "ninjaIcon")->getPosition());
+
+		findObjects(1, "p1KnightPic")->hide = true;
+		findObjects(1, "p1NinjaPic")->hide = false;
 	}
 	if (p2Char == 1) {
 		findObjects(1, "p2Select")->setPosition(
 			findObjects(1, "knightIcon")->getPosition());
+
+		findObjects(1, "p2KnightPic")->hide = false;
+		findObjects(1, "p2NinjaPic")->hide = true;
 	}
 	else if (p2Char == 2) {
 		findObjects(1, "p2Select")->setPosition(
 			findObjects(1, "ninjaIcon")->getPosition());
+
+		findObjects(1, "p2KnightPic")->hide = true;
+		findObjects(1, "p2NinjaPic")->hide = false;
 	}
 
 
@@ -622,14 +675,9 @@ void Game::updateSelect()
 	if (!p1Done) {
 		if (inputs[6]) {
 			if (p1Char == 1) {
-				//make p1 knight
-				//players[0] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png"));
-
 				p1Done = true;
 			}
 			else if (p1Char == 2) {
-				//make p1 ninja
-				//players[0] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player1ninja.png"));
 				p1Done = true;
 			}
 		}
@@ -637,13 +685,9 @@ void Game::updateSelect()
 	if (!p2Done) {
 		if (inputs2[6]) {
 			if (p2Char == 1) {
-				//make p2 knight
-				//players[1] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png"));
 				p2Done = true;
 			}
 			else if (p2Char == 2) {
-				//make p2 ninja
-				//players[1] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player2ninja.png"));
 				p2Done = true;
 			}
 		}
@@ -652,16 +696,23 @@ void Game::updateSelect()
 	//Both Done
 	if (p1Done && p2Done) {
 
-		if (p1Char == 1)
-			players[0] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png"));
-		else if (p1Char == 2) 
-			players[0] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player1ninja.png"));
+		if (p1Char == 1) {
+			players[0] = new Knight(knightTemp);
+			players[0]->texture.Load("./Assets/Textures/player1.png");
+		}
+		else if (p1Char == 2) {
+			players[0] = new Ninja(ninjaTemp);
+			players[0]->texture.Load("./Assets/Textures/player1ninja.png");
+		}
 
-		if (p2Char == 1)
-			players[1] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png"));
-		else if (p2Char == 2) 
-			players[1] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player2ninja.png"));
-
+		if (p2Char == 1) {
+			players[1] = new Knight(knightTemp);
+			players[1]->texture.Load("./Assets/Textures/player2.png");
+		}
+		else if (p2Char == 2) {
+			players[1] = new Ninja(ninjaTemp);
+			players[1]->texture.Load("./Assets/Textures/player2ninja.png");
+		}
 
 		scene = 2;
 		gameDone = false;
@@ -1227,10 +1278,15 @@ void Game::drawScene()
 		std::cout << timer << std::endl;
 		if (timer >= 4)
 		{
+			//Set their age past their lifetime so they no longer desync
+			ConfettiEffectRedRight.Reset();
+			ConfettiEffectRedLeft.Reset();
+
 			ConfettiEffectRedRight.Playing = false;
 			ConfettiEffectRedLeft.Playing = false;
 			timer = 0;
 			p1Score = false;
+
 		}
 	}
 
@@ -1255,6 +1311,10 @@ void Game::drawScene()
 		std::cout << timer << std::endl;
 		if (timer >= 4)
 		{
+			//Set their age past their lifetime so they no longer desync
+			ConfettiEffectBlueRight.Reset();
+			ConfettiEffectBlueLeft.Reset();
+
 			ConfettiEffectBlueRight.Playing = false;
 			ConfettiEffectBlueLeft.Playing = false;
 			timer = 0;
@@ -1483,7 +1543,7 @@ void Game::drawSelect()
 	//Moving data to the back buffer, at the same time as our last post process
 	BloomHighPass.Bind();
 	BloomHighPass.SendUniform("uTex", 0);
-	BloomHighPass.SendUniform("uThreshold", BLOOM_THRESHOLD);
+	BloomHighPass.SendUniform("uThreshold", 1.0f);
 	WorkBuffer1.Bind();
 	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
 	DrawFullScreenQuad();
@@ -1854,7 +1914,7 @@ void Game::drawMenu()
 	//Moving data to the back buffer, at the same time as our last post process
 	BloomHighPass.Bind();
 	BloomHighPass.SendUniform("uTex", 0);
-	BloomHighPass.SendUniform("uThreshold", BLOOM_THRESHOLD);
+	BloomHighPass.SendUniform("uThreshold", 1.0f);
 
 	WorkBuffer1.Bind();
 
@@ -2149,8 +2209,12 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 			lastInputTime = 0.0f;
 		}
 		else {
-			players[0] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png"));
-			players[1] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png"));
+			//players[0] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png"));
+			//players[1] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png"));
+
+			players[0] = new Knight(knightTemp);
+			players[1] = new Ninja(ninjaTemp);
+			players[1]->texture.Load("./Assets/Textures/player2ninja.png");
 			scene = 2;
 			gameDone = false;
 			score1 = 0;
@@ -2215,7 +2279,7 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		//inputs2[3] = false;
 		break;
 	case '.': //a
-		//PointLight.ReloadShader();
+		GBufferPass.ReloadShader();
 		//inputs2[4] = false;
 		break;
 	case '/': //b

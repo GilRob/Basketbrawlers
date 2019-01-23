@@ -33,6 +33,8 @@ public:
 	Mesh body;
 	Texture texture;
 	bool blending;
+
+	bool hide = false;
 protected:
 
 	//physics

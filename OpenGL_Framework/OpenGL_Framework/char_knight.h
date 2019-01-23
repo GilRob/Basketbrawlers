@@ -9,6 +9,87 @@ public:
 	Knight() {}
 	Knight(const std::string& body, const std::string& texture);
 
+	Knight(const Knight* copy) {
+
+		this->aniTimer = 0.0f;
+		this->index = 0;
+
+		this->body = copy->body;
+		this->texture = copy->texture;
+		this->boxMesh = copy->boxMesh;
+		this->boxTexture = copy->boxTexture;
+		this->shieldTexture = copy->shieldTexture;
+
+
+		//duplicate animations
+		for (int i = 0; i < 23; i++) {//for each action
+			for (int j = 0; j < (int)(copy->aniFrames[i].size()); j++) {//for each pose
+				this->aniFrames[i].push_back(new Mesh(*copy->aniFrames[i][j]));//add pose to this character list
+			}
+		}
+		for (int i = 0; i < (int)(aniFrames->size()); i++) {//for each action
+			for (int j = 0; j < (int)(aniFrames[i].size()); j++) {//for each pose
+				this->aniFrames[i][j]->VAO = copy->aniFrames[i][j]->VAO;
+				this->aniFrames[i][j]->VBO_Normals = copy->aniFrames[i][j]->VBO_Normals;
+				this->aniFrames[i][j]->VBO_UVs = copy->aniFrames[i][j]->VBO_UVs;
+				this->aniFrames[i][j]->VBO_Vertices = copy->aniFrames[i][j]->VBO_Vertices;
+			}
+		}
+
+
+		//Set Physics
+		position = glm::vec3(0, 0, 0);
+		velocity = glm::vec3(0, 0, 0);
+		acceleration = glm::vec3(0, 0, 0);
+		force = glm::vec3(0, 0, 0);
+		facingRight = true;
+		blocking = false;
+		blockSuccessful = false;
+		//scaling
+		scaleX = copy->scaleX;
+		scaleY = copy->scaleY;
+		scaleZ = copy->scaleZ;
+
+		transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
+		//glm::rotate(transform, 90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		transform.RotateY(90);
+
+		mass = copy->mass;
+		gravity = copy->gravity;
+		diMultiplier = copy->diMultiplier;
+		dashMultiplier = copy->dashMultiplier;
+		runSpeed = copy->runSpeed;
+		runAccel = copy->runAccel;
+		airAccel = copy->airAccel;
+		jumpForce = copy->jumpForce;
+		jumpFrames = copy->jumpFrames;
+		dashLength = copy->dashLength;
+		prejumpLength = copy->prejumpLength;
+		airJumps = jumpsLeft = 1;
+		hitstun = copy->hitstun;
+		hitframes = copy->hitframes;
+
+		//set combo stuff
+		comboCount = 0;
+		comboMeter = 0;
+		comboTimer = 0;
+		comboMaxTime = 120;//1 seconds times 60fps
+
+		//Set Starting Action
+		action = ACTION_FALL;//0 idle, 1 jumping
+		idle();
+
+
+		comboMeter = copy->comboMeter;
+
+		Hitbox *hurt1 = new Hitbox(glm::vec3(0.0f, 3.0f, 0.0f), 3.0f);
+		hurtbox.push_back(hurt1);
+		Hitbox *hurt2 = new Hitbox(glm::vec3(0.0f, 1.0f, 0.0f), 3.0f);
+		hurtbox.push_back(hurt2);
+	}
+
+
+
 	int storedCharge;
 
 	Transform jab();

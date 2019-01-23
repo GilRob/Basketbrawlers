@@ -1,4 +1,5 @@
 #include "ParticleEffect.h"
+#include <iostream>
 #include "Random.h"
 
 #define BUFFER_OFFSET(i) ((char *)0 + (i))
@@ -132,6 +133,8 @@ void ParticleEffect::Update(float elapsed)
 	{
 		_Particles.Ages[i] += elapsed;
 
+		std::cout << i;
+
 		//Explanation of this is on Week 9 video at time 5:30 (maybe)
 		if (_Particles.Ages[i] > _Particles.Lifetimes[i])
 		{
@@ -201,15 +204,6 @@ void ParticleEffect::Reset()
 {
 	for (unsigned i = 0; i < _NumCurrentParticles; i++)
 	{
-		//remove the particle by replacing it with the one at the top of the stack
-		_Particles.Alpha[i] = _Particles.Alpha[_NumCurrentParticles - 1];
-		_Particles.Ages[i] = _Particles.Ages[_NumCurrentParticles - 1];
-		_Particles.Lifetimes[i] = _Particles.Lifetimes[_NumCurrentParticles - 1];
-		_Particles.Positions[i] = _Particles.Positions[_NumCurrentParticles - 1];
-		_Particles.Size[i] = _Particles.Size[_NumCurrentParticles - 1];
-		_Particles.Velocities[i] = _Particles.Velocities[_NumCurrentParticles - 1];
-
-		_NumCurrentParticles--;
-		continue;
+		_Particles.Ages[i] = 5.0f;
 	}
 }

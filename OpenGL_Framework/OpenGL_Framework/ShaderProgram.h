@@ -16,6 +16,8 @@ public:
 	//This gives the option to load a geometry shader
 	bool Load(const std::string &vertFile, const std::string &fragFile, const std::string &geomFile);
 	bool IsLoaded() const;
+	//This function will allow the shader to be reloaded while the game is running
+	bool ReloadShader();
 	//- Clear all data from OpenGL
 	void UnLoad();
 	bool LinkProgram();
@@ -51,6 +53,9 @@ private:
 	GLuint _GeomShader = 0;
 	GLuint _FragShader = 0;
 	GLuint _Program = 0;
+
+	std::string vertexFilename;
+	std::string fragFilename;
 
 	std::string ReadFile(const std::string &fileName) const;
 	//Take one of the two shaders in the class and compile them, if there is an error it will output those errors

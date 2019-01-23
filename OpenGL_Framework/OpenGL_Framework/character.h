@@ -25,6 +25,76 @@ public:
 	Character() {}
 	Character(const std::string& body, const std::string& texture);
 
+	Character(const Character* copy) {
+
+		this->aniTimer = 0.0f;
+		this->index = 0;
+
+		this->body = copy->body;
+		this->texture = copy->texture;
+		this->boxMesh = copy->boxMesh;
+		this->boxTexture = copy->boxTexture;
+		this->shieldTexture = copy->shieldTexture;
+
+		//this->aniFrames = copy->aniFrames;
+		for (int i = 0; i < (int)(copy->aniFrames->size()); i++) {//for each action
+			//for (int j = 0; j < (int)(copy->aniFrames[i].size()); j++) {//for each pose
+			//	this->aniFrames[i].push_back(copy->aniFrames[i][j]);//add pose to this character list
+			//}
+			this->aniFrames[i] = copy->aniFrames[i];
+		}
+
+		//Set Physics
+		position = glm::vec3(0, 0, 0);
+		velocity = glm::vec3(0, 0, 0);
+		acceleration = glm::vec3(0, 0, 0);
+		force = glm::vec3(0, 0, 0);
+		facingRight = true;
+		blocking = false;
+		blockSuccessful = false;
+		//scaling
+		scaleX = copy->scaleX;
+		scaleY = copy->scaleY;
+		scaleZ = copy->scaleZ;
+
+		transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
+		//glm::rotate(transform, 90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		transform.RotateY(90);
+
+		mass = copy->mass;
+		gravity = copy->gravity;
+		diMultiplier = copy->diMultiplier;
+		dashMultiplier = copy->dashMultiplier;
+		runSpeed = copy->runSpeed;
+		runAccel = copy->runAccel;
+		airAccel = copy->airAccel;
+		jumpForce = copy->jumpForce;
+		jumpFrames = copy->jumpFrames;
+		dashLength = copy->dashLength;
+		prejumpLength = copy->prejumpLength;
+		airJumps = jumpsLeft = 1;
+		hitstun = copy->hitstun;
+		hitframes = copy->hitframes;
+
+		//set combo stuff
+		comboCount = 0;
+		comboMeter = 0;
+		comboTimer = 0;
+		comboMaxTime = 120;//1 seconds times 60fps
+
+		//Set Starting Action
+		action = ACTION_FALL;//0 idle, 1 jumping
+		idle();
+
+
+		comboMeter = copy->comboMeter;
+
+		Hitbox *hurt1 = new Hitbox(glm::vec3(0.0f, 3.0f, 0.0f), 3.0f);
+		hurtbox.push_back(hurt1);
+		Hitbox *hurt2 = new Hitbox(glm::vec3(0.0f, 1.0f, 0.0f), 3.0f);
+		hurtbox.push_back(hurt2);
+	}
+
 	void update(int t, std::vector<bool> inputs);
 	void draw(ShaderProgram GBufferPass, float dt);
 	void drawBoxes(ShaderProgram GBufferPass);

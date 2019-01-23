@@ -80,7 +80,8 @@ public:
 	Mesh boxMesh;
 	Texture boxTexture;
 
-	//Knight* playerOne;
+	Knight* knightTemp;
+	Ninja* ninjaTemp;
 	std::vector<bool> inputs2;
 	//Ninja* playerTwo;
 	std::vector<bool> inputs;
