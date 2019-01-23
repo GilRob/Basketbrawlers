@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "Utilities.h"
 
-#define FULLSCREEN true
+#define FULLSCREEN false
 
 Game::Game()
 	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(1)
@@ -61,7 +61,11 @@ void Game::initializeGame()
 	
 
 	//Load All Main Menu Objects
+<<<<<<< HEAD
 	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/titleScreen.png", "background", true));
+=======
+	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/menuback.png", "background", true));
+>>>>>>> master
 	if (FULLSCREEN)
 		menuObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
 	else
@@ -70,7 +74,11 @@ void Game::initializeGame()
 	menuObjects[0]->setPosition(glm::vec3(0, -555, -1));
 	
 
+<<<<<<< HEAD
 	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/startButton.png", "button1", true));
+=======
+	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/button.png", "button1", true));
+>>>>>>> master
 	if (FULLSCREEN) 
 		menuObjects[1]->setScale(300.0f);
 	else 
@@ -79,7 +87,11 @@ void Game::initializeGame()
 	menuObjects[1]->setPosition(glm::vec3(570, -250, 0));
 
 
+<<<<<<< HEAD
 	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/tutButton.png", "button2", true));
+=======
+	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/button.png", "button2", true));
+>>>>>>> master
 	if (FULLSCREEN)
 		menuObjects[2]->setScale(300.0f);
 	else
@@ -87,7 +99,11 @@ void Game::initializeGame()
 	menuObjects[2]->RotateY(90.0f);
 	menuObjects[2]->setPosition(glm::vec3(570, -450, 0));
 
+<<<<<<< HEAD
 	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/creditsButton.png", "button3", true));
+=======
+	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/button.png", "button3", true));
+>>>>>>> master
 	if (FULLSCREEN)
 		menuObjects[3]->setScale(300.0f);
 	else
@@ -232,12 +248,12 @@ void Game::initializeGame()
 	knightTemp = (new Knight("./Assets/Models/Knight", "./Assets/Textures/player1.png"));
 	ninjaTemp = (new Ninja("./Assets/Models/Knight", "./Assets/Textures/player1ninja.png"));
 	//player1
-	//players[0] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png"));
+	//players[0] = (new Knight("./Assets/Models/Knight", "./Assets/Textures/player1.png"));
 
 	inputs2 = { false, false, false, false, false, false, false, false, false, false, false }; //up, left, down, right, X, Y, A, LeftFull, RightFull, R, B
 
 	//player2
-	//players[1] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png"));
+	//players[1] = (new Ninja("./Assets/Models/Knight", "./Assets/Textures/player2.png"));
 
 
 //====================================================================//
@@ -675,9 +691,20 @@ void Game::updateSelect()
 	if (!p1Done) {
 		if (inputs[6]) {
 			if (p1Char == 1) {
+<<<<<<< HEAD
 				p1Done = true;
 			}
 			else if (p1Char == 2) {
+=======
+				//make p1 knight
+				//players[0] = (new Knight("./Assets/Models/Knight", "./Assets/Textures/player1.png"));
+
+				p1Done = true;
+			}
+			else if (p1Char == 2) {
+				//make p1 ninja
+				//players[0] = (new Ninja("./Assets/Models/Knight", "./Assets/Textures/player1ninja.png"));
+>>>>>>> master
 				p1Done = true;
 			}
 		}
@@ -685,9 +712,19 @@ void Game::updateSelect()
 	if (!p2Done) {
 		if (inputs2[6]) {
 			if (p2Char == 1) {
+<<<<<<< HEAD
 				p2Done = true;
 			}
 			else if (p2Char == 2) {
+=======
+				//make p2 knight
+				//players[1] = (new Knight("./Assets/Models/Knight", "./Assets/Textures/player2.png"));
+				p2Done = true;
+			}
+			else if (p2Char == 2) {
+				//make p2 ninja
+				//players[1] = (new Ninja("./Assets/Models/Knight", "./Assets/Textures/player2ninja.png"));
+>>>>>>> master
 				p2Done = true;
 			}
 		}
@@ -696,6 +733,7 @@ void Game::updateSelect()
 	//Both Done
 	if (p1Done && p2Done) {
 
+<<<<<<< HEAD
 		if (p1Char == 1) {
 			players[0] = new Knight(knightTemp);
 			players[0]->texture.Load("./Assets/Textures/player1.png");
@@ -704,6 +742,17 @@ void Game::updateSelect()
 			players[0] = new Ninja(ninjaTemp);
 			players[0]->texture.Load("./Assets/Textures/player1ninja.png");
 		}
+=======
+		if (p1Char == 1)
+			players[0] = (new Knight("./Assets/Models/Knight", "./Assets/Textures/player1.png"));
+		else if (p1Char == 2) 
+			players[0] = (new Ninja("./Assets/Models/Knight", "./Assets/Textures/player1ninja.png"));
+
+		if (p2Char == 1)
+			players[1] = (new Knight("./Assets/Models/Knight", "./Assets/Textures/player2.png"));
+		else if (p2Char == 2) 
+			players[1] = (new Ninja("./Assets/Models/Knight", "./Assets/Textures/player2ninja.png"));
+>>>>>>> master
 
 		if (p2Char == 1) {
 			players[1] = new Knight(knightTemp);
@@ -2209,12 +2258,17 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 			lastInputTime = 0.0f;
 		}
 		else {
+<<<<<<< HEAD
 			//players[0] = (new Knight("./Assets/Models/Knight.obj", "./Assets/Textures/player1.png"));
 			//players[1] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png"));
 
 			players[0] = new Knight(knightTemp);
 			players[1] = new Ninja(ninjaTemp);
 			players[1]->texture.Load("./Assets/Textures/player2ninja.png");
+=======
+			players[0] = (new Knight("./Assets/Models/Knight", "./Assets/Textures/player1.png"));
+			players[1] = (new Ninja("./Assets/Models/Knight", "./Assets/Textures/player2.png"));
+>>>>>>> master
 			scene = 2;
 			gameDone = false;
 			score1 = 0;
