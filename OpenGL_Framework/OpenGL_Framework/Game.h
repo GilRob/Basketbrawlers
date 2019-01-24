@@ -17,7 +17,7 @@
 #include "char_knight.h"
 #include "char_ninja.h"
 #include "controller.h"
-#pragma comment( lib, "Xinput9_1_0.lib" ) 
+#pragma comment(lib, "Xinput9_1_0.lib") 
 
 #include "Timer.h"
 

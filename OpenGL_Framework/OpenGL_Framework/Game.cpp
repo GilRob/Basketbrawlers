@@ -746,15 +746,15 @@ void Game::updateScene()
 		players[1]->setPosition(players[1]->getPosition() + glm::vec3(((diffx / abs(diffx))*-0.01f), 0, 0));
 	}
 
-	//rumble when hit;
+	//rumble fr first 5 frames of either player being hit;
 	for (int i = 0; i < 2; i++) {
 		if (players[i]->isHit() && players[i]->currentFrame < 5) {
-			XBoxController.SetVibration(0, 10, 10);
-			XBoxController.SetVibration(1, 10, 10);
+			XBoxController.SetVibration(0, 10, 10);//controller 0, power 10 on left and right
+			XBoxController.SetVibration(1, 10, 10);//controller 1, power 10 on left and right
 		}
 		else if (players[i]->isHit() && players[i]->currentFrame == 5) {
-			XBoxController.SetVibration(0, 0, 0);
-			XBoxController.SetVibration(1, 0, 0);
+			XBoxController.SetVibration(0, 0, 0);//controller 0, power 0 on left and right (off)
+			XBoxController.SetVibration(1, 0, 0);//controller , power 0 on left and right (off)
 		}
 	}
 
@@ -768,7 +768,7 @@ void Game::updateScene()
 
 				XBoxController.SetVibration(0, 10,10);
 				XBoxController.SetVibration(1, 10,10);
-				Sleep(50);
+				Sleep(40);
 				XBoxController.SetVibration(0, 0, 0);
 				XBoxController.SetVibration(1, 0, 0);
 
@@ -797,7 +797,7 @@ void Game::updateScene()
 
 				XBoxController.SetVibration(0, 10, 10);
 				XBoxController.SetVibration(1, 10, 10);
-				Sleep(50);
+				Sleep(40);
 				XBoxController.SetVibration(0, 0,0);
 				XBoxController.SetVibration(1, 0,0);
 
@@ -1011,6 +1011,9 @@ void Game::drawScene()
 	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 
+
+	glDisable(GL_CULL_FACE);//should fix random holes in knight
+
 	GBufferPass.UnBind();
 	//draw p1 shadow
 	AniShader.Bind();
@@ -1029,6 +1032,8 @@ void Game::drawScene()
 	AniShader.SendUniformMat4("uModel", players[1]->transform.data, true);
 	players[1]->draw(AniShader, 0);
 	AniShader.SendUniformMat4("uModel", Transform().data, true);
+
+	glEnable(GL_CULL_FACE);//turn it back on after for preformance
 
 	glBindVertexArray(0);
 
@@ -1149,6 +1154,9 @@ void Game::drawScene()
 
 	AniShader.UnBind();*/
 
+
+	glDisable(GL_CULL_FACE);//should fix random holes in knight
+
 	AniShader.Bind();
 	AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
 	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
@@ -1159,6 +1167,7 @@ void Game::drawScene()
 	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
 	players[1]->draw(AniShader, 1);
 
+	glEnable(GL_CULL_FACE);//turn it back on after for preformance
 
 	drawScore();
 
