@@ -1,5 +1,4 @@
 #include "ParticleEffect.h"
-#include <iostream>
 #include "Random.h"
 
 #define BUFFER_OFFSET(i) ((char *)0 + (i))
@@ -94,6 +93,9 @@ bool ParticleEffect::Init(const std::string &textureFile, unsigned int maxPartic
 
 void ParticleEffect::Update(float elapsed)
 {
+	//auto end = chrono::steady_clock::now();
+	//auto start = chrono::steady_clock::now();
+
 	int NumToSpawn = (int)_Rate;
 
 		/// Create new particles ///
@@ -127,13 +129,10 @@ void ParticleEffect::Update(float elapsed)
 		NumToSpawn--;
 	}
 	
-
-	/// Update existing particles ///
+	/// Update existing particles ///s
 	for (unsigned i = 0; i < _NumCurrentParticles; i++)
 	{
 		_Particles.Ages[i] += elapsed;
-
-		std::cout << i;
 
 		//Explanation of this is on Week 9 video at time 5:30 (maybe)
 		if (_Particles.Ages[i] > _Particles.Lifetimes[i])
@@ -161,6 +160,9 @@ void ParticleEffect::Update(float elapsed)
 		_Particles.Alpha[i] = glm::mix(LerpAlpha.x, LerpAlpha.y, interp);
 		_Particles.Size[i] = glm::mix(LerpSize.x, LerpSize.y, interp);
 	}
+	//end = chrono::steady_clock::now();
+
+	//cout << chrono::duration_cast<chrono::milliseconds>(end - start).count() << ":";
 
 	//Update OpenGL on the changes
 
@@ -176,6 +178,9 @@ void ParticleEffect::Update(float elapsed)
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * _NumCurrentParticles, &_Particles.Alpha[0]);
 
 	glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
+	//end = chrono::steady_clock::now();
+
+	//cout << chrono::duration_cast<chrono::milliseconds>(end - start).count() << ":x";
 }
 
 void ParticleEffect::Render()

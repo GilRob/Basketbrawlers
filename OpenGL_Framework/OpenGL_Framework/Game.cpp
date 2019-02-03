@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "Utilities.h"
 
-#define FULLSCREEN true
+#define FULLSCREEN false
 
 Game::Game()
 	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(1)
@@ -440,6 +440,30 @@ void Game::initializeGame()
 	ConfettiEffectRedRight.HaveGravity = true;
 	ConfettiEffectRedRight.Mass = 2.0f;
 	ConfettiEffectRedRight.Gravity = 0.2f;
+
+#pragma region test
+	if (!ConfettiEffectRedStressTest.Init("./Assets/Textures/RedConfetti.png", (unsigned int)5000, (unsigned int)50))
+	{
+		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	//Missing .Set which is what the video uses***
+	ConfettiEffectRedStressTest.LerpAlpha = glm::vec2(0.4f, 0.8f);
+	ConfettiEffectRedStressTest.LerpSize = glm::vec2(1.0f, 2.0f);
+	ConfettiEffectRedStressTest.RangeLifetime = glm::vec2(4.0f, 4.0f);
+	ConfettiEffectRedStressTest.RangeVelocity = glm::vec2(-5.0f, 5.0f);
+	ConfettiEffectRedStressTest.RangeX = glm::vec2(12.0f, 12.0f);
+	ConfettiEffectRedStressTest.RangeY = glm::vec2(20.0f, 20.0f);
+	ConfettiEffectRedStressTest.RangeZ = glm::vec2(-15.0f, -15.0f);
+	ConfettiEffectRedStressTest.HaveGravity = true;
+	ConfettiEffectRedStressTest.Mass = 2.0f;
+	ConfettiEffectRedStressTest.Gravity = 0.2f;
+
+#pragma endregion
+
+
+
 
 	if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)50))
 	{
@@ -1074,6 +1098,7 @@ void Game::updateScene()
 				//i = 100;
 				p2Score = true;
 				ConfettiEffectRedRight.Reset();
+				ConfettiEffectRedStressTest.Reset();
 				ConfettiEffectRedLeft.Reset();
 				j = 100;
 
@@ -1141,6 +1166,12 @@ void Game::updateScene()
 	{
 		ConfettiEffectRedLeft.Update(deltaTime);
 	}
+
+	if (ConfettiEffectRedStressTest.Playing == true)
+	{
+		ConfettiEffectRedStressTest.Update(deltaTime);
+	}
+
 
 	//additional lights
 	if (p1Score == true)
@@ -1502,6 +1533,9 @@ void Game::drawScene()
 
 		ConfettiEffectRedRight.Playing = true;
 		ConfettiEffectRedRight.Render();
+
+		ConfettiEffectRedStressTest.Playing = true;
+		ConfettiEffectRedStressTest.Render();
 
 		ConfettiEffectRedLeft.Playing = true;
 		ConfettiEffectRedLeft.Render();
