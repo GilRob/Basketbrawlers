@@ -27,6 +27,7 @@ public:
 	void setScale(float scale);
 	void RotateY(float rot);
 
+
 	std::string name;
 	//model
 	Transform transform;

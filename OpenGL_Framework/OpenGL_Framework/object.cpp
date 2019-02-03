@@ -45,21 +45,24 @@ Object::~Object()
 
 void Object::update(int t, std::vector<bool> inputs) {
 
-	//actual update
-	transform = Transform::Identity();
+		//actual update
+		transform = Transform::Identity();
 
-	//physics update
-	force = glm::vec3();
-	acceleration = force / mass;
-	velocity = velocity + (acceleration);
+		//physics update
+		force = glm::vec3();
+		acceleration = force / mass;
+		velocity = velocity + (acceleration);
 
-	//Update Position
-	position = position + (velocity);
+		//Update Position
+		position = position + (velocity);
 
-	transform.RotateY(rotY);
+		transform.RotateY(rotY);
 
-	transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
-	transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
+		transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
+		transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
+
+	
+
 
 }
 
@@ -96,6 +99,8 @@ void Object::draw(ShaderProgram shader, float dt) {
 		else {
 			glDisable(GL_CULL_FACE);
 		}
+
+
 	}
 }
 

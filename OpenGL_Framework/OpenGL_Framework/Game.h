@@ -44,10 +44,12 @@ public:
 	void update();
 	void updateScene();
 	void updateMenu();
-	void updateSelect();
+	void updateCSS();
+	void updateSSS();
 	void draw();
 	void drawScene();
-	void drawSelect();
+	void drawCSS();
+	void drawSSS();
 	void drawHUD();
 	void drawTime();
 	void drawScore();
@@ -93,7 +95,8 @@ public:
 	std::vector<PointLightObj*> pointLights;
 	Object* hitboxObj;
 	std::vector<Object*> menuObjects;
-	std::vector<Object*> selectObjects;
+	std::vector<Object*> cssObjects;
+	std::vector<Object*> sssObjects;
 
 	unsigned int scene = 0; //0=menu, 1=selecting, 2=fighting
 	bool gameDone = false;
@@ -108,6 +111,14 @@ public:
 	unsigned int p2Char = 0;
 	bool p1Done = false;
 	bool p2Done = false;
+
+	//SSS
+	unsigned int stageVal = 0;
+	unsigned int oldStageVal = 0;
+	bool stageDone = false;
+	std::vector<std::string> default_court_objs;
+	std::vector<std::string> knight_court_objs;
+	std::vector<std::string> ninja_court_objs;
 
 	Mesh HudObj;
 	Texture P1Hud;
