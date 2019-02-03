@@ -135,7 +135,6 @@ public:
 	ParticleEffect ConfettiEffectBlueLeft;
 	ParticleEffect ConfettiEffectRedRight;
 	ParticleEffect ConfettiEffectRedLeft;
-	ParticleEffect ConfettiEffectRedStressTest;
 
 	std::vector<Texture*> time;
 	std::vector<Hitbox*>Netbox;//2
