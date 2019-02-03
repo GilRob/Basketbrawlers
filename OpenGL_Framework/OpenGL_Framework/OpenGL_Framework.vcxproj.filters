@@ -133,6 +133,9 @@
     <ClInclude Include="char_ninja.h">
       <Filter>GameFunctions</Filter>
     </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\GreyScalePost.frag">

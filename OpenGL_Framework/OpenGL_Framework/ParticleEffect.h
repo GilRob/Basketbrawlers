@@ -5,6 +5,12 @@
 #include "Texture.h"
 #include "Transform.h"
 
+//debugging
+#include <chrono>
+#include <iostream>
+
+using namespace std;
+
 struct ParticleList
 {
 	glm::vec3 *Positions = nullptr;

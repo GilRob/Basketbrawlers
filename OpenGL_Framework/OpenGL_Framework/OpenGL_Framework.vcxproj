@@ -100,6 +100,7 @@
     <ClInclude Include="hitbox.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="object.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleEffect.h" />
     <ClInclude Include="PointLightObj.h" />
     <ClInclude Include="Random.h" />

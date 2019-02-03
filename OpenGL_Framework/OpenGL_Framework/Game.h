@@ -21,6 +21,11 @@
 
 #include "Timer.h"
 
+//debugging
+#include <chrono>
+#include <iostream>
+
+
 #define WINDOW_WIDTH			1280
 #define WINDOW_HEIGHT			720
 #define FULLSCREEN_WIDTH		1920
@@ -130,6 +135,7 @@ public:
 	ParticleEffect ConfettiEffectBlueLeft;
 	ParticleEffect ConfettiEffectRedRight;
 	ParticleEffect ConfettiEffectRedLeft;
+
 	std::vector<Texture*> time;
 	std::vector<Hitbox*>Netbox;//2
 
