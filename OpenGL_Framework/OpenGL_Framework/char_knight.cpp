@@ -823,8 +823,8 @@ Transform Knight::nSpecial(bool charging)
 		//attack
 		else if (currentFrame == 10 && activeFrames == endlag) {//actually done endlag
 			//create hitbox
-			float _kb = 25.0f + (30.0f * (storedCharge * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			unsigned int angle = 45;
+			float _kb = 33.0f + (35.0f * (storedCharge * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			unsigned int angle = 30;
 			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.1f, 2.9f, 0.1f), 3.1f, _kb, (float)angle, 7, 0, glm::vec3((-0.5f + (int)facingRight)*2.0f, -0.22f, 0.0f));
 			newAtk->spline = true;
 			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -20.0f, 4.5f, 0.0f));
@@ -885,7 +885,7 @@ Transform Knight::sSpecial()
 
 		if (currentFrame == 5) {
 			float _kb = 1.5f + (1.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.11, 1.1f, 0.05f)*2.5f, 4.0f, 2.0f * _kb, 45, 15, 0, glm::vec3((-0.5f + (int)facingRight)*0.01, 0.0f, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.11, 1.1f, 0.05f)*2.5f, 4.0f, 2.0f * _kb, 30, 15, 0, glm::vec3((-0.5f + (int)facingRight)*0.01, 0.0f, 0.0f));
 			newAtk->facingRight = facingRight;
 
 			//Hitbox *newAtk = new Hitbox(vec3((-0.5f + (int)facingRight)*0.2f, 0.6f, 0.1f), 2.1f, _kb, 45, 7, 0, vec3((-0.5f + (int)facingRight)*1.95f, 0.4f, 0.0f));
@@ -936,9 +936,9 @@ Transform Knight::dSpecial()
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
 		if (currentFrame == 8) {
-			float _kb = 11.5f + (11.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(glm::vec3(0.05f, 1.0f, 0.1f), 2.7f, _kb, 75, 5, 0, glm::vec3(0.3f, 0.0f, 0.0f));
-			Hitbox *newAtk2 = new Hitbox(glm::vec3(-0.05f, 1.0f, 0.1f), 2.7f, _kb, 75, 5, 0, glm::vec3(-0.3f, 0.0f, 0.0f));
+			float _kb = 21.5f + (21.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			Hitbox *newAtk = new Hitbox(glm::vec3(0.05f, 1.0f, 0.1f), 2.7f, _kb, 10, 5, 0, glm::vec3(0.3f, 0.0f, 0.0f));
+			Hitbox *newAtk2 = new Hitbox(glm::vec3(-0.05f, 1.0f, 0.1f), 2.7f, _kb, 10, 5, 0, glm::vec3(-0.3f, 0.0f, 0.0f));
 			newAtk->facingRight = facingRight;
 			newAtk2->facingRight = !facingRight;
 
@@ -979,7 +979,7 @@ Transform Knight::uSpecial()
 			//velocity.y = jumpForce * 1.1f;
 		}
 		if (currentFrame == 8) {
-			float _kb = 15.0f + (16.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			float _kb = 25.0f + (26.5f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 0.7f, 0.1f), 2.9f, _kb, 88, 7, 0, glm::vec3((-0.5f + (int)facingRight)*1.9f, 0.55f, 0.0f));
 			newAtk->spline = true;
 			newAtk->facingRight = facingRight;

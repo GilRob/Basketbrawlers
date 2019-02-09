@@ -27,6 +27,13 @@
 #include <iostream>
 
 
+
+
+//vsync
+#include "include/wglext.h"
+
+
+
 #define WINDOW_WIDTH			1280
 #define WINDOW_HEIGHT			720
 #define FULLSCREEN_WIDTH		1920
@@ -84,6 +91,7 @@ public:
 	ShaderProgram AniShader;
 	ShaderProgram PointLight;
 	ShaderProgram ParticleProgram;
+	ShaderProgram AdShader;
 
 	Mesh boxMesh;
 	Texture boxTexture;

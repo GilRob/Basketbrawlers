@@ -28,14 +28,13 @@ public:
 		pos += vel;
 
 		//update zoom
-		if (abs(targetZoom - zoom) > 0.01f) {
+		if (abs(targetZoom - zoom) > 0.03f) {
 			if (targetZoom > zoom)
-				zoomGain += followForce * 0.04f;
+				zoomGain += followForce * 0.03f;
 			else if (targetZoom < zoom)
-				zoomGain += followForce * -0.04f;
+				zoomGain += followForce * -0.03f;
 			else {
 				zoomGain += 0;
-
 			}
 
 			if (abs(zoomGain) > maxSpeed * 0.03f)
@@ -101,14 +100,14 @@ public:
 
 private:
 
-	float zoom = 8;
+	float zoom = 10;
 	float zoomGain = 0;
 	glm::vec2 pos = glm::vec2(0, 0);
 	glm::vec2 vel = glm::vec2(0, 0);
 	glm::vec2 acc = glm::vec2(0, 0);
 
 	glm::vec2 camBounds = glm::vec2(25, 15);//x = left/right, y = up/down
-	glm::vec2 zoomBounds = glm::vec2(8, 17);
+	glm::vec2 zoomBounds = glm::vec2(10, 19);
 	float followForce = 0.1f;
 	float maxSpeed = 1.0f;
 

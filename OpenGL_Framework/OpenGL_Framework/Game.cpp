@@ -1,7 +1,9 @@
 #include "Game.h"
 #include "Utilities.h"
 
+
 #define FULLSCREEN true
+#define VSYNC false
 
 Game::Game()
 	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(1)
@@ -35,6 +37,24 @@ Game::~Game()
 	P2Bar.Unload();
 }
 
+bool WGLExtensionSupported(const char *extension_name)
+{
+	// this is pointer to function which returns pointer to string with list of all wgl extensions
+	PFNWGLGETEXTENSIONSSTRINGEXTPROC _wglGetExtensionsStringEXT = NULL;
+
+	// determine pointer to wglGetExtensionsStringEXT function
+	_wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
+
+	if (strstr(_wglGetExtensionsStringEXT(), extension_name) == NULL)
+	{
+		// string was not found
+		return false;
+	}
+
+	// extension is supported
+	return true;
+}
+
 void Game::initializeGame()
 {
 
@@ -45,6 +65,24 @@ void Game::initializeGame()
 	InitFullScreenQuad();
 	if (FULLSCREEN)
 		glutFullScreen();
+
+	//init vsync
+	PFNWGLSWAPINTERVALEXTPROC       wglSwapIntervalEXT = NULL;
+	PFNWGLGETSWAPINTERVALEXTPROC    wglGetSwapIntervalEXT = NULL;
+
+	if (WGLExtensionSupported("WGL_EXT_swap_control"))
+	{
+		// Extension is supported, init pointers.
+		wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+
+		// this is another function from WGL_EXT_swap_control extension
+		wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC)wglGetProcAddress("wglGetSwapIntervalEXT");
+	}
+	if (VSYNC)
+		wglSwapIntervalEXT(1);
+	else
+		wglSwapIntervalEXT(0);
+
 
 //=================================================================//
 	//Load All Game Objects
@@ -371,6 +409,13 @@ void Game::initializeGame()
 	if (!PointLight.Load("./Assets/Shaders/PassThroughLight.vert", "./Assets/Shaders/PointLight.frag"))
 	{
 		std::cout << "SL Shaders failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
+
+	if (!AdShader.Load("./Assets/Shaders/AdShader.vert", "./Assets/Shaders/GBufferPass.frag"))
+	{
+		std::cout << "ADS Shaders failed to initialize. \n";
 		system("pause");
 		exit(0);
 	}
@@ -1042,16 +1087,6 @@ void Game::updateScene()
 		}
 	}
 
-	//rumble while in net
-	for (int i = 0; i < 2; i++) {
-		if (players[i]->action == players[i]->ACTION_IN_NET) {
-			XBoxController.SetVibration(i, 5, 5);
-		}
-		else if (players[i]->action == players[i]->ACTION_RESPAWN) {
-			XBoxController.SetVibration(i, 0, 0);
-		}
-	}
-
 	//Check Hurtboxes
 	for (unsigned int i = 0; i < Netbox.size(); i++) {
 		Netbox[i]->update((int)deltaTime, glm::vec3());
@@ -1101,50 +1136,79 @@ void Game::updateScene()
 		}
 	}
 
+	//rumble while in net
+	for (int i = 0; i < 2; i++) {
+		if (players[i]->action == players[i]->ACTION_IN_NET) {
+			XBoxController.SetVibration(i, 5, 5);
+			XBoxController.SetVibration((i + 1) % 2, 0, 0);
+		}
+		else if (players[i]->action == players[i]->ACTION_RESPAWN) {
+			XBoxController.SetVibration(i, 0, 0);
+			XBoxController.SetVibration((i + 1) % 2, 0, 0);
+		}
+	}
+
 	//DYNAMIC CAM
-	//camera control
+	//camera control using seek point and target zoom
 	seekPoint.x = (players[1]->getPosition().x + players[0]->getPosition().x) * 0.5f;//seek point is inbetween the 2 players
 	seekPoint.y = (players[1]->getPosition().y + players[0]->getPosition().y) * 0.5f;//seek point is inbetween the 2 players
 
 	glm::vec2 p1;
 	glm::vec2 p2;
-	if (seekPoint.x < -5) {
-		p1 = glm::vec2(-25, 2);
-		if (players[0]->getPosition().x < players[1]->getPosition().x) {
-			p2 = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().y);
-			if (players[0]->getPosition().y > 2)
-				p1.y = players[0]->getPosition().y;
-		}
-		else{
-			p2 = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().y);
-			if (players[1]->getPosition().y > 2)
-				p1.y = players[1]->getPosition().y;
-		}
+	if (players[0]->action == players[0]->ACTION_IN_NET && players[1]->action == players[1]->ACTION_IN_NET) {
+		seekPoint = glm::vec3(0, 3, 0);
+		GameCamera.targetZoom = 20;
 	}
-	else if (seekPoint.x > 5) {
-		p1 = glm::vec2(25,2);
-		if (players[0]->getPosition().x > players[1]->getPosition().x) {
-			p2 = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().y);
-			if (players[0]->getPosition().y > 2)
-				p1.y = players[0]->getPosition().y;
+	else if (players[0]->action == players[0]->ACTION_IN_NET && players[1]->action != players[1]->ACTION_IN_NET) {
+		seekPoint = glm::vec3((players[0]->getPosition().x / abs(players[0]->getPosition().x) * 10), 2, 0);
+		GameCamera.targetZoom = 20;
+	}
+	else if (players[0]->action != players[0]->ACTION_IN_NET && players[1]->action == players[1]->ACTION_IN_NET) {
+		seekPoint = glm::vec3((players[1]->getPosition().x / abs(players[1]->getPosition().x) * 10), 2, 0);
+		GameCamera.targetZoom = 20;
+	}
+	else if (players[0]->action == players[0]->ACTION_RESPAWN || players[1]->action == players[1]->ACTION_RESPAWN) {
+			seekPoint = glm::vec3(0, 1, 0);
+			GameCamera.targetZoom = 20;
+		}
+	else {
+		if (seekPoint.x < -5) {
+			p1 = glm::vec2(-25, 2);
+			if (players[0]->getPosition().x < players[1]->getPosition().x) {
+				p2 = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().y);
+				if (players[0]->getPosition().y > 2)
+					p1.y = players[0]->getPosition().y;
+			}
+			else {
+				p2 = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().y);
+				if (players[1]->getPosition().y > 2)
+					p1.y = players[1]->getPosition().y;
+			}
+		}
+		else if (seekPoint.x > 5) {
+			p1 = glm::vec2(25, 2);
+			if (players[0]->getPosition().x > players[1]->getPosition().x) {
+				p2 = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().y);
+				if (players[0]->getPosition().y > 2)
+					p1.y = players[0]->getPosition().y;
+			}
+			else {
+				p2 = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().y);
+				if (players[1]->getPosition().y > 2)
+					p1.y = players[1]->getPosition().y;
+			}
 		}
 		else {
-			p2 = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().y);
-			if (players[1]->getPosition().y > 2)
-				p1.y = players[1]->getPosition().y;
+			p1 = players[0]->getPosition();
+			p2 = players[1]->getPosition();
 		}
-	}
-	else {
-		p1 = players[0]->getPosition();
-		p2 = players[1]->getPosition();
-	}
 
-	seekPoint.x = (p1.x + p2.x) * 0.5f;//seek point is inbetween the 2 players
-	seekPoint.y = (p1.y +p2.y) * 0.5f;//seek point is inbetween the 2 players
+		GameCamera.targetZoom = (abs(p1.x - p2.x) / 6) + 10;
+		seekPoint.x = (p1.x + p2.x) * 0.5f;//seek point is inbetween the 2 players
+		seekPoint.y = ((p1.y + p2.y) * 0.5f) - 2;//seek point is inbetween the 2 players
+	}
 
 	GameCamera.seekPoint = seekPoint;
-	//GameCamera.targetZoom = (abs(players[1]->getPosition().x - players[0]->getPosition().x) / 5) + 5;
-	GameCamera.targetZoom = (abs(p1.x - p2.x) / 6) + 5;
 	
 	GameCamera.update();
 	//GameCamera.CameraTransform = Transform::Identity();
@@ -1350,7 +1414,31 @@ void Game::drawScene()
 	//draws everything in scene
 	sortObjects(3);
 	for (int i = 0; i < (int)gameObjects.size(); i++) {
-		gameObjects[i]->draw(GBufferPass, 1);
+		if (gameObjects[i] == findObjects(3, "default_words"))
+		{
+			AdShader.Bind();
+			AdShader.SendUniformMat4("uModel", Transform().data, true);
+			AdShader.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+			AdShader.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
+			AdShader.SendUniform("uTex", 0);
+			AdShader.SendUniform("uTime", TotalGameTime);
+			gameObjects[i]->draw(AdShader, 1);
+
+			AdShader.UnBind();
+		}
+		else
+		{
+			GBufferPass.Bind();
+			GBufferPass.SendUniformMat4("uModel", Transform().data, true);
+			//The reason of the inverse is because it is easier to do transformations
+			GBufferPass.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+			GBufferPass.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
+			//GBufferPass.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
+
+			//MAKE SURE TO KNOW WHAT VIEWSPACE YOU ARE WORKING IN
+			GBufferPass.SendUniform("uTex", 0);
+			gameObjects[i]->draw(GBufferPass, 1);
+		}
 	}
 
 	glDisable(GL_BLEND);
@@ -2780,7 +2868,9 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		//inputs2[3] = false;
 		break;
 	case '.': //a
-		GBufferPass.ReloadShader();
+		//GBufferPass.ReloadShader();
+		AdShader.ReloadShader();
+		std::cout << "Reloaded Shaders\n";
 		//inputs2[4] = false;
 		break;
 	case '/': //b
