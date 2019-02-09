@@ -31,7 +31,9 @@ public:
 		this->index = 0;
 
 		this->body = copy->body;
-		this->texture = copy->texture;
+		this->bodyTexture = copy->bodyTexture;
+		this->hurtTexture = copy->hurtTexture;
+		activeTexture = &(this->bodyTexture);
 		this->boxMesh = copy->boxMesh;
 		this->boxTexture = copy->boxTexture;
 		this->shieldTexture = copy->shieldTexture;
@@ -170,11 +172,13 @@ public:
 	void respawn() {
 		comboTimer = 50;
 		comboMeter = 50;
-		position = glm::vec3(0, 15, 0);
+		position.y = 20;
 		velocity = glm::vec3(0, 0, 0);
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
-		fall();
+		//fall();
+
+		action = ACTION_RESPAWN;
 	}
 
 	int getMeter() {
@@ -184,7 +188,9 @@ public:
 	Transform transform;
 	Mesh body;
 	std::vector<Mesh*> aniFrames[23];
-	Texture texture;
+	Texture* activeTexture;
+	Texture bodyTexture;
+	Texture hurtTexture;
 	float aniTimer;
 	unsigned int index;
 protected:
@@ -237,7 +243,7 @@ protected:
 	Mesh boxMesh;
 	Texture boxTexture;
 	Texture shieldTexture;
-
+public:
 //===================================================//
 	//ACTION ID's
 //===================================================//
@@ -250,7 +256,7 @@ unsigned int ACTION_JUMP			=5;
 unsigned int ACTION_JUMP2			=6;
 unsigned int ACTION_FALL			=7;
 unsigned int ACTION_HIT				=8;
-unsigned int ACTION_PLACEHOLDER		=23;
+unsigned int ACTION_IN_NET			=23;
 unsigned int ACTION_JAB				=10;
 unsigned int ACTION_SIDE_ATTACK		=11;
 unsigned int ACTION_DOWN_ATTACK		=12;
@@ -265,6 +271,8 @@ unsigned int ACTION_DOWN_AERIAL		=20;
 unsigned int ACTION_UP_AERIAL		=21;
 unsigned int ACTION_BLOCK			=9;
 unsigned int ACTION_DASH			=22;
+unsigned int ACTION_RESPAWN			=24;
+unsigned int ACTION_PLACEHOLDER		=25;
 //===================================================//
 
 private:

@@ -9,6 +9,7 @@
 #include "ParticleEffect.h"
 #include "Object.h"
 #include "PointLightObj.h"
+#include "Camera.h"
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -149,8 +150,11 @@ public:
 	FrameBuffer WorkBuffer2;
 	FrameBuffer HudMap;
 
-	Transform CameraTransform;
-	Transform CameraProjection;
+	//Transform CameraTransform;
+	//Transform CameraProjection;
+	Camera GameCamera;
+	glm::vec3 seekPoint;
+
 	Transform ShadowTransform;
 	Transform ShadowProjection;
 	Transform hudTransform;

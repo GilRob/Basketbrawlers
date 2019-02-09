@@ -1,21 +1,28 @@
 #include "char_ninja.h"
 
 //new push
-#define BASE_ANI_TOGGLE		true	//non-offensive animations
-#define G_ATK_ANI_TOGGLE	true	//ground attacks
-#define A_ATK_ANI_TOGGLE	true	//aerials
-#define S_ATK_ANI_TOGGLE	true	//specials
+#define BASE_ANI_TOGGLE		false	//non-offensive animations
+#define G_ATK_ANI_TOGGLE	false	//ground attacks
+#define A_ATK_ANI_TOGGLE	false	//aerials
+#define S_ATK_ANI_TOGGLE	false	//specials
 #define HITBOX_TOGGLE		false	//visual hitboxes
 #define HURTBOX_TOGGLE		false	//visual hurtboxes
 
 Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
 
-	if (!(texture.Load(textureName)))//"./Assets/Textures/Sword.png"))
+	if (!(bodyTexture.Load(textureName)))//"./Assets/Textures/Sword.png"))
 	{
 		std::cout << "Character Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
+	if (!(hurtTexture.Load("./Assets/Textures/hurt.png")))//"./Assets/Textures/Sword.png"))
+	{
+		std::cout << "Character Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+	activeTexture = &bodyTexture;
 
 	aniTimer = 0.f;
 	index = 0;

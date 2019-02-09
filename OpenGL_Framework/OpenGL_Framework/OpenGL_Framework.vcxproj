@@ -91,6 +91,7 @@
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="character.h" />
     <ClInclude Include="char_knight.h" />
     <ClInclude Include="char_ninja.h" />

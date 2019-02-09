@@ -37,8 +37,7 @@ void Character::update(int t, std::vector<bool> inputs) {
 	//actual update
 	force.x = 0;
 	transform = atkInputHandler(inputs);
-
-	if (action != ACTION_DASH) {
+	if (action != ACTION_DASH && action != ACTION_IN_NET && action != ACTION_RESPAWN) {
 
 		//physics update
 		force = glm::vec3(force.x, 0 - gravity, 0);
@@ -99,7 +98,7 @@ void Character::update(int t, std::vector<bool> inputs) {
 
 	//Fake Roof Code
 	///Will be changed later
-	if (position.y > 19.0f) {
+	if (position.y > 19.0f && action != ACTION_RESPAWN) {
 		//called on landing
 		position.y = 19.0f;
 		if (action == ACTION_HIT) {
@@ -193,7 +192,7 @@ void Character::draw(ShaderProgram shader, float dt) {
 		int modelLoc = glGetUniformLocation(shader.getProgram(), "uModel");
 		glUniformMatrix4fv(modelLoc, 1, false, transform.data);
 
-		texture.Bind();
+		activeTexture->Bind();
 		glBindVertexArray(aniFrames[action][index]->VAO);
 
 		// Adjust model matrix for next object's location
@@ -208,7 +207,7 @@ void Character::draw(ShaderProgram shader, float dt) {
 		int modelLoc = glGetUniformLocation(shader.getProgram(), "uModel");
 		glUniformMatrix4fv(modelLoc, 1, false, transform.data);
 
-		texture.Bind();
+		activeTexture->Bind();
 		glBindVertexArray(aniFrames[ACTION_IDLE][index]->VAO);
 
 		glDrawArrays(GL_TRIANGLES, 0, aniFrames[ACTION_IDLE][index]->GetNumVertices());
@@ -313,8 +312,97 @@ void Character::hit(Hitbox* hitBy) {
 Transform Character::atkInputHandler(std::vector<bool> inputs)
 {
 	Transform result;
+	///die
+	if (action == ACTION_RESPAWN) {
+		if (currentFrame == 1) {//on first frame pause
+			comboTimer = 50;
+			comboMeter = 50;
+			activeTexture = &(bodyTexture);
+			force = glm::vec3(0, 0, 0);
+			acceleration = glm::vec3(0, 0, 0);
+			velocity = glm::vec3(0, 0, 0);
+			//position.x = 0;
+			position.y = 20;
+			currentFrame = 1;
+		}
+		//If in Hitstun reduce directional influence
+		if (currentFrame != 1 && currentFrame < 50) {
+			force = glm::vec3(0, 0, 0);
+			acceleration = glm::vec3(0, 0, 0);
+			velocity = glm::vec3(0, 0, 0);
+			//position.x = 0;
+			position.y -= 0.2f;
+			if((int)(currentFrame * 0.2f) % 2)
+				activeTexture = &(bodyTexture);
+			else
+				activeTexture = &(hurtTexture);
+		}
+		else if (currentFrame >= 50) {
+			force = glm::vec3(0, 0, 0);
+			acceleration = glm::vec3(0, 0, 0);
+			velocity = glm::vec3(0, 0, 0);
+			activeTexture = &(bodyTexture);
+			//respawn();
+			comboTimer = 50;
+			comboMeter = 50;
+			//position = glm::vec3(0, 10, 0);
+			velocity = glm::vec3(0, 0, 0);
+			interuptable = true;
+			action = ACTION_PLACEHOLDER;
+			fall();
+		}
+
+		if (facingRight)
+			result.RotateY(-45.0f + currentFrame * 6.0f);
+		else
+			result.RotateY(-45.0f - currentFrame * 6.0f);
+
+		currentFrame++;
+	}
+	else if (action == ACTION_IN_NET) {
+		if (activeTexture == &bodyTexture) {//on first frame pause
+			activeTexture = &(hurtTexture);
+			force = glm::vec3(0, 0, 0);
+			acceleration = glm::vec3(0, 0, 0);
+			velocity = glm::vec3(0, 0, 0);
+			position.x = (position.x / abs(position.x)) * 25;
+			position.y = 13 - (2.0f * (cosf((float)currentFrame * 0.157f) ));
+			position.x += 1.2f * sinf((float)currentFrame * 0.157f);
+			result.RotateZ((float)(currentFrame) * 9);
+			currentFrame = 1;
+		}
+		//If in Hitstun reduce directional influence
+		if (currentFrame != 1 && currentFrame < 80) {
+			force = glm::vec3(0, 0, 0);
+			acceleration = glm::vec3(0, 0, 0);
+			velocity = glm::vec3(0, 0, 0);
+			position.x = (position.x / abs(position.x)) * 25;
+			position.y = 13 - (2.0f * (cosf((float)currentFrame * 0.157f)));
+			position.x += 1.2f * sinf((float)currentFrame * 0.157f);
+			result.RotateZ((float)(currentFrame) * 9);
+		}
+		else if (currentFrame >= 80) {
+			force = glm::vec3(0, 0, 0);
+			acceleration = glm::vec3(0, 0, 0);
+			velocity = glm::vec3(0, 0, 0);
+			activeTexture = &(bodyTexture);
+			currentFrame = 0;
+			activeFrames = 50;
+			position.x = 0;
+			respawn();
+		}
+
+		if (facingRight)
+			result.RotateY(-45.0f);
+		else
+			result.RotateY(45.0f);
+
+		currentFrame++;
+		if (action == ACTION_RESPAWN)
+			currentFrame = 1;
+	}
 	///hit
-	if (action == ACTION_HIT) {
+	else if (action == ACTION_HIT) {
 		//If in Hitstun reduce directional influence
 		if (currentFrame != 1) {
 			force.x = (inputs[1] - inputs[3]) *  diMultiplier;

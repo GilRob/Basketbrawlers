@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "Utilities.h"
 
-#define FULLSCREEN false
+#define FULLSCREEN true
 
 Game::Game()
 	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(1)
@@ -547,13 +547,13 @@ void Game::initializeGame()
 	/*CameraTransform.Translate(vec3(0.0f, 7.5f, 20.0f));
 	CameraTransform.RotateX(-15.0f);*/
 	if (FULLSCREEN) {
-		CameraProjection = Transform::PerspectiveProjection(60.0f, (float)FULLSCREEN_WIDTH / (float)FULLSCREEN_HEIGHT, 1.0f, 10000.0f);
+		GameCamera.CameraProjection = Transform::PerspectiveProjection(60.0f, (float)FULLSCREEN_WIDTH / (float)FULLSCREEN_HEIGHT, 1.0f, 10000.0f);
 		//ShadowProjection.OrthographicProjection(35.0f, -35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
 		ShadowProjection = Transform::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -25.0f, 100.0f);
 		hudProjection = Transform::OrthographicProjection((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, -10.0f, 100.0f);
 	}
 	else {
-		CameraProjection = Transform::PerspectiveProjection(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 1.0f, 10000.0f);
+		GameCamera.CameraProjection = Transform::PerspectiveProjection(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 1.0f, 10000.0f);
 		//ShadowProjection.OrthographicProjection(35.0f, -35.0f, 35.0f, -35.0f, -10.0f, 100.0f);
 		ShadowProjection = Transform::OrthographicProjection(-35.0f, 35.0f, 35.0f, -35.0f, -25.0f, 100.0f);
 		hudProjection = Transform::OrthographicProjection((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * 0.5f, (float)WINDOW_HEIGHT * -0.5f, -10.0f, 100.0f);
@@ -917,20 +917,20 @@ void Game::updateSSS()
 
 		if (p1Char == 1) {
 			players[0] = new Knight(knightTemp);
-			players[0]->texture.Load("./Assets/Textures/player1.png");
+			players[0]->bodyTexture.Load("./Assets/Textures/player1.png");
 		}
 		else if (p1Char == 2) {
 			players[0] = new Ninja(ninjaTemp);
-			players[0]->texture.Load("./Assets/Textures/player1ninja.png");
+			players[0]->bodyTexture.Load("./Assets/Textures/player1ninja.png");
 		}
 
 		if (p2Char == 1) {
 			players[1] = new Knight(knightTemp);
-			players[1]->texture.Load("./Assets/Textures/player2.png");
+			players[1]->bodyTexture.Load("./Assets/Textures/player2.png");
 		}
 		else if (p2Char == 2) {
 			players[1] = new Ninja(ninjaTemp);
-			players[1]->texture.Load("./Assets/Textures/player2ninja.png");
+			players[1]->bodyTexture.Load("./Assets/Textures/player2ninja.png");
 		}
 
 		scene = 3;
@@ -970,10 +970,14 @@ void Game::updateScene()
 		if (players[i]->isHit() && players[i]->currentFrame < 5) {
 			XBoxController.SetVibration(0, 10, 10);//controller 0, power 10 on left and right
 			XBoxController.SetVibration(1, 10, 10);//controller 1, power 10 on left and right
+			GameCamera.rumble = true;
+			players[i]->activeTexture = &(players[i]->hurtTexture);
 		}
-		else if (players[i]->isHit() && players[i]->currentFrame == 5) {
+		else if (players[i]->isHit() && players[i]->currentFrame == 6) {
 			XBoxController.SetVibration(0, 0, 0);//controller 0, power 0 on left and right (off)
 			XBoxController.SetVibration(1, 0, 0);//controller , power 0 on left and right (off)
+			GameCamera.rumble = false;
+			players[i]->activeTexture = &(players[i]->bodyTexture);
 		}
 	}
 
@@ -985,8 +989,8 @@ void Game::updateScene()
 			float size = (players[0]->getHitboxes()[i]->getSize() + players[1]->getHurtboxes()[j]->getSize()) *0.5f;
 			if (/*diff.Length()*/ glm::length(diff) < size) {
 
-				XBoxController.SetVibration(0, 10,10);
-				XBoxController.SetVibration(1, 10,10);
+				XBoxController.SetVibration(0, 10, 10);
+				XBoxController.SetVibration(1, 10, 10);
 				Sleep(40);
 				XBoxController.SetVibration(0, 0, 0);
 				XBoxController.SetVibration(1, 0, 0);
@@ -1017,8 +1021,8 @@ void Game::updateScene()
 				XBoxController.SetVibration(0, 10, 10);
 				XBoxController.SetVibration(1, 10, 10);
 				Sleep(40);
-				XBoxController.SetVibration(0, 0,0);
-				XBoxController.SetVibration(1, 0,0);
+				XBoxController.SetVibration(0, 0, 0);
+				XBoxController.SetVibration(1, 0, 0);
 
 				if (players[0]->blocking && (players[0]->facingRight != players[1]->facingRight)) {//add only in front condition
 					players[0]->blockSuccessful = true;
@@ -1036,7 +1040,16 @@ void Game::updateScene()
 			}
 
 		}
+	}
 
+	//rumble while in net
+	for (int i = 0; i < 2; i++) {
+		if (players[i]->action == players[i]->ACTION_IN_NET) {
+			XBoxController.SetVibration(i, 5, 5);
+		}
+		else if (players[i]->action == players[i]->ACTION_RESPAWN) {
+			XBoxController.SetVibration(i, 0, 0);
+		}
 	}
 
 	//Check Hurtboxes
@@ -1054,8 +1067,10 @@ void Game::updateScene()
 		for (unsigned int j = 0; j < players[1]->getHurtboxes().size(); j++) {
 			glm::vec3 diff = Netbox[i]->getPosition() - players[1]->getHurtboxes()[j]->getPosition();
 			float size = (Netbox[i]->getSize() + players[1]->getHurtboxes()[j]->getSize()) *0.5f;
-			if (/*diff.Length()*/ glm::length(diff) < size) {
-				players[1]->respawn();
+			if (/*diff.Length()*/ glm::length(diff) < size && players[1]->action != players[1]->ACTION_IN_NET) {
+				//players[1]->respawn();
+				players[1]->action = players[1]->ACTION_IN_NET;
+				players[1]->activeFrames = 51;
 				std::cout << std::endl << "Player 1 Scored" << std::endl;
 				score1++;
 				//i = 100;
@@ -1063,14 +1078,17 @@ void Game::updateScene()
 				ConfettiEffectBlueRight.Reset();
 				ConfettiEffectBlueLeft.Reset();
 				j = 100;
+				GameCamera.reset();
 
 			}
 		}
 		for (unsigned int j = 0; j < players[0]->getHurtboxes().size(); j++) {
 			glm::vec3 diff = Netbox[i]->getPosition() - players[0]->getHurtboxes()[j]->getPosition();
 			float size = (Netbox[i]->getSize() + players[0]->getHurtboxes()[j]->getSize()) *0.5f;
-			if (/*diff.Length()*/ glm::length(diff) < size) {
-				players[0]->respawn();
+			if (/*diff.Length()*/ glm::length(diff) < size && players[0]->action != players[0]->ACTION_IN_NET) {
+				//players[0]->respawn();
+				players[0]->action = players[0]->ACTION_IN_NET;
+				players[0]->activeFrames = 51;
 				std::cout << std::endl << "Player 2 Scored" << std::endl;
 				score2++;
 				//i = 100;
@@ -1078,34 +1096,59 @@ void Game::updateScene()
 				ConfettiEffectRedRight.Reset();
 				ConfettiEffectRedLeft.Reset();
 				j = 100;
-
+				GameCamera.reset();
 			}
 		}
 	}
 
 	//DYNAMIC CAM
 	//camera control
-	float dist = abs(players[0]->getPosition().x - players[1]->getPosition().x) * 1.0f;
-	if (dist < 10)
-		dist = 10;
-	//camera->setPositionXY((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, abs(dist*0.1f) + 1.5f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f));
-	if (dist > 40)
-		dist = 40;
-	//camera->setPositionZ(dist);
+	seekPoint.x = (players[1]->getPosition().x + players[0]->getPosition().x) * 0.5f;//seek point is inbetween the 2 players
+	seekPoint.y = (players[1]->getPosition().y + players[0]->getPosition().y) * 0.5f;//seek point is inbetween the 2 players
 
-	//Make sure to do the reverse of the transform orders due to the change from row-major to column-major, it reverses all mathematic operations
-	CameraTransform = Transform::Identity();
-	//glm::rotate(CameraTransform, (-20.0f - abs(sqrtf(dist*0.01f)*10.0f)), glm::vec3(1.0f, 0.0f, 0.0f));
-	CameraTransform.RotateX(-20.0f - abs(sqrtf(dist*0.01f)*5.0f));
-	//CameraTransform.Translate(vec3(0.0f, 7.5f, 11.0f));
-	/*glm::translate(CameraTransform,
-		glm::vec3((playerTwo->getPosition().x + playerOne->getPosition().x) / 2.0f, 
-			abs(sqrtf(dist*0.01f)*20.0f) + 10.0f + ((playerTwo->getPosition().y + playerOne->getPosition().y) / 2.0f), 
-			dist + 10));*/
-	CameraTransform.Translate(glm::vec3((players[1]->getPosition().x + players[0]->getPosition().x) / 2.0f, abs(sqrtf(dist*0.01f)*18.5f) + 10.0f + ((players[1]->getPosition().y + players[0]->getPosition().y) / 2.0f), (dist* 0.75f)+9));
-	//glm::rotate(CameraTransform, 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-	CameraTransform.RotateY(0.0f);
-	//CameraTransform.RotateZ(180.0f);
+	glm::vec2 p1;
+	glm::vec2 p2;
+	if (seekPoint.x < -5) {
+		p1 = glm::vec2(-25, 2);
+		if (players[0]->getPosition().x < players[1]->getPosition().x) {
+			p2 = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().y);
+			if (players[0]->getPosition().y > 2)
+				p1.y = players[0]->getPosition().y;
+		}
+		else{
+			p2 = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().y);
+			if (players[1]->getPosition().y > 2)
+				p1.y = players[1]->getPosition().y;
+		}
+	}
+	else if (seekPoint.x > 5) {
+		p1 = glm::vec2(25,2);
+		if (players[0]->getPosition().x > players[1]->getPosition().x) {
+			p2 = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().y);
+			if (players[0]->getPosition().y > 2)
+				p1.y = players[0]->getPosition().y;
+		}
+		else {
+			p2 = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().y);
+			if (players[1]->getPosition().y > 2)
+				p1.y = players[1]->getPosition().y;
+		}
+	}
+	else {
+		p1 = players[0]->getPosition();
+		p2 = players[1]->getPosition();
+	}
+
+	seekPoint.x = (p1.x + p2.x) * 0.5f;//seek point is inbetween the 2 players
+	seekPoint.y = (p1.y +p2.y) * 0.5f;//seek point is inbetween the 2 players
+
+	GameCamera.seekPoint = seekPoint;
+	//GameCamera.targetZoom = (abs(players[1]->getPosition().x - players[0]->getPosition().x) / 5) + 5;
+	GameCamera.targetZoom = (abs(p1.x - p2.x) / 6) + 5;
+	
+	GameCamera.update();
+	//GameCamera.CameraTransform = Transform::Identity();
+	//GameCamera.CameraTransform.Translate(glm::vec3((players[1]->getPosition().x + players[0]->getPosition().x) / 2.0f, abs(sqrtf(dist*0.01f)*18.5f) + 10.0f + ((players[1]->getPosition().y + players[0]->getPosition().y) / 2.0f), (dist* 0.75f) + 9));
 
 	hudTransform = Transform::Identity();
 	hudTransform.RotateY(0.0f);
@@ -1122,7 +1165,7 @@ void Game::updateScene()
 					 0.0f, 0.0f, 0.0f, 1.0f);
 
 	ViewToShadowMap = Transform::Identity();
-	ViewToShadowMap = bias * ShadowProjection * ShadowTransform.GetInverse() * CameraTransform;
+	ViewToShadowMap = bias * ShadowProjection * ShadowTransform.GetInverse() * GameCamera.CameraTransform;
 	//ShadowTransform.Translate(vec3(0.0f, 0.0f, 0.0f));
 
 	///PARTICLE EFFECTS
@@ -1277,8 +1320,8 @@ void Game::drawScene()
 	GBufferPass.Bind();
 	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
 	//The reason of the inverse is because it is easier to do transformations
-	GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
+	GBufferPass.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+	GBufferPass.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
 	//GBufferPass.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
 
 	//MAKE SURE TO KNOW WHAT VIEWSPACE YOU ARE WORKING IN
@@ -1386,13 +1429,13 @@ void Game::drawScene()
 	glDisable(GL_CULL_FACE);//should fix random holes in knight
 
 	AniShader.Bind();
-	AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
+	AniShader.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+	AniShader.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
 	players[0]->draw(AniShader, 1);
 
 	AniShader.Bind();
-	AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
+	AniShader.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+	AniShader.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
 	players[1]->draw(AniShader, 1);
 
 	glEnable(GL_CULL_FACE);//turn it back on after for preformance
@@ -1445,7 +1488,7 @@ void Game::drawScene()
 	//DeferredLighting.SendUniform("uEdgeMap", 4);
 	//DeferredLighting.SendUniform("uStepTexture", 4);
 
-	DeferredLighting.SendUniform("LightDirection", glm::vec3(CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
 	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
 	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
 	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
@@ -1476,7 +1519,7 @@ void Game::drawScene()
 
 	for (int i = 0; i < (int)pointLights.size(); i++) {
 		if (pointLights[i]->active == true) {
-			pointLights[i]->draw(PointLight, CameraTransform);
+			pointLights[i]->draw(PointLight, GameCamera.CameraTransform);
 			DrawFullScreenQuad();
 		}
 	}
@@ -1499,8 +1542,8 @@ void Game::drawScene()
 		ParticleProgram.Bind();
 		ParticleProgram.SendUniform("uTex", 0);
 		ParticleProgram.SendUniformMat4("uModel", ConfettiEffectBlueRight.transform.data, true);
-		ParticleProgram.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-		ParticleProgram.SendUniformMat4("uProj", CameraProjection.data, true);
+		ParticleProgram.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+		ParticleProgram.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
 
 		ConfettiEffectRedRight.Playing = true;
 		ConfettiEffectRedRight.Render();
@@ -1532,8 +1575,8 @@ void Game::drawScene()
 		ParticleProgram.Bind();
 		ParticleProgram.SendUniform("uTex", 0);
 		ParticleProgram.SendUniformMat4("uModel", ConfettiEffectRedRight.transform.data, true);
-		ParticleProgram.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-		ParticleProgram.SendUniformMat4("uProj", CameraProjection.data, true);
+		ParticleProgram.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+		ParticleProgram.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
 
 		ConfettiEffectBlueRight.Playing = true;
 		ConfettiEffectBlueRight.Render();
@@ -1688,7 +1731,7 @@ void Game::drawCSS()
 	//DeferredLighting.SendUniform("uEdgeMap", 4);
 	//DeferredLighting.SendUniform("uStepTexture", 4);
 
-	DeferredLighting.SendUniform("LightDirection", glm::vec3(CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
 	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
 	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
 	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
@@ -1876,7 +1919,7 @@ void Game::drawSSS()
 	//DeferredLighting.SendUniform("uEdgeMap", 4);
 	//DeferredLighting.SendUniform("uStepTexture", 4);
 
-	DeferredLighting.SendUniform("LightDirection", glm::vec3(CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
 	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
 	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
 	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
@@ -2169,8 +2212,8 @@ void Game::drawScore() {
 	glDisable(GL_LIGHTING);
 
 	GBufferPass.Bind();
-	GBufferPass.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", CameraProjection.data, true);
+	GBufferPass.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+	GBufferPass.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
 	///score
 	Transform hudLoc = Transform::Identity();
 	hudLoc.Scale(2.0f);
@@ -2243,7 +2286,7 @@ void Game::drawMenu()
 	//DeferredLighting.SendUniform("uEdgeMap", 4);
 	//DeferredLighting.SendUniform("uStepTexture", 4);
 
-	DeferredLighting.SendUniform("LightDirection", glm::vec3(CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
 	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
 	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
 	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
@@ -2640,7 +2683,7 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 			p2Char = 2;
 			players[0] = new Knight(knightTemp);
 			players[1] = new Ninja(ninjaTemp);
-			players[1]->texture.Load("./Assets/Textures/player2ninja.png");
+			players[1]->bodyTexture.Load("./Assets/Textures/player2ninja.png");
 			stageVal = 1;
 			//hide ninja court
 			findObjects(3, "ninja_court")->hide = true;
@@ -3069,8 +3112,8 @@ void Game::sortObjects(unsigned int scene) {
 		for (int i = 0; i < (int)(gameObjects.size() - 1); i++) {
 			for (int j = i + 1; j < (int)gameObjects.size(); j++) {
 
-				float dist1 = (float)(CameraTransform.GetTranslation() - gameObjects[i]->transform.GetTranslation()).length();
-				float dist2 = (float)(CameraTransform.GetTranslation() - gameObjects[j]->transform.GetTranslation()).length();
+				float dist1 = (float)(GameCamera.CameraTransform.GetTranslation() - gameObjects[i]->transform.GetTranslation()).length();
+				float dist2 = (float)(GameCamera.CameraTransform.GetTranslation() - gameObjects[j]->transform.GetTranslation()).length();
 
 				if ((dist1 < dist2 && gameObjects[i]->blending) || (gameObjects[i]->blending && !gameObjects[j]->blending)) {
 					Object* temp = gameObjects[i];
@@ -3086,8 +3129,8 @@ void Game::sortObjects(unsigned int scene) {
 		for (int i = 0; i < (int)(menuObjects.size() - 1); i++) {
 			for (int j = i + 1; j < (int)menuObjects.size(); j++) {
 
-				float dist1 = (float)(CameraTransform.GetTranslation() - menuObjects[i]->transform.GetTranslation()).length();
-				float dist2 = (float)(CameraTransform.GetTranslation() - menuObjects[j]->transform.GetTranslation()).length();
+				float dist1 = (float)(GameCamera.CameraTransform.GetTranslation() - menuObjects[i]->transform.GetTranslation()).length();
+				float dist2 = (float)(GameCamera.CameraTransform.GetTranslation() - menuObjects[j]->transform.GetTranslation()).length();
 
 				if ((dist1 < dist2 && menuObjects[i]->blending) || (menuObjects[i]->blending && !menuObjects[j]->blending)) {
 					Object* temp = menuObjects[i];
@@ -3103,8 +3146,8 @@ void Game::sortObjects(unsigned int scene) {
 		for (int i = 0; i < (int)(cssObjects.size() - 1); i++) {
 			for (int j = i + 1; j < (int)cssObjects.size(); j++) {
 
-				float dist1 = (float)(CameraTransform.GetTranslation() - cssObjects[i]->transform.GetTranslation()).length();
-				float dist2 = (float)(CameraTransform.GetTranslation() - cssObjects[j]->transform.GetTranslation()).length();
+				float dist1 = (float)(GameCamera.CameraTransform.GetTranslation() - cssObjects[i]->transform.GetTranslation()).length();
+				float dist2 = (float)(GameCamera.CameraTransform.GetTranslation() - cssObjects[j]->transform.GetTranslation()).length();
 
 				if ((dist1 < dist2 && cssObjects[i]->blending) || (cssObjects[i]->blending && !cssObjects[j]->blending)) {
 					Object* temp = cssObjects[i];
@@ -3120,8 +3163,8 @@ void Game::sortObjects(unsigned int scene) {
 		for (int i = 0; i < (int)(sssObjects.size() - 1); i++) {
 			for (int j = i + 1; j < (int)sssObjects.size(); j++) {
 
-				float dist1 = (float)(CameraTransform.GetTranslation() - sssObjects[i]->transform.GetTranslation()).length();
-				float dist2 = (float)(CameraTransform.GetTranslation() - sssObjects[j]->transform.GetTranslation()).length();
+				float dist1 = (float)(GameCamera.CameraTransform.GetTranslation() - sssObjects[i]->transform.GetTranslation()).length();
+				float dist2 = (float)(GameCamera.CameraTransform.GetTranslation() - sssObjects[j]->transform.GetTranslation()).length();
 
 				if ((dist1 < dist2 && sssObjects[i]->blending) || (sssObjects[i]->blending && !sssObjects[j]->blending)) {
 					Object* temp = sssObjects[i];

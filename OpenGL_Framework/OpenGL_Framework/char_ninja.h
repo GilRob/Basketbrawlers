@@ -15,7 +15,9 @@ public:
 		this->index = 0;
 
 		this->body = copy->body;
-		this->texture = copy->texture;
+		this->bodyTexture = copy->bodyTexture;
+		this->hurtTexture = copy->hurtTexture;
+		activeTexture = &(this->bodyTexture);
 		this->boxMesh = copy->boxMesh;
 		this->boxTexture = copy->boxTexture;
 		this->shieldTexture = copy->shieldTexture;
