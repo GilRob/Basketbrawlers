@@ -433,7 +433,7 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	if (!ConfettiEffectBlueRight.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)50, false))
+	if (!ConfettiEffectBlueRight.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)50))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -451,7 +451,7 @@ void Game::initializeGame()
 	ConfettiEffectBlueRight.Mass = 2.0f;
 	ConfettiEffectBlueRight.Gravity = 0.2f;
 
-	if (!ConfettiEffectBlueLeft.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)50, false))
+	if (!ConfettiEffectBlueLeft.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)50))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -468,7 +468,7 @@ void Game::initializeGame()
 	ConfettiEffectBlueLeft.Mass = 2.0f;
 	ConfettiEffectBlueLeft.Gravity = 0.2f;
 
-	if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)5000, (unsigned int)50, false))
+	if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)500, (unsigned int)50))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -488,7 +488,7 @@ void Game::initializeGame()
 
 
 
-	if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)5000, (unsigned int)50, false))
+	if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)500, (unsigned int)50))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -1115,9 +1115,8 @@ void Game::updateScene()
 				std::cout << std::endl << "Player 1 Scored" << std::endl;
 				score1++;
 				//i = 100;
-				p1Score = true;
-				ConfettiEffectBlueRight.Reset();
-				ConfettiEffectBlueLeft.Reset();
+				ConfettiEffectBlueRight.Spawn(3.0f);
+				ConfettiEffectBlueLeft.Spawn(3.0f);
 				j = 100;
 				GameCamera.reset();
 
@@ -1133,9 +1132,8 @@ void Game::updateScene()
 				std::cout << std::endl << "Player 2 Scored" << std::endl;
 				score2++;
 				//i = 100;
-				p2Score = true;
-				ConfettiEffectRedRight.Reset();
-				ConfettiEffectRedLeft.Reset();
+				ConfettiEffectRedRight.Spawn(3.0f);
+				ConfettiEffectRedLeft.Spawn(3.0f);
 				j = 100;
 				GameCamera.reset();
 			}
@@ -1241,22 +1239,10 @@ void Game::updateScene()
 
 	///PARTICLE EFFECTS
 	//Update Patricle Effects
-	if (ConfettiEffectBlueRight.Playing == true)
-	{
-		ConfettiEffectBlueRight.Update(deltaTime);
-	}
-	if (ConfettiEffectBlueLeft.Playing == true)
-	{
-		ConfettiEffectBlueLeft.Update(deltaTime);
-	}
-	if (ConfettiEffectRedRight.Playing == true)
-	{
-		ConfettiEffectRedRight.Update(deltaTime);
-	}
-	if (ConfettiEffectRedLeft.Playing == true)
-	{
-		ConfettiEffectRedLeft.Update(deltaTime);
-	}
+	ConfettiEffectBlueRight.Update(deltaTime);
+	ConfettiEffectBlueLeft.Update(deltaTime);
+	ConfettiEffectRedRight.Update(deltaTime);
+	ConfettiEffectRedLeft.Update(deltaTime);
 
 
 	//additional lights
@@ -1635,71 +1621,21 @@ void Game::drawScene()
 	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
 
 
-	if (p1Score)
-	{
-		ParticleProgram.Bind();
-		ParticleProgram.SendUniform("uTex", 0);
-		ParticleProgram.SendUniformMat4("uModel", ConfettiEffectBlueRight.transform.data, true);
-		ParticleProgram.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
-		ParticleProgram.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
+	//draw particles
+	ParticleProgram.Bind();
+	ParticleProgram.SendUniform("uTex", 0);
+	ParticleProgram.SendUniformMat4("uModel", ConfettiEffectBlueRight.transform.data, true);
+	ParticleProgram.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+	ParticleProgram.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
 
-		ConfettiEffectRedRight.Playing = true;
-		ConfettiEffectRedRight.Render();
+	//render all particles
+	ConfettiEffectRedRight.Render();
+	ConfettiEffectRedLeft.Render();
+	ConfettiEffectBlueRight.Render();
+	ConfettiEffectBlueLeft.Render();
 
-		ConfettiEffectRedLeft.Playing = true;
-		ConfettiEffectRedLeft.Render();
+	ParticleProgram.UnBind();
 
-		ParticleProgram.UnBind();
-
-		static float timer;
-		timer += updateTimer->getElapsedTimeSeconds();
-		//std::cout << timer << std::endl;
-		if (timer >= 4)
-		{
-			//Set their age past their lifetime so they no longer desync
-			ConfettiEffectRedRight.Reset();
-			ConfettiEffectRedLeft.Reset();
-
-			ConfettiEffectRedRight.Playing = false;
-			ConfettiEffectRedLeft.Playing = false;
-			timer = 0;
-			p1Score = false;
-
-		}
-	}
-
-
-	if (p2Score)
-	{
-		ParticleProgram.Bind();
-		ParticleProgram.SendUniform("uTex", 0);
-		ParticleProgram.SendUniformMat4("uModel", ConfettiEffectRedRight.transform.data, true);
-		ParticleProgram.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
-		ParticleProgram.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
-
-		ConfettiEffectBlueRight.Playing = true;
-		ConfettiEffectBlueRight.Render();
-
-		ConfettiEffectBlueLeft.Playing = true;
-		ConfettiEffectBlueLeft.Render();
-
-		ParticleProgram.UnBind();
-
-		static float timer;
-		timer += updateTimer->getElapsedTimeSeconds();
-		std::cout << timer << std::endl;
-		if (timer >= 4)
-		{
-			//Set their age past their lifetime so they no longer desync
-			ConfettiEffectBlueRight.Reset();
-			ConfettiEffectBlueLeft.Reset();
-
-			ConfettiEffectBlueRight.Playing = false;
-			ConfettiEffectBlueLeft.Playing = false;
-			timer = 0;
-			p2Score = false;
-		}
-	}
 
 	DeferredComposite.UnBind();
 	DeferredLighting.UnBind();

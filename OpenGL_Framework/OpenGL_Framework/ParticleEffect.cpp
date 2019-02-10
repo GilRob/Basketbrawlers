@@ -42,7 +42,7 @@ ParticleEffect::~ParticleEffect()
 	}
 }
 
-bool ParticleEffect::Init(const std::string &textureFile, unsigned int maxParticles, unsigned int rate, bool loop)
+bool ParticleEffect::Init(const std::string &textureFile, unsigned int maxParticles, unsigned int rate)
 {
 	if (!_Texture.Load(textureFile))
 	{
@@ -58,7 +58,6 @@ bool ParticleEffect::Init(const std::string &textureFile, unsigned int maxPartic
 	_Particles.Ages = new float[_MaxParticles];
 	_Particles.Lifetimes = new float[_MaxParticles];
 	_Particles.Size = new float[_MaxParticles];
-	_loop = loop;
 
 	//Setup OpenGL Memory
 	glGenVertexArrays(1, &_VAO);
@@ -98,13 +97,19 @@ void ParticleEffect::Update(float elapsed)
 	//auto start = chrono::steady_clock::now();
 
 	int NumToSpawn = (int)_Rate;
+	spawnerTime -= elapsed;
+	if (spawnerTime < 0) {
+		Playing = false;
+	}
 
 		/// Create new particles ///
 	while (
 		//We have not reached the particle cap and...
 		_NumCurrentParticles < _MaxParticles && 
 		//We have more particles to generate this frame...
-		NumToSpawn > 0
+		NumToSpawn > 0 &&
+		//We have not reached the time limit to keep spawning...
+		Playing
 		)
 	{
 		_Particles.Alpha[_NumCurrentParticles] = RandomRangef(LerpAlpha.x, LerpAlpha.y);
@@ -131,54 +136,56 @@ void ParticleEffect::Update(float elapsed)
 		NumToSpawn--;
 	}
 	
-	/// Update existing particles ///s
-	for (unsigned i = 0; i < _NumCurrentParticles; i++)
-	{
-		_Particles.Ages[i] += elapsed;
-
-		//Explanation of this is on Week 9 video at time 5:30 (maybe)
-		if (_Particles.Ages[i] > _Particles.Lifetimes[i])
+	if (_NumCurrentParticles > 0) {
+		/// Update existing particles ///s
+		for (unsigned i = 0; i < _NumCurrentParticles; i++)
 		{
-			//remove the particle by replacing it with the one at the top of the stack
-			_Particles.Alpha[i] = _Particles.Alpha[_NumCurrentParticles - 1];
-			_Particles.Ages[i] = _Particles.Ages[_NumCurrentParticles - 1];
-			_Particles.Lifetimes[i] = _Particles.Lifetimes[_NumCurrentParticles - 1];
-			_Particles.Positions[i] = _Particles.Positions[_NumCurrentParticles - 1];
-			_Particles.Size[i] = _Particles.Size[_NumCurrentParticles - 1];
-			_Particles.Velocities[i] = _Particles.Velocities[_NumCurrentParticles - 1];
-			_NumCurrentParticles--;
-			continue;
+			_Particles.Ages[i] += elapsed;
+
+			//Explanation of this is on Week 9 video at time 5:30 (maybe)
+			if (_Particles.Ages[i] > _Particles.Lifetimes[i])
+			{
+				//remove the particle by replacing it with the one at the top of the stack
+				_Particles.Alpha[i] = _Particles.Alpha[_NumCurrentParticles - 1];
+				_Particles.Ages[i] = _Particles.Ages[_NumCurrentParticles - 1];
+				_Particles.Lifetimes[i] = _Particles.Lifetimes[_NumCurrentParticles - 1];
+				_Particles.Positions[i] = _Particles.Positions[_NumCurrentParticles - 1];
+				_Particles.Size[i] = _Particles.Size[_NumCurrentParticles - 1];
+				_Particles.Velocities[i] = _Particles.Velocities[_NumCurrentParticles - 1];
+				_NumCurrentParticles--;
+				continue;
+			}
+
+			//physics update
+			force = glm::vec3(0, 0 - Gravity, 0);
+			acceleration = force / Mass;
+			_Particles.Velocities[i] += acceleration;
+			_Particles.Positions[i] += _Particles.Velocities[i] * elapsed;
+
+			float interp = _Particles.Ages[i] / _Particles.Lifetimes[i];
+
+			_Particles.Alpha[i] = glm::mix(LerpAlpha.x, LerpAlpha.y, interp);
+			_Particles.Size[i] = glm::mix(LerpSize.x, LerpSize.y, interp);
 		}
+		//end = chrono::steady_clock::now();
 
-		//physics update
-		force = glm::vec3(0, 0 - Gravity, 0);
-		acceleration = force / Mass;
-		_Particles.Velocities[i] += acceleration;
-		_Particles.Positions[i] += _Particles.Velocities[i] * elapsed;
+		//cout << chrono::duration_cast<chrono::milliseconds>(end - start).count() << ":";
 
-		float interp = _Particles.Ages[i] / _Particles.Lifetimes[i];
+		//Update OpenGL on the changes
 
-		_Particles.Alpha[i] = glm::mix(LerpAlpha.x, LerpAlpha.y, interp);
-		_Particles.Size[i] = glm::mix(LerpSize.x, LerpSize.y, interp);
+		glBindBuffer(GL_ARRAY_BUFFER, _VBO_Position);
+		//Call this because glBufferData will reallocate the entire array :O
+		//This will update the data in an existing array, update a small subset as you need to
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * _NumCurrentParticles, &_Particles.Positions[0]);
+
+		glBindBuffer(GL_ARRAY_BUFFER, _VBO_Size);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * _NumCurrentParticles, &_Particles.Size[0]);
+
+		glBindBuffer(GL_ARRAY_BUFFER, _VBO_Alpha);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * _NumCurrentParticles, &_Particles.Alpha[0]);
+
+		glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
 	}
-	//end = chrono::steady_clock::now();
-
-	//cout << chrono::duration_cast<chrono::milliseconds>(end - start).count() << ":";
-
-	//Update OpenGL on the changes
-
-	glBindBuffer(GL_ARRAY_BUFFER, _VBO_Position);
-	//Call this because glBufferData will reallocate the entire array :O
-	//This will update the data in an existing array, update a small subset as you need to
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * _NumCurrentParticles, &_Particles.Positions[0]);
-
-	glBindBuffer(GL_ARRAY_BUFFER, _VBO_Size);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * _NumCurrentParticles, &_Particles.Size[0]);
-
-	glBindBuffer(GL_ARRAY_BUFFER, _VBO_Alpha);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * _NumCurrentParticles, &_Particles.Alpha[0]);
-
-	glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
 	//end = chrono::steady_clock::now();
 
 	//cout << chrono::duration_cast<chrono::milliseconds>(end - start).count() << ":x";
@@ -211,6 +218,13 @@ void ParticleEffect::Reset()
 	for (unsigned i = 0; i < _NumCurrentParticles; i++)
 	{
 		_Particles.Ages[i] = 5.0f;
-		//TODO: reset positions
 	}
+}
+
+void ParticleEffect::Spawn(float time)
+{
+	Reset();
+	Playing = true;
+	spawnerTime = time;
+	
 }

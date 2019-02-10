@@ -27,15 +27,16 @@ public:
 	ParticleEffect();
 	~ParticleEffect();
 
-	bool Init(const std::string &textureFile, unsigned int maxParticles, unsigned int rate, bool loop);
+	bool Init(const std::string &textureFile, unsigned int maxParticles, unsigned int rate);
 
 	void Update(float elapsed);
 	void Render();
 	void Reset();
+	void Spawn(float time);
 
 	Transform transform;
 
-	bool _loop = false;
+	float spawnerTime = 1.0f;
 	glm::vec2 RangeX = glm::vec2(-10.0f, 10.0f);
 	glm::vec2 RangeY = glm::vec2(0.0f, 10.0f);
 	glm::vec2 RangeZ = glm::vec2(-10.0f, 10.0f);
