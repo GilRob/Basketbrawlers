@@ -27,7 +27,7 @@ public:
 	ParticleEffect();
 	~ParticleEffect();
 
-	bool Init(const std::string &textureFile, unsigned int maxParticles, unsigned int rate);
+	bool Init(const std::string &textureFile, unsigned int maxParticles, unsigned int rate, bool loop);
 
 	void Update(float elapsed);
 	void Render();
@@ -35,6 +35,7 @@ public:
 
 	Transform transform;
 
+	bool _loop = false;
 	glm::vec2 RangeX = glm::vec2(-10.0f, 10.0f);
 	glm::vec2 RangeY = glm::vec2(0.0f, 10.0f);
 	glm::vec2 RangeZ = glm::vec2(-10.0f, 10.0f);
@@ -63,4 +64,6 @@ private:
 	GLuint _VBO_Position = 0;
 	GLuint _VBO_Size = 0;
 	GLuint _VBO_Alpha = 0;
+
+
 };

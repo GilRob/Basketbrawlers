@@ -2,7 +2,7 @@
 #include "Utilities.h"
 
 
-#define FULLSCREEN true
+#define FULLSCREEN false
 #define VSYNC false
 
 Game::Game()
@@ -433,7 +433,7 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	if (!ConfettiEffectBlueRight.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)50))
+	if (!ConfettiEffectBlueRight.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)50, false))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -451,7 +451,7 @@ void Game::initializeGame()
 	ConfettiEffectBlueRight.Mass = 2.0f;
 	ConfettiEffectBlueRight.Gravity = 0.2f;
 
-	if (!ConfettiEffectBlueLeft.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)50))
+	if (!ConfettiEffectBlueLeft.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)50, false))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -468,7 +468,7 @@ void Game::initializeGame()
 	ConfettiEffectBlueLeft.Mass = 2.0f;
 	ConfettiEffectBlueLeft.Gravity = 0.2f;
 
-	if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)50))
+	if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)5000, (unsigned int)50, false))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -488,7 +488,7 @@ void Game::initializeGame()
 
 
 
-	if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)50))
+	if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)5000, (unsigned int)50, false))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -631,6 +631,9 @@ void Game::initializeGame()
 
 void Game::update()
 {
+	auto end = chrono::steady_clock::now();
+	auto start = chrono::steady_clock::now();
+
 	if (scene == 3) {
 		updateScene();
 	}
@@ -643,6 +646,9 @@ void Game::update()
 	else {
 		updateMenu();
 	}
+	end = chrono::steady_clock::now();
+	cout << chrono::duration_cast<chrono::microseconds>(end - start).count() << ":";
+
 }
 
 void Game::updateMenu()
@@ -1232,6 +1238,7 @@ void Game::updateScene()
 	ViewToShadowMap = bias * ShadowProjection * ShadowTransform.GetInverse() * GameCamera.CameraTransform;
 	//ShadowTransform.Translate(vec3(0.0f, 0.0f, 0.0f));
 
+
 	///PARTICLE EFFECTS
 	//Update Patricle Effects
 	if (ConfettiEffectBlueRight.Playing == true)
@@ -1250,6 +1257,7 @@ void Game::updateScene()
 	{
 		ConfettiEffectRedLeft.Update(deltaTime);
 	}
+
 
 	//additional lights
 	if (p1Score == true)
@@ -1300,6 +1308,7 @@ void Game::draw()
 
 void Game::drawScene()
 {
+
 	/// Clear Buffers ///
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -1625,6 +1634,7 @@ void Game::drawScene()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
 
+
 	if (p1Score)
 	{
 		ParticleProgram.Bind();
@@ -1643,7 +1653,7 @@ void Game::drawScene()
 
 		static float timer;
 		timer += updateTimer->getElapsedTimeSeconds();
-		std::cout << timer << std::endl;
+		//std::cout << timer << std::endl;
 		if (timer >= 4)
 		{
 			//Set their age past their lifetime so they no longer desync
@@ -1657,6 +1667,7 @@ void Game::drawScene()
 
 		}
 	}
+
 
 	if (p2Score)
 	{

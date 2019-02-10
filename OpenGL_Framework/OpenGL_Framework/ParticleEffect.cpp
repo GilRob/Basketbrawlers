@@ -42,7 +42,7 @@ ParticleEffect::~ParticleEffect()
 	}
 }
 
-bool ParticleEffect::Init(const std::string &textureFile, unsigned int maxParticles, unsigned int rate)
+bool ParticleEffect::Init(const std::string &textureFile, unsigned int maxParticles, unsigned int rate, bool loop)
 {
 	if (!_Texture.Load(textureFile))
 	{
@@ -58,6 +58,7 @@ bool ParticleEffect::Init(const std::string &textureFile, unsigned int maxPartic
 	_Particles.Ages = new float[_MaxParticles];
 	_Particles.Lifetimes = new float[_MaxParticles];
 	_Particles.Size = new float[_MaxParticles];
+	_loop = loop;
 
 	//Setup OpenGL Memory
 	glGenVertexArrays(1, &_VAO);
@@ -101,9 +102,10 @@ void ParticleEffect::Update(float elapsed)
 		/// Create new particles ///
 	while (
 		//We have not reached the particle cap and...
-		_NumCurrentParticles < _MaxParticles &&
+		_NumCurrentParticles < _MaxParticles && 
 		//We have more particles to generate this frame...
-		NumToSpawn > 0)
+		NumToSpawn > 0
+		)
 	{
 		_Particles.Alpha[_NumCurrentParticles] = RandomRangef(LerpAlpha.x, LerpAlpha.y);
 		_Particles.Ages[_NumCurrentParticles] = 0.0f;
@@ -144,7 +146,6 @@ void ParticleEffect::Update(float elapsed)
 			_Particles.Positions[i] = _Particles.Positions[_NumCurrentParticles - 1];
 			_Particles.Size[i] = _Particles.Size[_NumCurrentParticles - 1];
 			_Particles.Velocities[i] = _Particles.Velocities[_NumCurrentParticles - 1];
-
 			_NumCurrentParticles--;
 			continue;
 		}
@@ -210,5 +211,6 @@ void ParticleEffect::Reset()
 	for (unsigned i = 0; i < _NumCurrentParticles; i++)
 	{
 		_Particles.Ages[i] = 5.0f;
+		//TODO: reset positions
 	}
 }
