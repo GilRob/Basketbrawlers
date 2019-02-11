@@ -1,5 +1,11 @@
 #include "character.h"
 
+/*
+Keys:
+$$$ - Particle Signal
+
+*/
+
 //new push
 #define BASE_ANI_TOGGLE		false	//non-offensive animations
 #define G_ATK_ANI_TOGGLE	false	//ground attacks
@@ -130,11 +136,13 @@ void Character::update(int t, std::vector<bool> inputs) {
 			action = ACTION_PLACEHOLDER;
 			idle();
 			//velocity.x *= 0.7f;
+			partiQueue.push(LANDDUST);				//$$$
 		}
 		else if (currentFrame < activeFrames - 5 && (action == ACTION_SIDE_AERIAL || action == ACTION_UP_AERIAL || action == ACTION_DOWN_AERIAL || action == ACTION_NEUTRAL_AERIAL)) {//landing lag
 			currentFrame = activeFrames - 3;
 			index = aniFrames[action].size() -1;
 			//velocity.x *= 0.7f;
+			partiQueue.push(LANDDUST);				//$$$
 		}
 	}
 	else {
@@ -650,6 +658,18 @@ Transform Character::initialDash(bool right, bool left)
 		activeFrames = dashLength;
 		currentFrame = 1;
 		interuptable = true;
+
+		int direction = (int)facingRight;
+		if (facingRight == 0) {
+			direction = -1;
+			partiQueue.push(RDASHDUST);						//$$$
+		}
+		else {
+			partiQueue.push(LDASHDUST);						//$$$
+		}
+
+
+
 	}
 	else if (action == ACTION_INTIAL_DASH && currentFrame <= activeFrames) {
 
@@ -663,8 +683,9 @@ Transform Character::initialDash(bool right, bool left)
 
 		//stuff goes here
 		int direction = (int)facingRight;
-		if (facingRight == 0)
+		if (facingRight == 0) {
 			direction = -1;
+		}
 
 		//dashdancing
 		if (direction == 1 && left == true) { 

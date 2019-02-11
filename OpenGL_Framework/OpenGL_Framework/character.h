@@ -15,7 +15,16 @@
 #include "hitbox.h"
 #include <iostream>
 #include "Transform.h"
+#include <queue>
 
+//Enum for tracking particle signals 
+enum Particall
+{
+	NOACTION,
+	LDASHDUST,
+	RDASHDUST,
+	LANDDUST,
+};
 
 //Will be the parent class for all other charcaters
 ///Has all basic functions/data that charcaters need but lacks the unique passives and thas virtual functions for each attack type
@@ -119,6 +128,9 @@ public:
 	bool isHit() {
 		return (action == ACTION_HIT);
 	}
+
+	//queue for particle signals
+	std::queue<Particall> partiQueue;
 
 	//Actions
 	Transform idle();

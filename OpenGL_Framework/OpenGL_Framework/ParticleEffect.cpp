@@ -97,10 +97,10 @@ void ParticleEffect::Update(float elapsed)
 	//auto start = chrono::steady_clock::now();
 
 	int NumToSpawn = (int)_Rate;
-	spawnerTime -= elapsed;
-	if (spawnerTime < 0) {
+	if (spawnerTime < 0.0f) {
 		Playing = false;
 	}
+	spawnerTime -= elapsed;
 
 		/// Create new particles ///
 	while (
@@ -125,9 +125,9 @@ void ParticleEffect::Update(float elapsed)
 		//send the particle in a random direction, with a velocity between our range
 		//Missing .Set which is what the video uses
 		//_Particles.Velocities[_NumCurrentParticles] = vec3((RandomRangef(-1.0f, 1.0f), RandomRangef(-1.0f, 1.0f), RandomRangef(-1.0f, 1.0f)));
-		_Particles.Velocities[_NumCurrentParticles].x = RandomRangef(-1.0f, 1.0f);
-		_Particles.Velocities[_NumCurrentParticles].y = RandomRangef(-1.0f, 1.0f);
-		_Particles.Velocities[_NumCurrentParticles].z = RandomRangef(-1.0f, 1.0f);
+		_Particles.Velocities[_NumCurrentParticles].x = RandomRangef(InitialXRange.x, InitialXRange.y);
+		_Particles.Velocities[_NumCurrentParticles].y = RandomRangef(InitialZRange.x, InitialZRange.y);
+		_Particles.Velocities[_NumCurrentParticles].z = 0.0f;
 		_Particles.Velocities[_NumCurrentParticles] = glm::normalize(_Particles.Velocities[_NumCurrentParticles]);
 		_Particles.Velocities[_NumCurrentParticles] *= RandomRangef(RangeVelocity.x, RangeVelocity.y);
 

@@ -50,6 +50,8 @@ public:
 	//Lerp variables are dynamic based on lifetime of particle
 	glm::vec2 LerpAlpha = glm::vec2(0.5f, 0.0f);
 	glm::vec2 LerpSize = glm::vec2(0.0f, 1.0f);
+	glm::vec2 InitialXRange = glm::vec2(1.0f, -1.0f);
+	glm::vec2 InitialZRange = glm::vec2(1.0f, -1.0f);
 
 	bool HaveGravity = false;
 	bool Playing = false;

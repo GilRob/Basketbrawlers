@@ -1,6 +1,11 @@
 #include "Game.h"
 #include "Utilities.h"
 
+/*
+Keys:
+$$$ - Particle Signal
+
+*/
 
 #define FULLSCREEN false
 #define VSYNC false
@@ -433,7 +438,7 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	if (!ConfettiEffectBlueRight.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)5000, (unsigned int)50))
+	if (!ConfettiEffectBlueRight.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)30))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -442,7 +447,7 @@ void Game::initializeGame()
 	//Missing .Set which is what the video uses***
 	ConfettiEffectBlueRight.LerpAlpha = glm::vec2(0.4f, 0.8f);
 	ConfettiEffectBlueRight.LerpSize = glm::vec2(1.0f, 2.0f);
-	ConfettiEffectBlueRight.RangeLifetime = glm::vec2(4.0f, 4.0f);
+	ConfettiEffectBlueRight.RangeLifetime = glm::vec2(2.0f, 3.0f);
 	ConfettiEffectBlueRight.RangeVelocity = glm::vec2(-5.0f, 5.0f);
 	ConfettiEffectBlueRight.RangeX = glm::vec2(12.0f, 12.0f);
 	ConfettiEffectBlueRight.RangeY = glm::vec2(20.0f, 20.0f);
@@ -451,7 +456,7 @@ void Game::initializeGame()
 	ConfettiEffectBlueRight.Mass = 2.0f;
 	ConfettiEffectBlueRight.Gravity = 0.2f;
 
-	if (!ConfettiEffectBlueLeft.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)5000, (unsigned int)50))
+	if (!ConfettiEffectBlueLeft.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)30))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -459,7 +464,7 @@ void Game::initializeGame()
 	}
 	ConfettiEffectBlueLeft.LerpAlpha = glm::vec2(0.4f, 0.8f);
 	ConfettiEffectBlueLeft.LerpSize = glm::vec2(1.0f, 2.0f);
-	ConfettiEffectBlueLeft.RangeLifetime = glm::vec2(4.0f, 4.0f);
+	ConfettiEffectBlueLeft.RangeLifetime = glm::vec2(2.0f, 3.0f);
 	ConfettiEffectBlueLeft.RangeVelocity = glm::vec2(-5.0f, 5.0f);
 	ConfettiEffectBlueLeft.RangeX = glm::vec2(-12.0f, -12.0f);
 	ConfettiEffectBlueLeft.RangeY = glm::vec2(20.0f, 20.0f);
@@ -468,7 +473,7 @@ void Game::initializeGame()
 	ConfettiEffectBlueLeft.Mass = 2.0f;
 	ConfettiEffectBlueLeft.Gravity = 0.2f;
 
-	if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)50))
+	if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)30))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -477,7 +482,7 @@ void Game::initializeGame()
 	//Missing .Set which is what the video uses***
 	ConfettiEffectRedRight.LerpAlpha = glm::vec2(0.4f, 0.8f);
 	ConfettiEffectRedRight.LerpSize = glm::vec2(1.0f, 2.0f);
-	ConfettiEffectRedRight.RangeLifetime = glm::vec2(4.0f, 4.0f);
+	ConfettiEffectRedRight.RangeLifetime = glm::vec2(2.0f, 3.0f);
 	ConfettiEffectRedRight.RangeVelocity = glm::vec2(-5.0f, 5.0f);
 	ConfettiEffectRedRight.RangeX = glm::vec2(12.0f, 12.0f);
 	ConfettiEffectRedRight.RangeY = glm::vec2(20.0f, 20.0f);
@@ -488,7 +493,7 @@ void Game::initializeGame()
 
 
 
-	if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)50))
+	if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)30))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -496,7 +501,7 @@ void Game::initializeGame()
 	}
 	ConfettiEffectRedLeft.LerpAlpha = glm::vec2(0.4f, 0.8f);
 	ConfettiEffectRedLeft.LerpSize = glm::vec2(1.0f, 2.0f);
-	ConfettiEffectRedLeft.RangeLifetime = glm::vec2(4.0f, 4.0f);
+	ConfettiEffectRedLeft.RangeLifetime = glm::vec2(2.0f, 3.0f);
 	ConfettiEffectRedLeft.RangeVelocity = glm::vec2(-5.0f, 5.0f);
 	ConfettiEffectRedLeft.RangeX = glm::vec2(-12.0f, -12.0f);
 	ConfettiEffectRedLeft.RangeY = glm::vec2(20.0f, 20.0f);
@@ -504,6 +509,58 @@ void Game::initializeGame()
 	ConfettiEffectRedLeft.HaveGravity = true;
 	ConfettiEffectRedLeft.Mass = 2.0f;
 	ConfettiEffectRedLeft.Gravity = 0.2f;
+
+	if (!DustLand.Init("./Assets/Textures/dust.png", (unsigned int)50, (unsigned int)3))
+	{
+		std::cout << "Dust Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	DustLand.LerpAlpha = glm::vec2(1.0f, 1.0f);
+	DustLand.LerpSize = glm::vec2(1.0f, 2.0f);
+	DustLand.RangeLifetime = glm::vec2(0.3f, 0.6f);
+	DustLand.RangeVelocity = glm::vec2(1.0f, 2.0f);
+	DustLand.RangeZ = glm::vec2(-1.0f, -1.0f);
+	DustLand.InitialXRange = glm::vec2(-1.0f, 1.0f);
+	DustLand.InitialZRange = glm::vec2(1.0f, 1.0f);
+	DustLand.HaveGravity = true;
+	DustLand.Mass = 1.0f;
+	DustLand.Gravity = 0.0f;
+
+	if (!DustDashL.Init("./Assets/Textures/dust.png", (unsigned int)50, (unsigned int)1))
+	{
+		std::cout << "Dust Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	DustDashL.LerpAlpha = glm::vec2(1.0f, 1.0f);
+	DustDashL.LerpSize = glm::vec2(1.0f, 2.0f);
+	DustDashL.RangeLifetime = glm::vec2(0.3f, 0.6f);
+	DustDashL.RangeVelocity = glm::vec2(1.0f, 2.0f);
+	DustDashL.RangeZ = glm::vec2(-1.0f, -1.0f);
+	DustDashL.InitialXRange = glm::vec2(-1.0f, -1.0f);
+	DustDashL.InitialZRange = glm::vec2(1.0f, 1.0f);
+	DustDashL.HaveGravity = true;
+	DustDashL.Mass = 1.0f;
+	DustDashL.Gravity = 0.0f;
+
+	if (!DustDashR.Init("./Assets/Textures/dust.png", (unsigned int)50, (unsigned int)1))
+	{
+		std::cout << "Dust Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	DustDashR.LerpAlpha = glm::vec2(1.0f, 1.0f);
+	DustDashR.LerpSize = glm::vec2(1.0f, 2.0f);
+	DustDashR.RangeLifetime = glm::vec2(0.3f, 0.6f);
+	DustDashR.RangeVelocity = glm::vec2(1.0f, 2.0f);
+	DustDashR.RangeZ = glm::vec2(-1.0f, -1.0f);
+	DustDashR.InitialXRange = glm::vec2(1.0f, 1.0f);
+	DustDashR.InitialZRange = glm::vec2(1.0f, 1.0f);
+	DustDashR.HaveGravity = true;
+	DustDashR.Mass = 1.0f;
+	DustDashR.Gravity = 0.0f;
+
 
 
 //=======================================================================//
@@ -631,8 +688,8 @@ void Game::initializeGame()
 
 void Game::update()
 {
-	auto end = chrono::steady_clock::now();
-	auto start = chrono::steady_clock::now();
+	//auto end = chrono::steady_clock::now();
+	//auto start = chrono::steady_clock::now();
 
 	if (scene == 3) {
 		updateScene();
@@ -646,8 +703,8 @@ void Game::update()
 	else {
 		updateMenu();
 	}
-	end = chrono::steady_clock::now();
-	cout << chrono::duration_cast<chrono::microseconds>(end - start).count() << ":";
+	//end = chrono::steady_clock::now();
+	//cout << chrono::duration_cast<chrono::microseconds>(end - start).count() << ":";
 
 }
 
@@ -1099,9 +1156,63 @@ void Game::updateScene()
 	}
 
 	updateInputs();
+	
+	players[0]->update((int)deltaTime, inputs);
+	players[1]->update((int)deltaTime, inputs2);
+	
+	//particle listener
+	if (players[0]->partiQueue.size() > 0) {
+		//cout << "Spawned";
+		switch (players[0]->partiQueue.front())
+		{
+		case LDASHDUST:
+			DustDashL.RangeX = glm::vec2(players[0]->getPosition().x + 1.0f, players[0]->getPosition().x - 1.0f);
+			DustDashL.RangeY = glm::vec2(players[0]->getPosition().y-1.4f, players[0]->getPosition().y-1.6f);
+			DustDashL.Spawn(0.05f);
+			break;
+		case RDASHDUST:
+			DustDashR.RangeX = glm::vec2(players[0]->getPosition().x + 1.0f, players[0]->getPosition().x - 1.0f);
+			DustDashR.RangeY = glm::vec2(players[0]->getPosition().y-1.4f, players[0]->getPosition().y-1.6f);
+			DustDashR.Spawn(0.05f);
+			break;
+		case LANDDUST:
+			DustLand.RangeX = glm::vec2(players[0]->getPosition().x + 1.0f, players[0]->getPosition().x - 1.0f);
+			DustLand.RangeY = glm::vec2(players[0]->getPosition().y-1.4f, players[0]->getPosition().y-1.6f);
+			DustLand.Spawn(0.05f);
+			break;
+		default:
+			break;
+		}
 
-		players[0]->update((int)deltaTime, inputs);
-		players[1]->update((int)deltaTime, inputs2);
+		players[0]->partiQueue.pop();
+	}
+	else if (players[1]->partiQueue.size() > 0) {
+		//cout << "Spawned";
+		switch (players[1]->partiQueue.front())
+		{
+
+		case LDASHDUST:
+			DustDashL.RangeX = glm::vec2(players[1]->getPosition().x + 1.0f, players[1]->getPosition().x - 1.0f);
+			DustDashL.RangeY = glm::vec2(players[1]->getPosition().y-1.4f, players[1]->getPosition().y-1.6f);
+			DustDashL.Spawn(0.05f);
+			break;
+		case RDASHDUST:
+			DustDashR.RangeX = glm::vec2(players[1]->getPosition().x + 1.0f, players[1]->getPosition().x - 1.0f);
+			DustDashR.RangeY = glm::vec2(players[1]->getPosition().y-1.4f, players[1]->getPosition().y-1.6f);
+			DustDashR.Spawn(0.05f);
+			break;
+		case LANDDUST:
+			DustLand.RangeX = glm::vec2(players[1]->getPosition().x + 1.0f, players[1]->getPosition().x - 1.0f);
+			DustLand.RangeY = glm::vec2(players[1]->getPosition().y-1.4f, players[1]->getPosition().y-1.6f);
+			DustLand.Spawn(0.05f);
+			break;
+		default:
+			break;
+		}
+
+		players[1]->partiQueue.pop();
+
+	}
 
 	//new score code
 	for (unsigned int i = 0; i < Netbox.size(); i++) {
@@ -1115,8 +1226,8 @@ void Game::updateScene()
 				std::cout << std::endl << "Player 1 Scored" << std::endl;
 				score1++;
 				//i = 100;
-				ConfettiEffectRedRight.Spawn(3.0f);
-				ConfettiEffectRedLeft.Spawn(3.0f);
+				ConfettiEffectRedRight.Spawn(1.0f);
+				ConfettiEffectRedLeft.Spawn(1.0f);
 				j = 100;
 				GameCamera.reset();
 
@@ -1132,8 +1243,8 @@ void Game::updateScene()
 				std::cout << std::endl << "Player 2 Scored" << std::endl;
 				score2++;
 				//i = 100;
-				ConfettiEffectBlueRight.Spawn(3.0f);
-				ConfettiEffectBlueLeft.Spawn(3.0f);
+				ConfettiEffectBlueRight.Spawn(1.0f);
+				ConfettiEffectBlueLeft.Spawn(1.0f);
 				j = 100;
 				GameCamera.reset();
 			}
@@ -1243,6 +1354,9 @@ void Game::updateScene()
 	ConfettiEffectBlueLeft.Update(deltaTime);
 	ConfettiEffectRedRight.Update(deltaTime);
 	ConfettiEffectRedLeft.Update(deltaTime);
+	DustDashL.Update(deltaTime);
+	DustDashR.Update(deltaTime);
+	DustLand.Update(deltaTime);
 
 
 	//additional lights
@@ -1633,6 +1747,9 @@ void Game::drawScene()
 	ConfettiEffectRedLeft.Render();
 	ConfettiEffectBlueRight.Render();
 	ConfettiEffectBlueLeft.Render();
+	DustDashL.Render();
+	DustDashR.Render();
+	DustLand.Render();
 
 	ParticleProgram.UnBind();
 

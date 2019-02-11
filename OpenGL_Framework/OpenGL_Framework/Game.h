@@ -44,6 +44,7 @@
 #define BLOOM_BLUR_PASSES		8	//How many times to repeat the blur process?
 #define SHADOW_RESOLUTION		4096
 
+
 class Game
 {
 public:
@@ -144,6 +145,10 @@ public:
 	ParticleEffect ConfettiEffectBlueLeft;
 	ParticleEffect ConfettiEffectRedRight;
 	ParticleEffect ConfettiEffectRedLeft;
+	ParticleEffect DustLand;
+	ParticleEffect DustDashL;	
+	ParticleEffect DustDashR;
+
 
 	std::vector<Texture*> time;
 	std::vector<Hitbox*>Netbox;//2
