@@ -7,7 +7,7 @@ $$$ - Particle Signal
 
 */
 
-#define FULLSCREEN false
+#define FULLSCREEN true
 #define VSYNC false
 
 Game::Game()
@@ -94,7 +94,7 @@ void Game::initializeGame()
 	///Object(*mesh path*, *texture path*, *enable blending?* = false by deafult);
 
 	//load objects for scene
-	gameObjects.push_back(new Object("./Assets/Models/court", "./Assets/Textures/court.png", "default_court"));
+	gameObjects.push_back(new Object("./Assets/Models/basicCourt", "./Assets/Textures/basicCourt.png", "default_court"));
 
 	gameObjects.push_back(new Object("./Assets/Models/nets", "./Assets/Textures/net.png", "default_net", true));
 	default_court_objs.push_back("default_net");
@@ -108,12 +108,33 @@ void Game::initializeGame()
 	default_court_objs.push_back("default_bottles");
 	gameObjects.push_back(new Object("./Assets/Models/score", "./Assets/Textures/score.png", "default_score"));
 	default_court_objs.push_back("default_score");
+	gameObjects.push_back(new Object("./Assets/Models/basicCrowd1", "./Assets/Textures/crowd.png", "default_crowd1"));
+	default_court_objs.push_back("default_crowd1");
+	gameObjects.push_back(new Object("./Assets/Models/basicCrowd2", "./Assets/Textures/crowd.png", "default_crowd2"));
+	default_court_objs.push_back("default_crowd2");
+	gameObjects.push_back(new Object("./Assets/Models/basicCrowd3", "./Assets/Textures/crowd.png", "default_crowd3"));
+	default_court_objs.push_back("default_crowd3");
+
+	gameObjects.push_back(new Object("./Assets/Models/basicBricks", "./Assets/Textures/basicBricks.png", "default_bricks"));
+	default_court_objs.push_back("default_bricks");
 
 	//load objects for knight scene
-	gameObjects.push_back(new Object("./Assets/Models/KnightCourt", "./Assets/Textures/GameCastleTexture.png", "knight_court"));
+	gameObjects.push_back(new Object("./Assets/Models/knightCourt1", "./Assets/Textures/knightCourt.png", "knight_court"));
 
-	gameObjects.push_back(new Object("./Assets/Models/Background", "./Assets/Textures/BackgroundTexture.jpg", "knight_background"));
-	knight_court_objs.push_back("knight_background");
+	gameObjects.push_back(new Object("./Assets/Models/knightBleachers", "./Assets/Textures/knightBleachers.png", "knight_bleachers"));
+	knight_court_objs.push_back("knight_bleachers");
+	gameObjects.push_back(new Object("./Assets/Models/knightChair", "./Assets/Textures/knightChair.png", "knight_chairs"));
+	knight_court_objs.push_back("knight_chairs");
+	gameObjects.push_back(new Object("./Assets/Models/knightCrowd1", "./Assets/Textures/crowd.png", "knight_crowd1"));
+	knight_court_objs.push_back("knight_crowd1");
+	gameObjects.push_back(new Object("./Assets/Models/knightCrowd2", "./Assets/Textures/crowd.png", "knight_crowd2"));
+	knight_court_objs.push_back("knight_crowd2");
+	gameObjects.push_back(new Object("./Assets/Models/knightCrowd3", "./Assets/Textures/crowd.png", "knight_crowd3"));
+	knight_court_objs.push_back("knight_crowd3");
+	gameObjects.push_back(new Object("./Assets/Models/knightTorches", "./Assets/Textures/knightTorch.png", "knight_torch"));
+	knight_court_objs.push_back("knight_torch");
+	gameObjects.push_back(new Object("./Assets/Models/knightBricks", "./Assets/Textures/knightBricks.png", "knight_bricks"));
+	knight_court_objs.push_back("knight_bricks");
 
 	//load objects for ninja scene
 	gameObjects.push_back(new Object("./Assets/Models/oldCourt", "./Assets/Textures/CourtTexture.png", "ninja_court"));
@@ -250,7 +271,7 @@ void Game::initializeGame()
 	// Stage Select Screen
 
 	///background image
-	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/selectback.png", "background", true));
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/stageSelect.png", "background", true));
 	if (FULLSCREEN)
 		sssObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
 	else
@@ -258,8 +279,8 @@ void Game::initializeGame()
 	sssObjects[0]->RotateY(90);
 	sssObjects[0]->setPosition(glm::vec3(0, -555, -1));
 
-	///default stage Icon
-	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/CourtIconDefault.png", "courtIconDefault", true));
+	///knight stage Icon
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/knightCourtSelect.png", "courtIconDefault", true));
 	if (FULLSCREEN)
 		sssObjects[1]->setScale(120.0f);
 	else
@@ -267,8 +288,8 @@ void Game::initializeGame()
 	sssObjects[1]->RotateY(90.0f);
 	sssObjects[1]->setPosition(glm::vec3(-350, -200, 0));
 
-	///knight stage Icon
-	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/CourtIconKnight.png", "courtIconKnight", true));
+	///default stage Icon
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/basicCourtSelect.png", "courtIconKnight", true));
 	if (FULLSCREEN)
 		sssObjects[2]->setScale(120.0f);
 	else
@@ -3074,7 +3095,7 @@ void Game::updateInputs()
 		if (Anew == true && Aold == false)
 			inputs[6] = true;
 		else inputs[6] = false;//A = only on pressed not held
-		if (Bnew == true && Bold == false)
+		if (LBnew == true && LBold == false)
 			inputs[10] = true;
 		if (RBnew == true && RBold == false)
 			inputs[9] = true;
@@ -3102,7 +3123,7 @@ void Game::updateInputs()
 			inputs[5] = false;
 		if (Anew == false && Aold == true)
 			inputs[6] = false;
-		if (Bnew == false && Bold == true)
+		if (LBnew == false && LBold == true)
 			inputs[10] = false;
 		if (RBnew == false && RBold == true)
 			inputs[9] = false;
@@ -3205,7 +3226,7 @@ void Game::updateInputs()
 		if (Anew2 == true && Aold2 == false)
 			inputs2[6] = true;
 		else inputs2[6] = false;//A = only on pressed not held
-		if (Bnew2 == true && Bold2 == false)
+		if (LBnew2 == true && LBold2 == false)
 			inputs2[10] = true;
 		if (RBnew2 == true && RBold2 == false)
 			inputs2[9] = true;
@@ -3233,7 +3254,7 @@ void Game::updateInputs()
 			inputs2[5] = false;
 		if (Anew2 == false && Aold2 == true)
 			inputs2[6] = false;
-		if (Bnew2 == false && Bold2 == true)
+		if (LBnew2 == false && LBold2 == true)
 			inputs2[10] = false;
 		if (RBnew2 == false && RBold2 == true)
 			inputs2[9] = false;
