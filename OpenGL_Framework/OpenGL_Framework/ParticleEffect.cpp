@@ -221,9 +221,11 @@ void ParticleEffect::Reset()
 	}
 }
 
-void ParticleEffect::Spawn(float time)
+void ParticleEffect::Spawn(float time, bool reset)
 {
-	Reset();
+	if (reset) {
+		Reset();
+	}
 	Playing = true;
 	spawnerTime = time;
 	

@@ -32,7 +32,12 @@ public:
 	void Update(float elapsed);
 	void Render();
 	void Reset();
-	void Spawn(float time);
+	/*
+	Spawn: Function used to begin spawning particles
+	@time: Time for particles to spawn
+	@reset: if previous particles get deleted upon play
+	*/
+	void Spawn(float time, bool reset = false); 
 
 	Transform transform;
 
@@ -52,6 +57,7 @@ public:
 	float Gravity = 0.0f;
 	glm::vec3 force;
 	glm::vec3 acceleration;
+
 
 private:
 	ParticleList _Particles;

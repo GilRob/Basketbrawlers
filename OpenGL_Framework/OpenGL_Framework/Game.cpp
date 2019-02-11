@@ -433,7 +433,7 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	if (!ConfettiEffectBlueRight.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)50))
+	if (!ConfettiEffectBlueRight.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)5000, (unsigned int)50))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -451,7 +451,7 @@ void Game::initializeGame()
 	ConfettiEffectBlueRight.Mass = 2.0f;
 	ConfettiEffectBlueRight.Gravity = 0.2f;
 
-	if (!ConfettiEffectBlueLeft.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)50))
+	if (!ConfettiEffectBlueLeft.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)5000, (unsigned int)50))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -468,7 +468,7 @@ void Game::initializeGame()
 	ConfettiEffectBlueLeft.Mass = 2.0f;
 	ConfettiEffectBlueLeft.Gravity = 0.2f;
 
-	if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)500, (unsigned int)50))
+	if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)50))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -488,7 +488,7 @@ void Game::initializeGame()
 
 
 
-	if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)500, (unsigned int)50))
+	if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)50))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -1115,8 +1115,8 @@ void Game::updateScene()
 				std::cout << std::endl << "Player 1 Scored" << std::endl;
 				score1++;
 				//i = 100;
-				ConfettiEffectBlueRight.Spawn(3.0f);
-				ConfettiEffectBlueLeft.Spawn(3.0f);
+				ConfettiEffectRedRight.Spawn(3.0f);
+				ConfettiEffectRedLeft.Spawn(3.0f);
 				j = 100;
 				GameCamera.reset();
 
@@ -1132,8 +1132,8 @@ void Game::updateScene()
 				std::cout << std::endl << "Player 2 Scored" << std::endl;
 				score2++;
 				//i = 100;
-				ConfettiEffectRedRight.Spawn(3.0f);
-				ConfettiEffectRedLeft.Spawn(3.0f);
+				ConfettiEffectBlueRight.Spawn(3.0f);
+				ConfettiEffectBlueLeft.Spawn(3.0f);
 				j = 100;
 				GameCamera.reset();
 			}
