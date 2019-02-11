@@ -543,7 +543,7 @@ void Game::initializeGame()
 	DustLand.RangeVelocity = glm::vec2(1.0f, 2.0f);
 	DustLand.RangeZ = glm::vec2(-1.0f, -1.0f);
 	DustLand.InitialXRange = glm::vec2(-1.0f, 1.0f);
-	DustLand.InitialZRange = glm::vec2(1.0f, 1.0f);
+	DustLand.InitialYRange = glm::vec2(1.0f, 1.0f);
 	DustLand.HaveGravity = true;
 	DustLand.Mass = 1.0f;
 	DustLand.Gravity = 0.0f;
@@ -560,7 +560,7 @@ void Game::initializeGame()
 	DustDashL.RangeVelocity = glm::vec2(1.0f, 2.0f);
 	DustDashL.RangeZ = glm::vec2(-1.0f, -1.0f);
 	DustDashL.InitialXRange = glm::vec2(-1.0f, -1.0f);
-	DustDashL.InitialZRange = glm::vec2(1.0f, 1.0f);
+	DustDashL.InitialYRange = glm::vec2(1.0f, 1.0f);
 	DustDashL.HaveGravity = true;
 	DustDashL.Mass = 1.0f;
 	DustDashL.Gravity = 0.0f;
@@ -577,7 +577,7 @@ void Game::initializeGame()
 	DustDashR.RangeVelocity = glm::vec2(1.0f, 2.0f);
 	DustDashR.RangeZ = glm::vec2(-1.0f, -1.0f);
 	DustDashR.InitialXRange = glm::vec2(1.0f, 1.0f);
-	DustDashR.InitialZRange = glm::vec2(1.0f, 1.0f);
+	DustDashR.InitialYRange = glm::vec2(1.0f, 1.0f);
 	DustDashR.HaveGravity = true;
 	DustDashR.Mass = 1.0f;
 	DustDashR.Gravity = 0.0f;

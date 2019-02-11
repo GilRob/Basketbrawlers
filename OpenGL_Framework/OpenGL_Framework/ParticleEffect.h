@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include "Texture.h"
 #include "Transform.h"
+#include <fstream>
 
 //debugging
 #include <chrono>
@@ -28,6 +29,8 @@ public:
 	~ParticleEffect();
 
 	bool Init(const std::string &textureFile, unsigned int maxParticles, unsigned int rate);
+	//use this instead of init when you want to parse from Partimaker
+	bool PartiParse(const std::string &ParseFile, const std::string &textureFile);
 
 	void Update(float elapsed);
 	void Render();
@@ -37,11 +40,13 @@ public:
 	@time: Time for particles to spawn
 	@reset: if previous particles get deleted upon play
 	*/
-	void Spawn(float time, bool reset = false); 
+	void Spawn(float time, bool reset = false);
+	void Spawn();
 
 	Transform transform;
 
 	float spawnerTime = 1.0f;
+	float savedSpawnerTime = 1.0f;
 	glm::vec2 RangeX = glm::vec2(-10.0f, 10.0f);
 	glm::vec2 RangeY = glm::vec2(0.0f, 10.0f);
 	glm::vec2 RangeZ = glm::vec2(-10.0f, 10.0f);
@@ -51,7 +56,7 @@ public:
 	glm::vec2 LerpAlpha = glm::vec2(0.5f, 0.0f);
 	glm::vec2 LerpSize = glm::vec2(0.0f, 1.0f);
 	glm::vec2 InitialXRange = glm::vec2(1.0f, -1.0f);
-	glm::vec2 InitialZRange = glm::vec2(1.0f, -1.0f);
+	glm::vec2 InitialYRange = glm::vec2(1.0f, -1.0f);
 
 	bool HaveGravity = false;
 	bool Playing = false;

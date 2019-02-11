@@ -46,6 +46,7 @@ bool ParticleEffect::Init(const std::string &textureFile, unsigned int maxPartic
 {
 	if (!_Texture.Load(textureFile))
 	{
+		std::cout << "Could not open the Texture File." << std::endl;
 		return false;
 	}
 
@@ -91,6 +92,85 @@ bool ParticleEffect::Init(const std::string &textureFile, unsigned int maxPartic
 	return true;
 }
 
+bool ParticleEffect::PartiParse(const std::string & ParseFile, const std::string &textureFile)
+{
+	ifstream input;
+	input.open(ParseFile);
+
+	if (!input) {
+		std::cout << "Could not open the Parse File." << std::endl;
+		return false;
+	}
+	std::string inputLine;
+
+	while (!input.eof()) {
+		getline(input, inputLine);
+
+		//empty and comments
+		if (inputLine.empty()) continue;
+		if (inputLine.find("#")) continue;
+
+		//a - Max Particles
+		if (inputLine.find("a")) {
+			sscanf_s(inputLine.c_str(), "a%i", &_MaxParticles);
+			continue;
+		}
+		//b - Rate
+		if (inputLine.find("b")) {
+			sscanf_s(inputLine.c_str(), "b%i", &_Rate);
+			continue;
+		}
+		//c - Spawner time
+		if (inputLine.find("c")) {
+			sscanf_s(inputLine.c_str(), "c%f", &savedSpawnerTime);
+			continue;
+		}
+		//d - Gravity
+		if (inputLine.find("d")) {
+			sscanf_s(inputLine.c_str(), "d%f", &Gravity);
+			continue;
+		}
+		//e - Mass
+		if (inputLine.find("e")) {
+			sscanf_s(inputLine.c_str(), "e%f", &Mass);
+			continue;
+		}
+		//f - Range Pos
+		if (inputLine.find("f")) {
+			sscanf_s(inputLine.c_str(), "f%f,%f/%f,%f/%f,%f", &RangeX.x, &RangeX.y, &RangeY.x, &RangeY.y, &RangeZ.x, &RangeZ.y);
+			continue;
+		}
+		//g - Range Vel
+		if (inputLine.find("g")) {
+			sscanf_s(inputLine.c_str(), "g%f,&f", &RangeVelocity.x, &RangeVelocity.y);
+			continue;
+		}
+		//h - Range Lifetime
+		if (inputLine.find("h")) {
+			sscanf_s(inputLine.c_str(), "h%f,&f", &RangeLifetime.x, &RangeLifetime.y);
+			continue;
+		}
+		//i - Lerp Alpha
+		if (inputLine.find("i")) {
+			sscanf_s(inputLine.c_str(), "i%f,%f", &LerpAlpha.x, &LerpAlpha.y);
+			continue;
+		}
+		//j - Lerp Size
+		if (inputLine.find("j")) {
+			sscanf_s(inputLine.c_str(), "j%f,%f", &LerpSize.x,&LerpSize.y);
+			continue;
+		}
+		//k - Innitial Vel
+		if (inputLine.find("k")) {
+			sscanf_s(inputLine.c_str(), "k%f,%f/%f,%f", &InitialXRange.x, &InitialXRange.y, &InitialYRange.x, &InitialYRange.y);
+			continue;
+		}
+	}
+	Init(textureFile, _MaxParticles, _Rate);
+
+	return false;
+}
+
 void ParticleEffect::Update(float elapsed)
 {
 	//auto end = chrono::steady_clock::now();
@@ -126,7 +206,7 @@ void ParticleEffect::Update(float elapsed)
 		//Missing .Set which is what the video uses
 		//_Particles.Velocities[_NumCurrentParticles] = vec3((RandomRangef(-1.0f, 1.0f), RandomRangef(-1.0f, 1.0f), RandomRangef(-1.0f, 1.0f)));
 		_Particles.Velocities[_NumCurrentParticles].x = RandomRangef(InitialXRange.x, InitialXRange.y);
-		_Particles.Velocities[_NumCurrentParticles].y = RandomRangef(InitialZRange.x, InitialZRange.y);
+		_Particles.Velocities[_NumCurrentParticles].y = RandomRangef(InitialYRange.x, InitialYRange.y);
 		_Particles.Velocities[_NumCurrentParticles].z = 0.0f;
 		_Particles.Velocities[_NumCurrentParticles] = glm::normalize(_Particles.Velocities[_NumCurrentParticles]);
 		_Particles.Velocities[_NumCurrentParticles] *= RandomRangef(RangeVelocity.x, RangeVelocity.y);
@@ -229,4 +309,10 @@ void ParticleEffect::Spawn(float time, bool reset)
 	Playing = true;
 	spawnerTime = time;
 	
+}
+
+void ParticleEffect::Spawn()
+{
+	Playing = true;
+	spawnerTime = savedSpawnerTime;
 }
