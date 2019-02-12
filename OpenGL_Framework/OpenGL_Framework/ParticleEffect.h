@@ -70,7 +70,7 @@ private:
 	ParticleList _Particles;
 	Texture _Texture;
 
-	float _Rate = 0.0f;
+	int _Rate = 0;
 	unsigned int _MaxParticles = 0;
 	unsigned int _NumCurrentParticles = 0;
 

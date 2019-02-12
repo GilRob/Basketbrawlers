@@ -494,23 +494,26 @@ void Game::initializeGame()
 	ConfettiEffectBlueLeft.Mass = 2.0f;
 	ConfettiEffectBlueLeft.Gravity = 0.2f;
 
-	if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)30))
-	{
-		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
-		system("pause");
-		exit(0);
-	}
-	//Missing .Set which is what the video uses***
-	ConfettiEffectRedRight.LerpAlpha = glm::vec2(0.4f, 0.8f);
-	ConfettiEffectRedRight.LerpSize = glm::vec2(1.0f, 2.0f);
-	ConfettiEffectRedRight.RangeLifetime = glm::vec2(2.0f, 3.0f);
-	ConfettiEffectRedRight.RangeVelocity = glm::vec2(-5.0f, 5.0f);
-	ConfettiEffectRedRight.RangeX = glm::vec2(12.0f, 12.0f);
-	ConfettiEffectRedRight.RangeY = glm::vec2(20.0f, 20.0f);
-	ConfettiEffectRedRight.RangeZ = glm::vec2(-15.0f, -15.0f);
-	ConfettiEffectRedRight.HaveGravity = true;
-	ConfettiEffectRedRight.Mass = 2.0f;
-	ConfettiEffectRedRight.Gravity = 0.2f;
+	//better version
+	ConfettiEffectRedRight.PartiParse("./Assets/Data/text.txt", "./Assets/Textures/RedConfetti.png");
+
+	//if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)30))
+	//{
+	//	std::cout << "Confetti Particle-Effect failed ot initialize.\n";
+	//	system("pause");
+	//	exit(0);
+	//}
+	////Missing .Set which is what the video uses***
+	//ConfettiEffectRedRight.LerpAlpha = glm::vec2(0.4f, 0.8f);
+	//ConfettiEffectRedRight.LerpSize = glm::vec2(1.0f, 2.0f);
+	//ConfettiEffectRedRight.RangeLifetime = glm::vec2(2.0f, 3.0f);
+	//ConfettiEffectRedRight.RangeVelocity = glm::vec2(-5.0f, 5.0f);
+	//ConfettiEffectRedRight.RangeX = glm::vec2(12.0f, 12.0f);
+	//ConfettiEffectRedRight.RangeY = glm::vec2(20.0f, 20.0f);
+	//ConfettiEffectRedRight.RangeZ = glm::vec2(-15.0f, -15.0f);
+	//ConfettiEffectRedRight.HaveGravity = true;
+	//ConfettiEffectRedRight.Mass = 2.0f;
+	//ConfettiEffectRedRight.Gravity = 0.2f;
 
 
 
