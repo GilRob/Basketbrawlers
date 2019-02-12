@@ -1,14 +1,15 @@
 #include "char_ninja.h"
 
 //new push
-#define BASE_ANI_TOGGLE		false	//non-offensive animations
-#define G_ATK_ANI_TOGGLE	false	//ground attacks
-#define A_ATK_ANI_TOGGLE	false	//aerials
-#define S_ATK_ANI_TOGGLE	false	//specials
+#define BASE_ANI_TOGGLE		true	//non-offensive animations
+#define G_ATK_ANI_TOGGLE	true	//ground attacks
+#define A_ATK_ANI_TOGGLE	true	//aerials
+#define S_ATK_ANI_TOGGLE	true	//specials
 #define HITBOX_TOGGLE		false	//visual hitboxes
 #define HURTBOX_TOGGLE		false	//visual hurtboxes
 
 Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
+	type = 2;
 
 	if (!(bodyTexture.Load(textureName)))//"./Assets/Textures/Sword.png"))
 	{
@@ -161,20 +162,6 @@ Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_RUN].push_back(jab);
 
-	}
-	///block
-	length = 14;
-	if (BASE_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/BlockPoses/Block" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/BlockPoses/Block" + std::to_string((int)((c + 1) % length))  );
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_BLOCK].push_back(jab);
 	}
 	//==================================================================//
 		//ATTACKS
@@ -362,8 +349,7 @@ Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
 	acceleration = glm::vec3(0, 0, 0);
 	force = glm::vec3(0, 0, 0);
 	facingRight = true;
-	blocking = false;
-	blockSuccessful = false;
+	ultMode = false;
 	//scaling
 	scaleX = 1.1f;
 	scaleY = 1.15f;

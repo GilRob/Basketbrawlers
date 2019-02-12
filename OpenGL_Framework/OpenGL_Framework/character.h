@@ -31,6 +31,9 @@ enum Particall
 class Character {
 
 public:
+
+	unsigned int type;
+
 	Character() {}
 	Character(const std::string& body, const std::string& texture);
 
@@ -61,8 +64,7 @@ public:
 		acceleration = glm::vec3(0, 0, 0);
 		force = glm::vec3(0, 0, 0);
 		facingRight = true;
-		blocking = false;
-		blockSuccessful = false;
+		ultMode = false;
 		//scaling
 		scaleX = copy->scaleX;
 		scaleY = copy->scaleY;
@@ -106,18 +108,26 @@ public:
 		hurtbox.push_back(hurt2);
 	}
 
-	void update(int t, std::vector<bool> inputs);
+	virtual void update(int t, std::vector<bool> inputs);
 	void draw(ShaderProgram GBufferPass, float dt);
 	void drawBoxes(ShaderProgram GBufferPass);
 	glm::vec3 getPosition();
 	void setPosition(glm::vec3 pos);
+
+	glm::vec3 getVelocity() { return velocity; }
+	void setVelocity(glm::vec3 vel) { velocity = vel; }
+	glm::vec3 getAccel() { return acceleration; }
+	void setAccel(glm::vec3 accel) { acceleration = accel; }
+
+	int getMeter() { return comboMeter; }
+	void setMeter(int meter) { comboMeter = meter; }
+
 	std::vector<Hitbox*> getHitboxes();
 	std::vector<Hitbox*> getHurtboxes();
 	Transform atkInputHandler(std::vector<bool> inputs);
 
 	bool facingRight;
-	bool blocking;
-	bool blockSuccessful;
+	bool ultMode = false;
 
 	//actions
 	unsigned int action;
@@ -155,7 +165,6 @@ public:
 	virtual Transform sAir();
 	virtual Transform dAir();
 	virtual Transform uAir();
-	Transform block(bool held);
 
 	//----------------------------------------------------------
 	void comboAdd() {
@@ -193,9 +202,9 @@ public:
 		action = ACTION_RESPAWN;
 	}
 
-	int getMeter() {
-		return comboMeter;
-	}
+	//int getMeter() {
+	//	return comboMeter;
+	//}
 
 	Transform transform;
 	Mesh body;
@@ -281,7 +290,7 @@ unsigned int ACTION_NEUTRAL_AERIAL	=18;
 unsigned int ACTION_SIDE_AERIAL		=19;
 unsigned int ACTION_DOWN_AERIAL		=20;
 unsigned int ACTION_UP_AERIAL		=21;
-unsigned int ACTION_BLOCK			=9;
+//unsigned int ACTION_BLOCK			=9;
 unsigned int ACTION_DASH			=22;
 unsigned int ACTION_RESPAWN			=24;
 unsigned int ACTION_PLACEHOLDER		=25;

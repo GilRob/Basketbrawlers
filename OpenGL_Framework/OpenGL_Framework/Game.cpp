@@ -8,7 +8,7 @@ $$$ - Particle Signal
 */
 
 #define FULLSCREEN true
-#define VSYNC false
+#define VSYNC true
 
 Game::Game()
 	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(1)
@@ -706,7 +706,11 @@ void Game::initializeGame()
 	updateTimer = new Timer();
 
 
+	gameTheme.Load("./Assets/Media/Theme.wav");
 
+	soundPos = { 0.0f, 0.0f, 0.0f };
+	soundChannel = gameTheme.Play(true);
+	gameSound.Load("./Assets/Media/hypebbrawl.wav");
 }
 
 
@@ -717,6 +721,19 @@ void Game::update()
 
 	if (scene == 3) {
 		updateScene();
+
+		if (!soundPlaying)
+		{
+			soundChannel->setPaused(true);
+
+			gameSoundPos = { 0.0f, 0.0f, 0.0f };
+			gameSoundChannel = gameSound.Play(true);
+			soundPlaying = true;
+		}
+
+		Sound::SetPosition(gameSoundChannel, gameSoundPos);
+		Sound::engine.update();
+
 	}
 	else if (scene == 2) {
 		updateSSS();
@@ -1127,8 +1144,8 @@ void Game::updateScene()
 				XBoxController.SetVibration(0, 0, 0);
 				XBoxController.SetVibration(1, 0, 0);
 
-				if (players[1]->blocking && (players[0]->facingRight != players[1]->facingRight)) {//add only in front condition
-					players[1]->blockSuccessful = true;
+				if (players[1]->ultMode) {//add only in front condition
+					//players[1]->blockSuccessful = true;
 					players[0]->getHitboxes()[i]->setDone();
 					i = 100;
 					j = 100;
@@ -1156,8 +1173,8 @@ void Game::updateScene()
 				XBoxController.SetVibration(0, 0, 0);
 				XBoxController.SetVibration(1, 0, 0);
 
-				if (players[0]->blocking && (players[0]->facingRight != players[1]->facingRight)) {//add only in front condition
-					players[0]->blockSuccessful = true;
+				if (players[0]->ultMode) {//add only in front condition
+					//players[0]->blockSuccessful = true;
 					players[1]->getHitboxes()[i]->setDone();
 					i = 100;
 					j = 100;
@@ -1183,6 +1200,53 @@ void Game::updateScene()
 	
 	players[0]->update((int)deltaTime, inputs);
 	players[1]->update((int)deltaTime, inputs2);
+	
+	//nijnaUlt
+	///before, check if u can even ult rn
+	bool okToUlt = true;
+	for (int j = 0; j < 2; j++) {
+		if (players[j]->action == players[j]->ACTION_IN_NET || players[j]->action == players[j]->ACTION_RESPAWN) {
+			okToUlt = false;
+		}
+	}
+	//actual ult
+	for (int i = 0; i < 2; i++) {
+		//if cant ult, add back metre
+		if (okToUlt == false && players[i]->type == 2 && players[i]->ultMode) {
+			players[i]->ultMode = false;
+			players[i]->setMeter(players[i]->getMeter() + 100);
+		}
+		else if (players[i]->type == 2 && players[i]->ultMode) {
+			//swap positions
+			glm::vec3 temp = players[i]->getPosition();
+			players[i]->setPosition(players[(i + 1) % 2]->getPosition());
+			players[(i + 1) % 2]->setPosition(temp);
+			//swap velocity
+			temp = players[i]->getVelocity();
+			players[i]->setVelocity(players[(i + 1) % 2]->getVelocity());
+			players[(i + 1) % 2]->setVelocity(temp);
+			//swap acceleration
+			temp = players[i]->getAccel();
+			players[i]->setAccel(players[(i + 1) % 2]->getAccel());
+			players[(i + 1) % 2]->setAccel(temp);
+
+			//swap action
+			int tempA = players[i]->action;
+			players[i]->action = players[(i + 1) % 2]->action;
+			players[(i + 1) % 2]->action = tempA;
+			//swap frameLength
+			players[i]->currentFrame = players[(i + 1) % 2]->activeFrames - 1;
+			players[(i + 1) % 2]->currentFrame = players[i]->activeFrames - 1;
+
+			//turn ult off
+			players[i]->ultMode = false;
+
+			//correct hit
+			if (players[i]->action == players[i]->ACTION_HIT)
+				players[i]->action = players[i]->ACTION_FALL;
+			
+		}
+	}
 	
 	//particle listener
 	if (players[0]->partiQueue.size() > 0) {
@@ -1405,6 +1469,34 @@ void Game::updateScene()
 		temp = (bool)(check >= 0.5f && check < 1.0f);
 
 		findLight("p2Score")->active = temp;
+	}
+
+	///People movement in the background
+	//Basic Court
+	if (stageVal == 1)
+	{
+		//Move the crowds up and down
+		float movementVal1 = (cos((TotalGameTime) * 9 + 110) + .5f);
+		findObjects(3, "default_crowd1")->transform.SetTranslation(glm::vec3(0.0f, movementVal1, 0.0f));
+
+		float movementVal2 = (cos((TotalGameTime) * 5 + 55) + .75f);
+		findObjects(3, "default_crowd2")->transform.SetTranslation(glm::vec3(0.0f, movementVal2, 0.0f));
+
+		float movementVal3 = (cos((TotalGameTime * 7) + 25) + .25f);
+		findObjects(3, "default_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
+	}
+	//Knight Court
+	if (stageVal == 2)
+	{
+		//Move the crowds up and down
+		float movementVal1 = (cos((TotalGameTime) * 9 + 110) + .6f);
+		findObjects(3, "knight_crowd1")->transform.SetTranslation(glm::vec3(0.0f, movementVal1, 0.0f));
+
+		float movementVal2 = (cos((TotalGameTime) * 5 + 55) + .85f);
+		findObjects(3, "knight_crowd2")->transform.SetTranslation(glm::vec3(0.0f, movementVal2, 0.0f));
+
+		float movementVal3 = (cos((TotalGameTime * 7) + 25) + .73f);
+		findObjects(3, "knight_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
 	}
 }
 /*
@@ -1662,6 +1754,7 @@ void Game::drawScene()
 	glEnable(GL_CULL_FACE);//turn it back on after for preformance
 
 	drawScore();
+	drawTime();
 
 	AniShader.UnBind();
 	GBuffer.UnBind();
@@ -1782,7 +1875,6 @@ void Game::drawScene()
 	DeferredLighting.UnBind();
 
 	drawHUD();
-	drawTime();
 
 	/// Compute High Pass ///
 	if (FULLSCREEN)
@@ -2393,19 +2485,24 @@ void Game::drawScore() {
 	///score
 	Transform hudLoc = Transform::Identity();
 	hudLoc.Scale(2.0f);
+	hudLoc.RotateX(-8.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(-1, 4, -12));
+	hudLoc.Translate(glm::vec3(-0.8f, 3.1f, -12.52f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
-	time[score1 % 10]->Bind();
+	if (players[1]->action == players[0]->ACTION_IN_NET)
+		time[rand() % 10]->Bind();
+	else
+		time[score1 % 10]->Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 	///score
 	hudLoc = Transform::Identity();
 	hudLoc.Scale(2.0f);
+	hudLoc.RotateX(-8.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(2, 4, -12.1f));
+	hudLoc.Translate(glm::vec3(2.2f, 3.1f, -12.51f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[10]->Bind();
 	glBindVertexArray(HudObj.VAO);
@@ -2413,11 +2510,15 @@ void Game::drawScore() {
 	///score
 	hudLoc = Transform::Identity();
 	hudLoc.Scale(2.0f);
+	hudLoc.RotateX(-8.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(5, 4, -12));
+	hudLoc.Translate(glm::vec3(5.2f, 3.1f, -12.5f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
-	time[score2 % 10]->Bind();
+	if (players[0]->action == players[1]->ACTION_IN_NET)
+		time[rand() % 10]->Bind();
+	else
+		time[score2 % 10]->Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
@@ -2644,37 +2745,17 @@ void Game::drawMenu()
 
 void Game::drawTime()
 {
-	//DeferredComposite.Bind();
-	DeferredComposite.Bind();
-
+	GBuffer.Bind();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDepthMask(GL_FALSE);  // disable writes to Z-Buffer
-	glDisable(GL_DEPTH_TEST);  // disable depth-testing
+	//glDepthMask(GL_FALSE);  // disable writes to Z-Buffer
+	//glDisable(GL_DEPTH_TEST);  // disable depth-testing
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_LIGHTING);
 
-	//new projection
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();//save old state
-	glLoadIdentity();//reset
-	//gluOrtho2D(0.0, 1.0, 0.0, 1.0);//create ortho
-	if (FULLSCREEN)
-		gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
-	else
-	gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();//save old state
-	glLoadIdentity();//reset
-
-	//////////////////////////
-	//now ready to draw 2d
-	//////////////////////////
 	GBufferPass.Bind();
-	hudTransform = Transform::Identity();
-	//hudTransform.Translate(vec3(WINDOW_WIDTH * -0.5f, WINDOW_HEIGHT* -0.5f, 0));
-	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+	GBufferPass.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+	GBufferPass.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
 
 	int timer = 300 - (int)TotalGameTime;
 	if (timer < 0) timer = 0;
@@ -2688,16 +2769,11 @@ void Game::drawTime()
 	//Draw Time
 	///min
 	Transform hudLoc;
+	hudLoc.Scale(2.0f);
+	hudLoc.RotateX(14.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	if (FULLSCREEN) {
-		hudLoc.Translate(glm::vec3(-75, 420, 0));
-		hudLoc.Scale(60.0f);
-	}
-	else {
-		hudLoc.Translate(glm::vec3(-50, 280, 0));
-		hudLoc.Scale(40.0f);
-	}
+	hudLoc.Translate(glm::vec3(-1.9f, 15.5f, -16.53f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[min]->Bind();
@@ -2706,16 +2782,11 @@ void Game::drawTime()
 
 	///speerate
 	hudLoc = Transform();
+	hudLoc.Scale(2.0f);
+	hudLoc.RotateX(14.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	if (FULLSCREEN) {
-		hudLoc.Translate(glm::vec3(0, 420, 0));
-		hudLoc.Scale(60.0f);
-	}
-	else {
-		hudLoc.Translate(glm::vec3(0, 280, 0));
-		hudLoc.Scale(40.0f);
-	}
+	hudLoc.Translate(glm::vec3(0.1f, 15.5f, -16.52f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[10]->Bind();
@@ -2724,16 +2795,11 @@ void Game::drawTime()
 
 	///sec tens
 	hudLoc = Transform();
+	hudLoc.Scale(2.0f);
+	hudLoc.RotateX(14.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	if (FULLSCREEN) {
-		hudLoc.Translate(glm::vec3(75, 420, 0));
-		hudLoc.Scale(60.0f);
-	}
-	else {
-		hudLoc.Translate(glm::vec3(50, 280, 0));
-		hudLoc.Scale(40.0f);
-	}
+	hudLoc.Translate(glm::vec3(2.1f, 15.5f, -16.51f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[secT]->Bind();
@@ -2742,16 +2808,11 @@ void Game::drawTime()
 
 	///sec ones
 	hudLoc = Transform();
+	hudLoc.Scale(2.0f);
+	hudLoc.RotateX(14.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	if (FULLSCREEN) {
-		hudLoc.Translate(glm::vec3(180, 420, 0));
-		hudLoc.Scale(60.0f);
-	}
-	else {
-		hudLoc.Translate(glm::vec3(120, 280, 0));
-		hudLoc.Scale(40.0f);
-	}
+	hudLoc.Translate(glm::vec3(5.1f, 15.5f, -16.5f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[secO]->Bind();
@@ -2761,22 +2822,14 @@ void Game::drawTime()
 	//unbind last used texture
 	time[secO]->UnBind();
 
-
-	GBufferPass.UnBind();
-
-	//restore projection matrix
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();//restore state
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();//restore state
-
-	DeferredComposite.UnBind();
-
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
+	//glEnable(GL_DEPTH_TEST);
+	//glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
+
+	GBufferPass.UnBind();
+	GBuffer.UnBind();
 }
 
 
@@ -3098,10 +3151,18 @@ void Game::updateInputs()
 		if (Anew == true && Aold == false)
 			inputs[6] = true;
 		else inputs[6] = false;//A = only on pressed not held
-		if (LBnew == true && LBold == false)
-			inputs[10] = true;
-		if (RBnew == true && RBold == false)
+
+		//ultimate
+		if ((LBnew && RBnew) && !(LBold && RBold))
 			inputs[9] = true;
+		else
+			inputs[9] = false;
+
+		//dash
+		if (LTnew || RTnew)
+			inputs[10] = true;
+		else
+			inputs[10] = false;
 
 		//release
 		if (lStick.xAxis < 0.9)//if key held
@@ -3126,10 +3187,6 @@ void Game::updateInputs()
 			inputs[5] = false;
 		if (Anew == false && Aold == true)
 			inputs[6] = false;
-		if (LBnew == false && LBold == true)
-			inputs[10] = false;
-		if (RBnew == false && RBold == true)
-			inputs[9] = false;
 
 	}
 	else {
@@ -3229,10 +3286,18 @@ void Game::updateInputs()
 		if (Anew2 == true && Aold2 == false)
 			inputs2[6] = true;
 		else inputs2[6] = false;//A = only on pressed not held
-		if (LBnew2 == true && LBold2 == false)
-			inputs2[10] = true;
-		if (RBnew2 == true && RBold2 == false)
+
+		//ultimate
+		if ((LBnew2 && RBnew2) && !(LBold2 && RBold2))
 			inputs2[9] = true;
+		else
+			inputs2[9] = false;
+
+		//dash
+		if (LTnew2 || RTnew2)
+			inputs2[10] = true;
+		else
+			inputs2[10] = false;
 
 		//released
 		if (lStick2.xAxis < 0.9)//if key held
@@ -3257,10 +3322,6 @@ void Game::updateInputs()
 			inputs2[5] = false;
 		if (Anew2 == false && Aold2 == true)
 			inputs2[6] = false;
-		if (LBnew2 == false && LBold2 == true)
-			inputs2[10] = false;
-		if (RBnew2 == false && RBold2 == true)
-			inputs2[9] = false;
 	}
 	else {
 
