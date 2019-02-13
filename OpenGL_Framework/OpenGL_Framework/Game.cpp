@@ -286,7 +286,7 @@ void Game::initializeGame()
 	else
 		sssObjects[1]->setScale(80.0f);
 	sssObjects[1]->RotateY(90.0f);
-	sssObjects[1]->setPosition(glm::vec3(-350, -200, 0));
+	sssObjects[1]->setPosition(glm::vec3(-350, -500, 0));
 
 	///default stage Icon
 	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/basicCourtSelect.png", "courtIconKnight", true));
@@ -295,7 +295,7 @@ void Game::initializeGame()
 	else
 		sssObjects[2]->setScale(80.0f);
 	sssObjects[2]->RotateY(90.0f);
-	sssObjects[2]->setPosition(glm::vec3(0, -200, 0));
+	sssObjects[2]->setPosition(glm::vec3(0, -500, 0));
 
 	///ninja stage Icon
 	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/CourtIconNinja.png", "courtIconNinja", true));
@@ -304,16 +304,43 @@ void Game::initializeGame()
 	else
 		sssObjects[3]->setScale(80.0f);
 	sssObjects[3]->RotateY(90.0f);
-	sssObjects[3]->setPosition(glm::vec3(350, -200, 0));
+	sssObjects[3]->setPosition(glm::vec3(350, -500, 0));
 
-	///p1 Icon
+	///select Icon
 	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/p1select.png", "select", true));
 	if (FULLSCREEN)
 		sssObjects[4]->setScale(120.0f);
 	else
 		sssObjects[4]->setScale(80.0f);
 	sssObjects[4]->RotateY(90.0f);
-	sssObjects[4]->setPosition(glm::vec3(-350, -200, 2));
+	sssObjects[4]->setPosition(glm::vec3(-350, -500, 2));
+
+	///basic court pic
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/CourtPicDefault.png", "courtPicDefault", true));
+	if (FULLSCREEN)
+		sssObjects[5]->setScale(glm::vec3(500.0f, 350.0f, 1.0f));
+	else
+		sssObjects[5]->setScale(glm::vec3(330.0f, 220.0f, 1.0f));
+	sssObjects[5]->RotateY(90.0f);
+	sssObjects[5]->setPosition(glm::vec3(0, -300, 0));
+
+	///knight court pic
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/CourtPicKnight.png", "courtPicKnight", true));
+	if (FULLSCREEN)
+		sssObjects[6]->setScale(glm::vec3(500.0f, 350.0f, 1.0f));
+	else
+		sssObjects[6]->setScale(glm::vec3(330.0f, 220.0f, 1.0f));
+	sssObjects[6]->RotateY(90.0f);
+	sssObjects[6]->setPosition(glm::vec3(0, -300, 0));
+
+	///ninja court pic
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/CourtPicNinja.png", "courtPicNinja", true));
+	if (FULLSCREEN)
+		sssObjects[7]->setScale(glm::vec3(500.0f, 350.0f, 1.0f));
+	else
+		sssObjects[7]->setScale(glm::vec3(330.0f, 220.0f, 1.0f));
+	sssObjects[7]->RotateY(90.0f);
+	sssObjects[7]->setPosition(glm::vec3(0, -300, 0));
 
 
 //================================================================//
@@ -982,22 +1009,25 @@ void Game::updateSSS()
 		findObjects(2, "select")->setPosition(
 			findObjects(2, "courtIconDefault")->getPosition());
 
-		//findObjects(1, "p1KnightPic")->hide = false;
-		//findObjects(1, "p1NinjaPic")->hide = true;
+		findObjects(2, "courtPicDefault")->hide = false;
+		findObjects(2, "courtPicKnight")->hide = true;
+		findObjects(2, "courtPicNinja")->hide = true;
 	}
 	else if (stageVal == 2) {
 		findObjects(2, "select")->setPosition(
 			findObjects(2, "courtIconKnight")->getPosition());
 
-		//findObjects(1, "p1KnightPic")->hide = true;
-		//findObjects(1, "p1NinjaPic")->hide = false;
+		findObjects(2, "courtPicDefault")->hide = true;
+		findObjects(2, "courtPicKnight")->hide = false;
+		findObjects(2, "courtPicNinja")->hide = true;
 	}
 	else if (stageVal == 3) {
 		findObjects(2, "select")->setPosition(
 			findObjects(2, "courtIconNinja")->getPosition());
 
-		//findObjects(1, "p1KnightPic")->hide = true;
-		//findObjects(1, "p1NinjaPic")->hide = false;
+		findObjects(2, "courtPicDefault")->hide = true;
+		findObjects(2, "courtPicKnight")->hide = true;
+		findObjects(2, "courtPicNinja")->hide = false;
 	}
 
 
