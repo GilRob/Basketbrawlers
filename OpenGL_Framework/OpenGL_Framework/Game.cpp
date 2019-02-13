@@ -135,12 +135,32 @@ void Game::initializeGame()
 	knight_court_objs.push_back("knight_torch");
 	gameObjects.push_back(new Object("./Assets/Models/knightBricks", "./Assets/Textures/knightBricks.png", "knight_bricks"));
 	knight_court_objs.push_back("knight_bricks");
+	gameObjects.push_back(new Object("./Assets/Models/knightJumbo", "./Assets/Textures/lightJumboTex.png", "knight_jumbo"));
+	knight_court_objs.push_back("knight_jumbo");
+	gameObjects.push_back(new Object("./Assets/Models/ad", "./Assets/Textures/words.png", "default_words"));
+	knight_court_objs.push_back("default_words");
 
 	//load objects for ninja scene
-	gameObjects.push_back(new Object("./Assets/Models/oldCourt", "./Assets/Textures/CourtTexture.png", "ninja_court"));
+	gameObjects.push_back(new Object("./Assets/Models/ninjaCourt", "./Assets/Textures/ninjaCourt.png", "ninja_court"));
 
-	gameObjects.push_back(new Object("./Assets/Models/Background", "./Assets/Textures/blackhatlogoshirt2.png", "ninja_background"));
+	gameObjects.push_back(new Object("./Assets/Models/ninjaBack", "./Assets/Textures/ninjaBack.png", "ninja_background"));
 	ninja_court_objs.push_back("ninja_background");
+	gameObjects.push_back(new Object("./Assets/Models/ninjaBridge", "./Assets/Textures/ninjaBridge.png", "ninja_bridge"));
+	ninja_court_objs.push_back("ninja_bridge");
+	gameObjects.push_back(new Object("./Assets/Models/ninjaCrowd1", "./Assets/Textures/crowd.png", "ninja_crowd1"));
+	ninja_court_objs.push_back("ninja_crowd1");
+	gameObjects.push_back(new Object("./Assets/Models/ninjaCrowd2", "./Assets/Textures/crowd.png", "ninja_crowd2"));
+	ninja_court_objs.push_back("ninja_crowd2");
+	gameObjects.push_back(new Object("./Assets/Models/ninjaCrowd3", "./Assets/Textures/crowd.png", "ninja_crowd3"));
+	ninja_court_objs.push_back("ninja_crowd3");
+	gameObjects.push_back(new Object("./Assets/Models/ninjaSides", "./Assets/Textures/ninjaSides.png", "ninja_sides"));
+	ninja_court_objs.push_back("ninja_sides");
+	gameObjects.push_back(new Object("./Assets/Models/score", "./Assets/Textures/score.png", "ninja_score"));
+	ninja_court_objs.push_back("ninja_score");
+	gameObjects.push_back(new Object("./Assets/Models/knightJumbo", "./Assets/Textures/lightJumboTex.png", "ninja_jumbo"));
+	ninja_court_objs.push_back("ninja_jumbo");
+	gameObjects.push_back(new Object("./Assets/Models/ad", "./Assets/Textures/words.png", "default_words"));
+	ninja_court_objs.push_back("default_words");
 
 	//hitbox
 	hitboxObj = new Object("./Assets/Models/Hitbox", "./Assets/Textures/redclear.png", "hitbox", true);
@@ -1527,6 +1547,19 @@ void Game::updateScene()
 
 		float movementVal3 = (cos((TotalGameTime * 7) + 25) + .73f);
 		findObjects(3, "knight_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
+	}
+	//Ninja Court
+	if (stageVal == 3)
+	{
+		//Move the crowds up and down
+		float movementVal1 = (cos((TotalGameTime) * 9 + 110) + .6f);
+		findObjects(3, "ninja_crowd1")->transform.SetTranslation(glm::vec3(0.0f, movementVal1, 0.0f));
+
+		float movementVal2 = (cos((TotalGameTime) * 5 + 55) + .85f);
+		findObjects(3, "ninja_crowd2")->transform.SetTranslation(glm::vec3(0.0f, movementVal2, 0.0f));
+
+		float movementVal3 = (cos((TotalGameTime * 7) + 25) + .73f);
+		findObjects(3, "ninja_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
 	}
 }
 /*
