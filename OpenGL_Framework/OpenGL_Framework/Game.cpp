@@ -287,10 +287,9 @@ void Game::initializeGame()
 	cssObjects[8]->RotateY(90.0f);
 	cssObjects[8]->setPosition(glm::vec3(530, -550, 1));
 	cssObjects[8]->hide = true;
-
 	// Stage Select Screen
 
-	///background image
+///background image
 	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/stageSelect.png", "background", true));
 	if (FULLSCREEN)
 		sssObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
@@ -300,7 +299,7 @@ void Game::initializeGame()
 	sssObjects[0]->setPosition(glm::vec3(0, -555, -1));
 
 	///knight stage Icon
-	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/knightCourtSelect.png", "courtIconDefault", true));
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/basicCourtSelect.png", "courtIconDefault", true));
 	if (FULLSCREEN)
 		sssObjects[1]->setScale(120.0f);
 	else
@@ -309,7 +308,7 @@ void Game::initializeGame()
 	sssObjects[1]->setPosition(glm::vec3(-350, -500, 0));
 
 	///default stage Icon
-	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/basicCourtSelect.png", "courtIconKnight", true));
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/knightCourtSelect.png", "courtIconKnight", true));
 	if (FULLSCREEN)
 		sssObjects[2]->setScale(120.0f);
 	else
@@ -318,7 +317,7 @@ void Game::initializeGame()
 	sssObjects[2]->setPosition(glm::vec3(0, -500, 0));
 
 	///ninja stage Icon
-	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/CourtIconNinja.png", "courtIconNinja", true));
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/ninjaCourtSelect.png", "courtIconNinja", true));
 	if (FULLSCREEN)
 		sssObjects[3]->setScale(120.0f);
 	else
@@ -336,7 +335,7 @@ void Game::initializeGame()
 	sssObjects[4]->setPosition(glm::vec3(-350, -500, 2));
 
 	///basic court pic
-	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/CourtPicDefault.png", "courtPicDefault", true));
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/basicStage.png", "courtPicDefault", true));
 	if (FULLSCREEN)
 		sssObjects[5]->setScale(glm::vec3(500.0f, 350.0f, 1.0f));
 	else
@@ -345,7 +344,7 @@ void Game::initializeGame()
 	sssObjects[5]->setPosition(glm::vec3(0, -300, 0));
 
 	///knight court pic
-	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/CourtPicKnight.png", "courtPicKnight", true));
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/knightStage.png", "courtPicKnight", true));
 	if (FULLSCREEN)
 		sssObjects[6]->setScale(glm::vec3(500.0f, 350.0f, 1.0f));
 	else
@@ -354,7 +353,7 @@ void Game::initializeGame()
 	sssObjects[6]->setPosition(glm::vec3(0, -300, 0));
 
 	///ninja court pic
-	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/CourtPicNinja.png", "courtPicNinja", true));
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/ninjaStage.png", "courtPicNinja", true));
 	if (FULLSCREEN)
 		sssObjects[7]->setScale(glm::vec3(500.0f, 350.0f, 1.0f));
 	else
