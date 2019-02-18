@@ -80,6 +80,9 @@
     <ClCompile Include="char_ninja.cpp">
       <Filter>GameFunctions</Filter>
     </ClCompile>
+    <ClCompile Include="FmodWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -137,6 +140,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FmodWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

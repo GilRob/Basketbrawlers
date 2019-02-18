@@ -256,25 +256,6 @@ void Character::drawBoxes(ShaderProgram GBufferPass) {
 		boxTexture.UnBind();
 	}
 
-	//shield
-	if (blocking) {
-		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
-		Transform shield;
-		int i = (int)facingRight;
-		if (i == 0) i = -1;
-		shield.SetTranslation(position + glm::vec3(i*1.7f, 2.0f, 0));
-		//glm::scale(shield, glm::vec3(1.0f, 5.5f, 5.5f));
-		shield.Scale(glm::vec3(1, 5.5f, 5.5));
-		glUniformMatrix4fv(modelLoc, 1, false, shield.data);
-
-		shieldTexture.Bind();
-		glBindVertexArray(boxMesh.VAO);
-
-		// Adjust model matrix for next object's location
-		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
-		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
-	}
-	shieldTexture.UnBind();
 }
 
 //Sets player position
@@ -301,7 +282,6 @@ void Character::hit(Hitbox* hitBy) {
 	else 
 		result = -0.06f;
 
-	blocking = false;
 	facingRight = !(hitBy->facingRight);
 	float xComp = hitBy->getKnockback() * cos((180.0f - hitBy->getAngle()) * 3.14f / 180.0f);//*0.0174772222222222f);
 	float yComp = hitBy->getKnockback() * sin((180.0f - hitBy->getAngle()) * 3.14f / 180.0f);//*0.0174772222222222f);
@@ -394,7 +374,7 @@ Transform Character::atkInputHandler(std::vector<bool> inputs)
 			acceleration = glm::vec3(0, 0, 0);
 			velocity = glm::vec3(0, 0, 0);
 			activeTexture = &(bodyTexture);
-			currentFrame = 0;
+			currentFrame = 1;
 			activeFrames = 50;
 			position.x = 0;
 			respawn();
@@ -463,10 +443,6 @@ Transform Character::atkInputHandler(std::vector<bool> inputs)
 		force.x = (inputs[1] - inputs[3])* 0.5f *  airAccel;
 		if (inputs[7] || inputs[8])
 			force.x *= 2.0f;
-	}
-	///SHIELD
-	else if (((inputs[9] && (action < 8)) || action == ACTION_BLOCK)) {//just r
-		result = block(inputs[9]);
 	}
 	///fall
 	else if (action == ACTION_FALL) {
@@ -1197,58 +1173,6 @@ Transform Character::uAir()
 		}
 
 		//result.GetScale()->y = 1.0f + (7 - abs(currentFrame - 6.0f))*0.02f;
-		currentFrame++;
-	}
-	return result;
-}
-
-Transform Character::block(bool held)
-{
-	int endlag = 6;//endlag after a successful block is this, on failed attempt its doubled
-	int startLag = 3;
-
-	Transform result;
-	if (interuptable == true && action != ACTION_BLOCK) {//called on first frame of move press
-		interuptable = false;
-		action = ACTION_BLOCK;
-		activeFrames = 42;
-		currentFrame = 1;
-
-	}
-	if (action == ACTION_BLOCK) {
-
-		//if released
-		if (!held && currentFrame > (unsigned int)startLag && (activeFrames != endlag && activeFrames != endlag*2)) {
-			//start endlag
-			aniTimer = 0.1f;
-			index = aniFrames[ACTION_BLOCK].size() - 3;
-			activeFrames = endlag;
-			if (!blockSuccessful) {
-				activeFrames *= 2;
-				index = aniFrames[ACTION_BLOCK].size() / 2;
-			}
-			currentFrame = 1;
-		}
-		//held
-		else if (held && currentFrame <= activeFrames && currentFrame > (unsigned int)startLag) {
-
-			interuptable = false;
-			currentFrame = startLag + 2;
-			//std::cout << " blocking" << std::endl;
-			blocking = true;
-			aniTimer = 0.2f;
-			if (index > aniFrames[ACTION_BLOCK].size() / 2)
-				index = aniFrames[ACTION_BLOCK].size() / 2;
-		}
-		//release
-		else if ((activeFrames == endlag || activeFrames == endlag * 2) && currentFrame >= activeFrames) {//actually done endlag
-			//if action over, goto idle
-			blocking = false;
-			blockSuccessful = false;
-			interuptable = true;
-			action = ACTION_PLACEHOLDER;
-			return idle();
-		}
 		currentFrame++;
 	}
 	return result;

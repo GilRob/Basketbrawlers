@@ -76,6 +76,7 @@
     <ClCompile Include="char_knight.cpp" />
     <ClCompile Include="char_ninja.cpp" />
     <ClCompile Include="controller.cpp" />
+    <ClCompile Include="FmodWrapper.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="hitbox.cpp" />
@@ -96,6 +97,7 @@
     <ClInclude Include="char_knight.h" />
     <ClInclude Include="char_ninja.h" />
     <ClInclude Include="controller.h" />
+    <ClInclude Include="FmodWrapper.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="hitbox.h" />

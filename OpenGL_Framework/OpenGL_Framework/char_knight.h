@@ -10,6 +10,7 @@ public:
 	Knight(const std::string& body, const std::string& texture);
 
 	Knight(const Knight* copy) {
+		type = 1;
 
 		this->aniTimer = 0.0f;
 		this->index = 0;
@@ -45,8 +46,7 @@ public:
 		acceleration = glm::vec3(0, 0, 0);
 		force = glm::vec3(0, 0, 0);
 		facingRight = true;
-		blocking = false;
-		blockSuccessful = false;
+		ultMode = false;
 		//scaling
 		scaleX = copy->scaleX;
 		scaleY = copy->scaleY;
@@ -93,6 +93,91 @@ public:
 
 
 	int storedCharge;
+
+	//Attributes
+	float ultMass = 10;
+	float ultGravity = 0.7f;
+	float ultRunSpeed = 0.2f;
+	float ultRunAccel = 0.65f;
+	float ultAirAccel = 0.1f;
+	float ultJumpForce = 0.5f;
+	float ultDashMultiplier = 1.2f;
+	float normMass;
+	float normGravity;
+	float normRunSpeed;
+	float normRunAccel;
+	float normAirAccel;
+	float normJumpForce;
+	float normDashMultiplier;
+
+
+	void update(int t, std::vector<bool> inputs) {
+		//check for ult
+		if (inputs[9] && comboMeter > 0) {
+			ultMode = true;
+		}
+
+		if (ultMode) {
+			//drain and stop mode
+			comboMeter--;
+			if (comboMeter <= 0)
+				ultMode = false;
+
+			//change change values
+			if (ultMass != mass) {
+				normMass = mass;
+				mass = ultMass;
+			}
+			if (ultGravity != gravity) {
+				normGravity = gravity;
+				gravity = ultGravity;
+			}
+			if (ultRunSpeed != runSpeed) {
+				normRunSpeed = runSpeed;
+				runSpeed = ultRunSpeed;
+			}
+			if (ultRunAccel != runAccel) {
+				normRunAccel = runAccel;
+				runAccel = ultRunAccel;
+			}
+			if (ultAirAccel != airAccel) {
+				normAirAccel = airAccel;
+				airAccel = ultAirAccel;
+			}
+			if (ultJumpForce != jumpForce) {
+				normJumpForce = jumpForce;
+				jumpForce = ultJumpForce;
+			}
+			if (ultDashMultiplier != dashMultiplier) {
+				normDashMultiplier = dashMultiplier;
+				dashMultiplier = ultDashMultiplier;
+			}
+		}
+		else {
+			if (ultMass == mass) {
+				mass = normMass;
+			}
+			if (ultGravity == gravity) {
+				gravity = normGravity;
+			}
+			if (ultRunSpeed == runSpeed) {
+				runSpeed = normRunSpeed;
+			}
+			if (ultRunAccel == runAccel) {
+				runAccel = normRunAccel;
+			}
+			if (ultAirAccel == airAccel) {
+				airAccel = normAirAccel;
+			}
+			if (ultJumpForce == jumpForce) {
+				jumpForce = normJumpForce;
+			}
+			if (ultDashMultiplier == dashMultiplier) {
+				dashMultiplier = normDashMultiplier;
+			}
+		}
+		Character::update(t, inputs);
+	}
 
 	Transform jab();
 	Transform sAttack();
