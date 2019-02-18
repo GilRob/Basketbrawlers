@@ -10,6 +10,8 @@
 #include "Object.h"
 #include "PointLightObj.h"
 #include "Camera.h"
+#include "FmodWrapper.h"
+#include "FMOD/inc/fmod.hpp"
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -194,6 +196,17 @@ public:
 
 	bool p1Score = false;
 	bool p2Score = false;
+
+	bool soundPlaying = false;
+
+	Sound gameSound;
+	Sound gameTheme;
+
+	FMOD_VECTOR soundPos;
+	FMOD_VECTOR gameSoundPos;
+
+	FMOD::Channel* soundChannel;
+	FMOD::Channel* gameSoundChannel;
 
 private:
 

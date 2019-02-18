@@ -8,7 +8,7 @@ $$$ - Particle Signal
 */
 
 #define FULLSCREEN true
-#define VSYNC false
+#define VSYNC true
 
 Game::Game()
 	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(1)
@@ -135,12 +135,32 @@ void Game::initializeGame()
 	knight_court_objs.push_back("knight_torch");
 	gameObjects.push_back(new Object("./Assets/Models/knightBricks", "./Assets/Textures/knightBricks.png", "knight_bricks"));
 	knight_court_objs.push_back("knight_bricks");
+	gameObjects.push_back(new Object("./Assets/Models/knightJumbo", "./Assets/Textures/lightJumboTex.png", "knight_jumbo"));
+	knight_court_objs.push_back("knight_jumbo");
+	gameObjects.push_back(new Object("./Assets/Models/ad", "./Assets/Textures/words.png", "default_words"));
+	knight_court_objs.push_back("default_words");
 
 	//load objects for ninja scene
-	gameObjects.push_back(new Object("./Assets/Models/oldCourt", "./Assets/Textures/CourtTexture.png", "ninja_court"));
+	gameObjects.push_back(new Object("./Assets/Models/ninjaCourt", "./Assets/Textures/ninjaCourt.png", "ninja_court"));
 
-	gameObjects.push_back(new Object("./Assets/Models/Background", "./Assets/Textures/blackhatlogoshirt2.png", "ninja_background"));
+	gameObjects.push_back(new Object("./Assets/Models/ninjaBack", "./Assets/Textures/ninjaBack.png", "ninja_background"));
 	ninja_court_objs.push_back("ninja_background");
+	gameObjects.push_back(new Object("./Assets/Models/ninjaBridge", "./Assets/Textures/ninjaBridge.png", "ninja_bridge"));
+	ninja_court_objs.push_back("ninja_bridge");
+	gameObjects.push_back(new Object("./Assets/Models/ninjaCrowd1", "./Assets/Textures/crowd.png", "ninja_crowd1"));
+	ninja_court_objs.push_back("ninja_crowd1");
+	gameObjects.push_back(new Object("./Assets/Models/ninjaCrowd2", "./Assets/Textures/crowd.png", "ninja_crowd2"));
+	ninja_court_objs.push_back("ninja_crowd2");
+	gameObjects.push_back(new Object("./Assets/Models/ninjaCrowd3", "./Assets/Textures/crowd.png", "ninja_crowd3"));
+	ninja_court_objs.push_back("ninja_crowd3");
+	gameObjects.push_back(new Object("./Assets/Models/ninjaSides", "./Assets/Textures/ninjaSides.png", "ninja_sides"));
+	ninja_court_objs.push_back("ninja_sides");
+	gameObjects.push_back(new Object("./Assets/Models/score", "./Assets/Textures/score.png", "ninja_score"));
+	ninja_court_objs.push_back("ninja_score");
+	gameObjects.push_back(new Object("./Assets/Models/knightJumbo", "./Assets/Textures/lightJumboTex.png", "ninja_jumbo"));
+	ninja_court_objs.push_back("ninja_jumbo");
+	gameObjects.push_back(new Object("./Assets/Models/ad", "./Assets/Textures/words.png", "default_words"));
+	ninja_court_objs.push_back("default_words");
 
 	//hitbox
 	hitboxObj = new Object("./Assets/Models/Hitbox", "./Assets/Textures/redclear.png", "hitbox", true);
@@ -267,10 +287,9 @@ void Game::initializeGame()
 	cssObjects[8]->RotateY(90.0f);
 	cssObjects[8]->setPosition(glm::vec3(530, -550, 1));
 	cssObjects[8]->hide = true;
-
 	// Stage Select Screen
 
-	///background image
+///background image
 	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/stageSelect.png", "background", true));
 	if (FULLSCREEN)
 		sssObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
@@ -280,40 +299,67 @@ void Game::initializeGame()
 	sssObjects[0]->setPosition(glm::vec3(0, -555, -1));
 
 	///knight stage Icon
-	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/knightCourtSelect.png", "courtIconDefault", true));
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/basicCourtSelect.png", "courtIconDefault", true));
 	if (FULLSCREEN)
 		sssObjects[1]->setScale(120.0f);
 	else
 		sssObjects[1]->setScale(80.0f);
 	sssObjects[1]->RotateY(90.0f);
-	sssObjects[1]->setPosition(glm::vec3(-350, -200, 0));
+	sssObjects[1]->setPosition(glm::vec3(-350, -500, 0));
 
 	///default stage Icon
-	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/basicCourtSelect.png", "courtIconKnight", true));
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/knightCourtSelect.png", "courtIconKnight", true));
 	if (FULLSCREEN)
 		sssObjects[2]->setScale(120.0f);
 	else
 		sssObjects[2]->setScale(80.0f);
 	sssObjects[2]->RotateY(90.0f);
-	sssObjects[2]->setPosition(glm::vec3(0, -200, 0));
+	sssObjects[2]->setPosition(glm::vec3(0, -500, 0));
 
 	///ninja stage Icon
-	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/CourtIconNinja.png", "courtIconNinja", true));
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/ninjaCourtSelect.png", "courtIconNinja", true));
 	if (FULLSCREEN)
 		sssObjects[3]->setScale(120.0f);
 	else
 		sssObjects[3]->setScale(80.0f);
 	sssObjects[3]->RotateY(90.0f);
-	sssObjects[3]->setPosition(glm::vec3(350, -200, 0));
+	sssObjects[3]->setPosition(glm::vec3(350, -500, 0));
 
-	///p1 Icon
+	///select Icon
 	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/p1select.png", "select", true));
 	if (FULLSCREEN)
 		sssObjects[4]->setScale(120.0f);
 	else
 		sssObjects[4]->setScale(80.0f);
 	sssObjects[4]->RotateY(90.0f);
-	sssObjects[4]->setPosition(glm::vec3(-350, -200, 2));
+	sssObjects[4]->setPosition(glm::vec3(-350, -500, 2));
+
+	///basic court pic
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/basicStage.png", "courtPicDefault", true));
+	if (FULLSCREEN)
+		sssObjects[5]->setScale(glm::vec3(500.0f, 350.0f, 1.0f));
+	else
+		sssObjects[5]->setScale(glm::vec3(330.0f, 220.0f, 1.0f));
+	sssObjects[5]->RotateY(90.0f);
+	sssObjects[5]->setPosition(glm::vec3(0, -300, 0));
+
+	///knight court pic
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/knightStage.png", "courtPicKnight", true));
+	if (FULLSCREEN)
+		sssObjects[6]->setScale(glm::vec3(500.0f, 350.0f, 1.0f));
+	else
+		sssObjects[6]->setScale(glm::vec3(330.0f, 220.0f, 1.0f));
+	sssObjects[6]->RotateY(90.0f);
+	sssObjects[6]->setPosition(glm::vec3(0, -300, 0));
+
+	///ninja court pic
+	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/ninjaStage.png", "courtPicNinja", true));
+	if (FULLSCREEN)
+		sssObjects[7]->setScale(glm::vec3(500.0f, 350.0f, 1.0f));
+	else
+		sssObjects[7]->setScale(glm::vec3(330.0f, 220.0f, 1.0f));
+	sssObjects[7]->RotateY(90.0f);
+	sssObjects[7]->setPosition(glm::vec3(0, -300, 0));
 
 
 //================================================================//
@@ -706,7 +752,11 @@ void Game::initializeGame()
 	updateTimer = new Timer();
 
 
+	gameTheme.Load("./Assets/Media/Theme.wav");
 
+	soundPos = { 0.0f, 0.0f, 0.0f };
+	soundChannel = gameTheme.Play(true);
+	gameSound.Load("./Assets/Media/hypebbrawl.wav");
 }
 
 
@@ -717,6 +767,19 @@ void Game::update()
 
 	if (scene == 3) {
 		updateScene();
+
+		if (!soundPlaying)
+		{
+			soundChannel->setPaused(true);
+
+			gameSoundPos = { 0.0f, 0.0f, 0.0f };
+			gameSoundChannel = gameSound.Play(true);
+			soundPlaying = true;
+		}
+
+		Sound::SetPosition(gameSoundChannel, gameSoundPos);
+		Sound::engine.update();
+
 	}
 	else if (scene == 2) {
 		updateSSS();
@@ -965,22 +1028,25 @@ void Game::updateSSS()
 		findObjects(2, "select")->setPosition(
 			findObjects(2, "courtIconDefault")->getPosition());
 
-		//findObjects(1, "p1KnightPic")->hide = false;
-		//findObjects(1, "p1NinjaPic")->hide = true;
+		findObjects(2, "courtPicDefault")->hide = false;
+		findObjects(2, "courtPicKnight")->hide = true;
+		findObjects(2, "courtPicNinja")->hide = true;
 	}
 	else if (stageVal == 2) {
 		findObjects(2, "select")->setPosition(
 			findObjects(2, "courtIconKnight")->getPosition());
 
-		//findObjects(1, "p1KnightPic")->hide = true;
-		//findObjects(1, "p1NinjaPic")->hide = false;
+		findObjects(2, "courtPicDefault")->hide = true;
+		findObjects(2, "courtPicKnight")->hide = false;
+		findObjects(2, "courtPicNinja")->hide = true;
 	}
 	else if (stageVal == 3) {
 		findObjects(2, "select")->setPosition(
 			findObjects(2, "courtIconNinja")->getPosition());
 
-		//findObjects(1, "p1KnightPic")->hide = true;
-		//findObjects(1, "p1NinjaPic")->hide = false;
+		findObjects(2, "courtPicDefault")->hide = true;
+		findObjects(2, "courtPicKnight")->hide = true;
+		findObjects(2, "courtPicNinja")->hide = false;
 	}
 
 
@@ -1127,8 +1193,8 @@ void Game::updateScene()
 				XBoxController.SetVibration(0, 0, 0);
 				XBoxController.SetVibration(1, 0, 0);
 
-				if (players[1]->blocking && (players[0]->facingRight != players[1]->facingRight)) {//add only in front condition
-					players[1]->blockSuccessful = true;
+				if (players[1]->ultMode) {//add only in front condition
+					//players[1]->blockSuccessful = true;
 					players[0]->getHitboxes()[i]->setDone();
 					i = 100;
 					j = 100;
@@ -1156,8 +1222,8 @@ void Game::updateScene()
 				XBoxController.SetVibration(0, 0, 0);
 				XBoxController.SetVibration(1, 0, 0);
 
-				if (players[0]->blocking && (players[0]->facingRight != players[1]->facingRight)) {//add only in front condition
-					players[0]->blockSuccessful = true;
+				if (players[0]->ultMode) {//add only in front condition
+					//players[0]->blockSuccessful = true;
 					players[1]->getHitboxes()[i]->setDone();
 					i = 100;
 					j = 100;
@@ -1183,6 +1249,53 @@ void Game::updateScene()
 	
 	players[0]->update((int)deltaTime, inputs);
 	players[1]->update((int)deltaTime, inputs2);
+	
+	//nijnaUlt
+	///before, check if u can even ult rn
+	bool okToUlt = true;
+	for (int j = 0; j < 2; j++) {
+		if (players[j]->action == players[j]->ACTION_IN_NET || players[j]->action == players[j]->ACTION_RESPAWN) {
+			okToUlt = false;
+		}
+	}
+	//actual ult
+	for (int i = 0; i < 2; i++) {
+		//if cant ult, add back metre
+		if (okToUlt == false && players[i]->type == 2 && players[i]->ultMode) {
+			players[i]->ultMode = false;
+			players[i]->setMeter(players[i]->getMeter() + 100);
+		}
+		else if (players[i]->type == 2 && players[i]->ultMode) {
+			//swap positions
+			glm::vec3 temp = players[i]->getPosition();
+			players[i]->setPosition(players[(i + 1) % 2]->getPosition());
+			players[(i + 1) % 2]->setPosition(temp);
+			//swap velocity
+			temp = players[i]->getVelocity();
+			players[i]->setVelocity(players[(i + 1) % 2]->getVelocity());
+			players[(i + 1) % 2]->setVelocity(temp);
+			//swap acceleration
+			temp = players[i]->getAccel();
+			players[i]->setAccel(players[(i + 1) % 2]->getAccel());
+			players[(i + 1) % 2]->setAccel(temp);
+
+			//swap action
+			int tempA = players[i]->action;
+			players[i]->action = players[(i + 1) % 2]->action;
+			players[(i + 1) % 2]->action = tempA;
+			//swap frameLength
+			players[i]->currentFrame = players[(i + 1) % 2]->activeFrames - 1;
+			players[(i + 1) % 2]->currentFrame = players[i]->activeFrames - 1;
+
+			//turn ult off
+			players[i]->ultMode = false;
+
+			//correct hit
+			if (players[i]->action == players[i]->ACTION_HIT)
+				players[i]->action = players[i]->ACTION_FALL;
+			
+		}
+	}
 	
 	//particle listener
 	if (players[0]->partiQueue.size() > 0) {
@@ -1405,6 +1518,47 @@ void Game::updateScene()
 		temp = (bool)(check >= 0.5f && check < 1.0f);
 
 		findLight("p2Score")->active = temp;
+	}
+
+	///People movement in the background
+	//Basic Court
+	if (stageVal == 1)
+	{
+		//Move the crowds up and down
+		float movementVal1 = (cos((TotalGameTime) * 9 + 110) + .5f);
+		findObjects(3, "default_crowd1")->transform.SetTranslation(glm::vec3(0.0f, movementVal1, 0.0f));
+
+		float movementVal2 = (cos((TotalGameTime) * 5 + 55) + .75f);
+		findObjects(3, "default_crowd2")->transform.SetTranslation(glm::vec3(0.0f, movementVal2, 0.0f));
+
+		float movementVal3 = (cos((TotalGameTime * 7) + 25) + .25f);
+		findObjects(3, "default_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
+	}
+	//Knight Court
+	if (stageVal == 2)
+	{
+		//Move the crowds up and down
+		float movementVal1 = (cos((TotalGameTime) * 9 + 110) + .6f);
+		findObjects(3, "knight_crowd1")->transform.SetTranslation(glm::vec3(0.0f, movementVal1, 0.0f));
+
+		float movementVal2 = (cos((TotalGameTime) * 5 + 55) + .85f);
+		findObjects(3, "knight_crowd2")->transform.SetTranslation(glm::vec3(0.0f, movementVal2, 0.0f));
+
+		float movementVal3 = (cos((TotalGameTime * 7) + 25) + .73f);
+		findObjects(3, "knight_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
+	}
+	//Ninja Court
+	if (stageVal == 3)
+	{
+		//Move the crowds up and down
+		float movementVal1 = (cos((TotalGameTime) * 9 + 110) + .6f);
+		findObjects(3, "ninja_crowd1")->transform.SetTranslation(glm::vec3(0.0f, movementVal1, 0.0f));
+
+		float movementVal2 = (cos((TotalGameTime) * 5 + 55) + .85f);
+		findObjects(3, "ninja_crowd2")->transform.SetTranslation(glm::vec3(0.0f, movementVal2, 0.0f));
+
+		float movementVal3 = (cos((TotalGameTime * 7) + 25) + .73f);
+		findObjects(3, "ninja_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
 	}
 }
 /*
@@ -1662,6 +1816,7 @@ void Game::drawScene()
 	glEnable(GL_CULL_FACE);//turn it back on after for preformance
 
 	drawScore();
+	drawTime();
 
 	AniShader.UnBind();
 	GBuffer.UnBind();
@@ -1782,7 +1937,6 @@ void Game::drawScene()
 	DeferredLighting.UnBind();
 
 	drawHUD();
-	drawTime();
 
 	/// Compute High Pass ///
 	if (FULLSCREEN)
@@ -2393,19 +2547,24 @@ void Game::drawScore() {
 	///score
 	Transform hudLoc = Transform::Identity();
 	hudLoc.Scale(2.0f);
+	hudLoc.RotateX(-8.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(-1, 4, -12));
+	hudLoc.Translate(glm::vec3(-0.8f, 3.1f, -12.52f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
-	time[score1 % 10]->Bind();
+	if (players[1]->action == players[0]->ACTION_IN_NET)
+		time[rand() % 10]->Bind();
+	else
+		time[score1 % 10]->Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 	///score
 	hudLoc = Transform::Identity();
 	hudLoc.Scale(2.0f);
+	hudLoc.RotateX(-8.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(2, 4, -12.1f));
+	hudLoc.Translate(glm::vec3(2.2f, 3.1f, -12.51f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[10]->Bind();
 	glBindVertexArray(HudObj.VAO);
@@ -2413,11 +2572,15 @@ void Game::drawScore() {
 	///score
 	hudLoc = Transform::Identity();
 	hudLoc.Scale(2.0f);
+	hudLoc.RotateX(-8.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(5, 4, -12));
+	hudLoc.Translate(glm::vec3(5.2f, 3.1f, -12.5f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
-	time[score2 % 10]->Bind();
+	if (players[0]->action == players[1]->ACTION_IN_NET)
+		time[rand() % 10]->Bind();
+	else
+		time[score2 % 10]->Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
@@ -2644,37 +2807,17 @@ void Game::drawMenu()
 
 void Game::drawTime()
 {
-	//DeferredComposite.Bind();
-	DeferredComposite.Bind();
-
+	GBuffer.Bind();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDepthMask(GL_FALSE);  // disable writes to Z-Buffer
-	glDisable(GL_DEPTH_TEST);  // disable depth-testing
+	//glDepthMask(GL_FALSE);  // disable writes to Z-Buffer
+	//glDisable(GL_DEPTH_TEST);  // disable depth-testing
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_LIGHTING);
 
-	//new projection
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();//save old state
-	glLoadIdentity();//reset
-	//gluOrtho2D(0.0, 1.0, 0.0, 1.0);//create ortho
-	if (FULLSCREEN)
-		gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
-	else
-	gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();//save old state
-	glLoadIdentity();//reset
-
-	//////////////////////////
-	//now ready to draw 2d
-	//////////////////////////
 	GBufferPass.Bind();
-	hudTransform = Transform::Identity();
-	//hudTransform.Translate(vec3(WINDOW_WIDTH * -0.5f, WINDOW_HEIGHT* -0.5f, 0));
-	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+	GBufferPass.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+	GBufferPass.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
 
 	int timer = 300 - (int)TotalGameTime;
 	if (timer < 0) timer = 0;
@@ -2688,16 +2831,11 @@ void Game::drawTime()
 	//Draw Time
 	///min
 	Transform hudLoc;
+	hudLoc.Scale(2.0f);
+	hudLoc.RotateX(14.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	if (FULLSCREEN) {
-		hudLoc.Translate(glm::vec3(-75, 420, 0));
-		hudLoc.Scale(60.0f);
-	}
-	else {
-		hudLoc.Translate(glm::vec3(-50, 280, 0));
-		hudLoc.Scale(40.0f);
-	}
+	hudLoc.Translate(glm::vec3(-1.9f, 15.5f, -16.53f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[min]->Bind();
@@ -2706,16 +2844,11 @@ void Game::drawTime()
 
 	///speerate
 	hudLoc = Transform();
+	hudLoc.Scale(2.0f);
+	hudLoc.RotateX(14.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	if (FULLSCREEN) {
-		hudLoc.Translate(glm::vec3(0, 420, 0));
-		hudLoc.Scale(60.0f);
-	}
-	else {
-		hudLoc.Translate(glm::vec3(0, 280, 0));
-		hudLoc.Scale(40.0f);
-	}
+	hudLoc.Translate(glm::vec3(0.1f, 15.5f, -16.52f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[10]->Bind();
@@ -2724,16 +2857,11 @@ void Game::drawTime()
 
 	///sec tens
 	hudLoc = Transform();
+	hudLoc.Scale(2.0f);
+	hudLoc.RotateX(14.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	if (FULLSCREEN) {
-		hudLoc.Translate(glm::vec3(75, 420, 0));
-		hudLoc.Scale(60.0f);
-	}
-	else {
-		hudLoc.Translate(glm::vec3(50, 280, 0));
-		hudLoc.Scale(40.0f);
-	}
+	hudLoc.Translate(glm::vec3(2.1f, 15.5f, -16.51f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[secT]->Bind();
@@ -2742,16 +2870,11 @@ void Game::drawTime()
 
 	///sec ones
 	hudLoc = Transform();
+	hudLoc.Scale(2.0f);
+	hudLoc.RotateX(14.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
-	if (FULLSCREEN) {
-		hudLoc.Translate(glm::vec3(180, 420, 0));
-		hudLoc.Scale(60.0f);
-	}
-	else {
-		hudLoc.Translate(glm::vec3(120, 280, 0));
-		hudLoc.Scale(40.0f);
-	}
+	hudLoc.Translate(glm::vec3(5.1f, 15.5f, -16.5f));
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[secO]->Bind();
@@ -2761,22 +2884,14 @@ void Game::drawTime()
 	//unbind last used texture
 	time[secO]->UnBind();
 
-
-	GBufferPass.UnBind();
-
-	//restore projection matrix
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();//restore state
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();//restore state
-
-	DeferredComposite.UnBind();
-
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
+	//glEnable(GL_DEPTH_TEST);
+	//glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
+
+	GBufferPass.UnBind();
+	GBuffer.UnBind();
 }
 
 
@@ -3098,10 +3213,18 @@ void Game::updateInputs()
 		if (Anew == true && Aold == false)
 			inputs[6] = true;
 		else inputs[6] = false;//A = only on pressed not held
-		if (LBnew == true && LBold == false)
-			inputs[10] = true;
-		if (RBnew == true && RBold == false)
+
+		//ultimate
+		if ((LBnew && RBnew) && !(LBold && RBold))
 			inputs[9] = true;
+		else
+			inputs[9] = false;
+
+		//dash
+		if (LTnew || RTnew)
+			inputs[10] = true;
+		else
+			inputs[10] = false;
 
 		//release
 		if (lStick.xAxis < 0.9)//if key held
@@ -3126,10 +3249,6 @@ void Game::updateInputs()
 			inputs[5] = false;
 		if (Anew == false && Aold == true)
 			inputs[6] = false;
-		if (LBnew == false && LBold == true)
-			inputs[10] = false;
-		if (RBnew == false && RBold == true)
-			inputs[9] = false;
 
 	}
 	else {
@@ -3229,10 +3348,18 @@ void Game::updateInputs()
 		if (Anew2 == true && Aold2 == false)
 			inputs2[6] = true;
 		else inputs2[6] = false;//A = only on pressed not held
-		if (LBnew2 == true && LBold2 == false)
-			inputs2[10] = true;
-		if (RBnew2 == true && RBold2 == false)
+
+		//ultimate
+		if ((LBnew2 && RBnew2) && !(LBold2 && RBold2))
 			inputs2[9] = true;
+		else
+			inputs2[9] = false;
+
+		//dash
+		if (LTnew2 || RTnew2)
+			inputs2[10] = true;
+		else
+			inputs2[10] = false;
 
 		//released
 		if (lStick2.xAxis < 0.9)//if key held
@@ -3257,10 +3384,6 @@ void Game::updateInputs()
 			inputs2[5] = false;
 		if (Anew2 == false && Aold2 == true)
 			inputs2[6] = false;
-		if (LBnew2 == false && LBold2 == true)
-			inputs2[10] = false;
-		if (RBnew2 == false && RBold2 == true)
-			inputs2[9] = false;
 	}
 	else {
 

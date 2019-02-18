@@ -10,6 +10,7 @@ public:
 	Ninja(const std::string& body, const std::string& texture);
 
 	Ninja(const Ninja* copy) {
+		type = 2;
 
 		this->aniTimer = 0.0f;
 		this->index = 0;
@@ -44,8 +45,7 @@ public:
 		acceleration = glm::vec3(0, 0, 0);
 		force = glm::vec3(0, 0, 0);
 		facingRight = true;
-		blocking = false;
-		blockSuccessful = false;
+		ultMode = false;
 		//scaling
 		scaleX = copy->scaleX;
 		scaleY = copy->scaleY;
@@ -87,6 +87,16 @@ public:
 		hurtbox.push_back(hurt1);
 		Hitbox *hurt2 = new Hitbox(glm::vec3(0.0f, 1.0f, 0.0f), 3.0f);
 		hurtbox.push_back(hurt2);
+	}
+
+
+	void update(int t, std::vector<bool> inputs) {
+		//check for ult
+		if (inputs[9] && comboMeter >= 100 && ultMode == false) {
+			ultMode = true;
+			comboMeter -= 100;
+		}
+		Character::update(t, inputs);
 	}
 
 	Transform jab();
