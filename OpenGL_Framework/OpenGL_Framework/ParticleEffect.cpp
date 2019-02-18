@@ -59,6 +59,7 @@ bool ParticleEffect::Init(const std::string &textureFile, unsigned int maxPartic
 	_Particles.Ages = new float[_MaxParticles];
 	_Particles.Lifetimes = new float[_MaxParticles];
 	_Particles.Size = new float[_MaxParticles];
+	_Particles.frequency = new int[_MaxParticles];
 
 	//Setup OpenGL Memory
 	glGenVertexArrays(1, &_VAO);
@@ -164,6 +165,12 @@ bool ParticleEffect::PartiParse(const std::string & ParseFile, const std::string
 			sscanf_s(inputLine.c_str(), "k%f,%f/%f,%f", &InitialXRange.x, &InitialXRange.y, &InitialYRange.x, &InitialYRange.y);
 			continue;
 		}
+		//l - Noise
+		if (!inputLine.find("l")) {
+			noiseOn = true;
+			sscanf_s(inputLine.c_str(), "l%f,%i", &noiseStrength, &noiseFrequency);
+			continue;
+		}
 	}
 	Init(textureFile, _MaxParticles, _Rate);
 
@@ -209,6 +216,7 @@ void ParticleEffect::Update(float elapsed)
 		_Particles.Velocities[_NumCurrentParticles].z = 0.0f;
 		_Particles.Velocities[_NumCurrentParticles] = glm::normalize(_Particles.Velocities[_NumCurrentParticles]);
 		_Particles.Velocities[_NumCurrentParticles] *= RandomRangef(RangeVelocity.x, RangeVelocity.y);
+		_Particles.frequency[_NumCurrentParticles] = noiseFrequency;
 
 		//counters...
 		_NumCurrentParticles++;
@@ -220,6 +228,7 @@ void ParticleEffect::Update(float elapsed)
 		for (unsigned i = 0; i < _NumCurrentParticles; i++)
 		{
 			_Particles.Ages[i] += elapsed;
+			_Particles.frequency[i]++;
 
 			//Explanation of this is on Week 9 video at time 5:30 (maybe)
 			if (_Particles.Ages[i] > _Particles.Lifetimes[i])
@@ -233,6 +242,13 @@ void ParticleEffect::Update(float elapsed)
 				_Particles.Velocities[i] = _Particles.Velocities[_NumCurrentParticles - 1];
 				_NumCurrentParticles--;
 				continue;
+			}
+
+			//noise
+			if (_Particles.frequency[i] >= 100 && noiseOn)
+			{
+				_Particles.Velocities[i] += glm::vec3(RandomRangef(-1.0f, 1.0f), 0, RandomRangef(-1.0f, 1.0f)) * noiseStrength;
+				_Particles.frequency[i] = noiseFrequency;
 			}
 
 			//physics update

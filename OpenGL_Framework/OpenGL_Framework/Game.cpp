@@ -543,6 +543,7 @@ void Game::initializeGame()
 	//better version
 	ConfettiEffectRedRight.PartiParse("./Assets/Data/text.txt", "./Assets/Textures/RedConfetti.png");
 
+	//Depricated code
 	//if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)30))
 	//{
 	//	std::cout << "Confetti Particle-Effect failed ot initialize.\n";
@@ -562,23 +563,24 @@ void Game::initializeGame()
 	//ConfettiEffectRedRight.Gravity = 0.2f;
 
 
+	ConfettiEffectRedLeft.PartiParse("./Assets/Data/redleftconf.txt", "./Assets/Textures/RedConfetti.png");
 
-	if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)30))
-	{
-		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
-		system("pause");
-		exit(0);
-	}
-	ConfettiEffectRedLeft.LerpAlpha = glm::vec2(0.4f, 0.8f);
-	ConfettiEffectRedLeft.LerpSize = glm::vec2(1.0f, 2.0f);
-	ConfettiEffectRedLeft.RangeLifetime = glm::vec2(2.0f, 3.0f);
-	ConfettiEffectRedLeft.RangeVelocity = glm::vec2(-5.0f, 5.0f);
-	ConfettiEffectRedLeft.RangeX = glm::vec2(-12.0f, -12.0f);
-	ConfettiEffectRedLeft.RangeY = glm::vec2(20.0f, 20.0f);
-	ConfettiEffectRedLeft.RangeZ = glm::vec2(-15.0f, -15.0f);
-	ConfettiEffectRedLeft.HaveGravity = true;
-	ConfettiEffectRedLeft.Mass = 2.0f;
-	ConfettiEffectRedLeft.Gravity = 0.2f;
+	//if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)30))
+	//{
+	//	std::cout << "Confetti Particle-Effect failed ot initialize.\n";
+	//	system("pause");
+	//	exit(0);
+	//}
+	//ConfettiEffectRedLeft.LerpAlpha = glm::vec2(0.4f, 0.8f);
+	//ConfettiEffectRedLeft.LerpSize = glm::vec2(1.0f, 2.0f);
+	//ConfettiEffectRedLeft.RangeLifetime = glm::vec2(2.0f, 3.0f);
+	//ConfettiEffectRedLeft.RangeVelocity = glm::vec2(-5.0f, 5.0f);
+	//ConfettiEffectRedLeft.RangeX = glm::vec2(-12.0f, -12.0f);
+	//ConfettiEffectRedLeft.RangeY = glm::vec2(20.0f, 20.0f);
+	//ConfettiEffectRedLeft.RangeZ = glm::vec2(-15.0f, -15.0f);
+	//ConfettiEffectRedLeft.HaveGravity = true;
+	//ConfettiEffectRedLeft.Mass = 2.0f;
+	//ConfettiEffectRedLeft.Gravity = 0.2f;
 
 	if (!DustLand.Init("./Assets/Textures/dust.png", (unsigned int)50, (unsigned int)3))
 	{

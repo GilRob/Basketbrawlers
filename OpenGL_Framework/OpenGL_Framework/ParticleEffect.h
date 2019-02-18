@@ -20,6 +20,7 @@ struct ParticleList
 	float *Alpha = nullptr;
 	float *Ages = nullptr;
 	float *Lifetimes = nullptr;
+	int *frequency = nullptr;
 };
 
 class ParticleEffect
@@ -57,6 +58,11 @@ public:
 	glm::vec2 LerpSize = glm::vec2(0.0f, 1.0f);
 	glm::vec2 InitialXRange = glm::vec2(1.0f, -1.0f);
 	glm::vec2 InitialYRange = glm::vec2(1.0f, -1.0f);
+
+	//noise
+	float noiseStrength = 0;
+	int noiseFrequency = 0;
+	bool noiseOn = false;
 
 	bool HaveGravity = false;
 	bool Playing = false;
