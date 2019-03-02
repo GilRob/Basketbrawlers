@@ -147,6 +147,8 @@ public:
 	ParticleEffect ConfettiEffectBlueLeft;
 	ParticleEffect ConfettiEffectRedRight;
 	ParticleEffect ConfettiEffectRedLeft;
+	ParticleEffect NinjaPetals;
+	ParticleEffect NinjaPetals2;
 	ParticleEffect DustLand;
 	ParticleEffect DustDashL;	
 	ParticleEffect DustDashR;

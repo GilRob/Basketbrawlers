@@ -177,7 +177,7 @@ public:
 			comboClear();
 			resetTimer();
 		}
-		comboMeter += (2 + (int)(comboCount));//amount added to combo
+		comboMeter += (2 + (int)(2 * comboCount));//amount added to combo
 		std::cout << "Count: " << comboCount << " Meter: " << comboMeter << std::endl;
 	}
 	void comboClear() { comboCount = 0; }

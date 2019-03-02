@@ -95,7 +95,8 @@ void Game::initializeGame()
 
 	//load objects for scene
 	gameObjects.push_back(new Object("./Assets/Models/basicCourt", "./Assets/Textures/basicCourt.png", "default_court"));
-
+	gameObjects.push_back(new Object("./Assets/Models/basicFloor", "./Assets/Textures/basicFloor.png", "default_floor"));
+	default_court_objs.push_back("default_floor");
 	gameObjects.push_back(new Object("./Assets/Models/nets", "./Assets/Textures/net.png", "default_net", true));
 	default_court_objs.push_back("default_net");
 	gameObjects.push_back(new Object("./Assets/Models/chairs", "./Assets/Textures/chair.png", "default_chairs"));
@@ -120,6 +121,8 @@ void Game::initializeGame()
 
 	//load objects for knight scene
 	gameObjects.push_back(new Object("./Assets/Models/knightCourt1", "./Assets/Textures/knightCourt.png", "knight_court"));
+	gameObjects.push_back(new Object("./Assets/Models/knightFloor", "./Assets/Textures/knightFloor.png", "knight_floor"));
+	knight_court_objs.push_back("knight_floor");
 
 	gameObjects.push_back(new Object("./Assets/Models/knightBleachers", "./Assets/Textures/knightBleachers.png", "knight_bleachers"));
 	knight_court_objs.push_back("knight_bleachers");
@@ -542,6 +545,10 @@ void Game::initializeGame()
 
 	//better version
 	ConfettiEffectRedRight.PartiParse("./Assets/Data/text.txt", "./Assets/Textures/RedConfetti.png");
+	
+	
+	NinjaPetals.PartiParse("./Assets/Data/petals.txt", "./Assets/Textures/petals.png");
+	NinjaPetals2.PartiParse("./Assets/Data/petals.txt", "./Assets/Textures/petals2.png");
 
 	//Depricated code
 	//if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)30))
@@ -1150,6 +1157,8 @@ void Game::updateSSS()
 
 void Game::updateScene()
 {
+
+	
 	// update our clock so we have the delta time since the last update
 	updateTimer->tick();
 
@@ -1493,6 +1502,8 @@ void Game::updateScene()
 	ConfettiEffectBlueLeft.Update(deltaTime);
 	ConfettiEffectRedRight.Update(deltaTime);
 	ConfettiEffectRedLeft.Update(deltaTime);
+	NinjaPetals.Update(deltaTime);
+	NinjaPetals2.Update(deltaTime);
 	DustDashL.Update(deltaTime);
 	DustDashR.Update(deltaTime);
 	DustLand.Update(deltaTime);
@@ -1561,6 +1572,10 @@ void Game::updateScene()
 
 		float movementVal3 = (cos((TotalGameTime * 7) + 25) + .73f);
 		findObjects(3, "ninja_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
+
+		//Flower petal effect
+		NinjaPetals.Spawn(1.0f);
+		NinjaPetals2.Spawn(1.0f);
 	}
 }
 /*
@@ -1928,6 +1943,8 @@ void Game::drawScene()
 	ConfettiEffectRedLeft.Render();
 	ConfettiEffectBlueRight.Render();
 	ConfettiEffectBlueLeft.Render();
+	NinjaPetals.Render();
+	NinjaPetals2.Render();
 	DustDashL.Render();
 	DustDashR.Render();
 	DustLand.Render();
