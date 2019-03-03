@@ -171,6 +171,12 @@ bool ParticleEffect::PartiParse(const std::string & ParseFile, const std::string
 			sscanf_s(inputLine.c_str(), "l%f,%i", &noiseStrength, &noiseFrequency);
 			continue;
 		}
+		if (!inputLine.find("m")) {
+			circleSpawner = true;
+			sscanf_s(inputLine.c_str(), "m%f,%f", &circleRadius, &ringRadius);
+			std::cout << circleRadius << "," << ringRadius;
+			continue;
+		}
 	}
 	Init(textureFile, _MaxParticles, _Rate);
 
@@ -207,6 +213,14 @@ void ParticleEffect::Update(float elapsed)
 		_Particles.Positions[_NumCurrentParticles].x = RandomRangef(RangeX.x, RangeX.y);
 		_Particles.Positions[_NumCurrentParticles].y = RandomRangef(RangeY.x, RangeY.y);
 		_Particles.Positions[_NumCurrentParticles].z = RandomRangef(RangeZ.x, RangeZ.y);
+
+		//custom spawners:
+		if (circleSpawner) {
+			glm::vec3 offset = glm::vec3(RandomRangef(-1.0f, 1.0f), RandomRangef(-1.0f, 1.0f), 0.0f);
+			offset = glm::normalize(offset);
+			_Particles.Positions[_NumCurrentParticles] += offset * RandomRangef(ringRadius, circleRadius);
+		}
+
 
 		//send the particle in a random direction, with a velocity between our range
 		//Missing .Set which is what the video uses
