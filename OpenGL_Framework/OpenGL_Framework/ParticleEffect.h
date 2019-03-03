@@ -58,6 +58,9 @@ public:
 	glm::vec2 LerpSize = glm::vec2(0.0f, 1.0f);
 	glm::vec2 InitialXRange = glm::vec2(1.0f, -1.0f);
 	glm::vec2 InitialYRange = glm::vec2(1.0f, -1.0f);
+	float circleRadius = 0.0f;
+	float ringRadius = 0.0f;
+	bool circleSpawner = false;
 
 	//noise
 	float noiseStrength = 0;
