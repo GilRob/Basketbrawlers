@@ -11,7 +11,7 @@ $$$ - Particle Signal
 #define VSYNC true
 
 Game::Game()
-	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(1)
+	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(1)//, godRaysBuffer1(1), godRaysBuffer2(1)
 	//This constructor in the initializer list is to solve the issue of creating a frame buffer object without no default constructor
 	//This will occur before the brackets of the constructor starts (Reference at Week #6 video Time: 47:00)
 	//The number is the number of color textures
@@ -370,6 +370,9 @@ void Game::initializeGame()
 	///PointLightObj(*position*, *color*, *name*, *active?* = false by default);
 	pointLights.push_back(new PointLightObj(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), "p1Score", false));
 	pointLights.push_back(new PointLightObj(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), "p2Score", false));
+	pointLights.push_back(new PointLightObj(glm::vec3(-18.0f, 10.0f, -19.0f), glm::vec3(1.0f, 1.0f, 0.6f), "lightLeft", false));
+	pointLights.push_back(new PointLightObj(glm::vec3(18.0f, 10.0f, -19.0f), glm::vec3(1.0f, 1.0f, 0.6f), "lightRight", false));
+	pointLights.push_back(new PointLightObj(glm::vec3(0.0f, 10.0f, -19.0f), glm::vec3(0.6f, 0.6f, 0.0f), "lightCenter", false));
 
 
 //================================================================//
@@ -494,6 +497,8 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}
+
+	//Load the god rays shaders here
 
 //================================================================//
 	//Particle Program
@@ -687,6 +692,28 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}
+
+	/*if (FULLSCREEN)
+		godRaysBuffer1.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGBA8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+	else
+		godRaysBuffer1.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+	if (!godRaysBuffer1.CheckFBO())
+	{
+		std::cout << "GR1 FBO failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
+
+	if (FULLSCREEN)
+		godRaysBuffer2.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGBA8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+	else
+		godRaysBuffer2.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+	if (!godRaysBuffer2.CheckFBO())
+	{
+		std::cout << "GR2 FBO failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}*/
 
 	if (FULLSCREEN)
 		WorkBuffer1.InitColorTexture(0,FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
@@ -1533,7 +1560,7 @@ void Game::updateScene()
 		findLight("p2Score")->active = temp;
 	}
 
-	///People movement in the background
+	///Court specific functionality
 	//Basic Court
 	if (stageVal == 1)
 	{
@@ -1546,6 +1573,11 @@ void Game::updateScene()
 
 		float movementVal3 = (cos((TotalGameTime * 7) + 25) + .25f);
 		findObjects(3, "default_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
+
+		//Additional lights in the basic court
+		findLight("lightLeft")->active = true;
+		findLight("lightRight")->active = true;
+		findLight("lightCenter")->active = true;
 	}
 	//Knight Court
 	if (stageVal == 2)
@@ -1559,6 +1591,11 @@ void Game::updateScene()
 
 		float movementVal3 = (cos((TotalGameTime * 7) + 25) + .73f);
 		findObjects(3, "knight_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
+
+		//Turn off the lights from the basic court
+		findLight("lightLeft")->active = false;
+		findLight("lightRight")->active = false;
+		findLight("lightCenter")->active = false;
 	}
 	//Ninja Court
 	if (stageVal == 3)
@@ -1576,6 +1613,11 @@ void Game::updateScene()
 		//Flower petal effect
 		NinjaPetals.Spawn(1.0f);
 		NinjaPetals2.Spawn(1.0f);
+
+		//Turn off the lights from the basic court
+		findLight("lightLeft")->active = false;
+		findLight("lightRight")->active = false;
+		findLight("lightCenter")->active = false;
 	}
 }
 /*
@@ -1616,6 +1658,8 @@ void Game::drawScene()
 	HudMap.Clear();
 	WorkBuffer1.Clear();
 	WorkBuffer2.Clear();
+	//godRaysBuffer1.Clear();
+	//godRaysBuffer2.Clear();
 
 	/// Generate The Shadow Map ///
 	glViewport(0, 0, SHADOW_RESOLUTION, SHADOW_RESOLUTION);
@@ -1966,7 +2010,12 @@ void Game::drawScene()
 	//Moving data to the back buffer, at the same time as our last post process
 	BloomHighPass.Bind();
 	BloomHighPass.SendUniform("uTex", 0);
-	BloomHighPass.SendUniform("uThreshold", BLOOM_THRESHOLD);
+	if (stageVal == 1)
+		BloomHighPass.SendUniform("uThreshold", BLOOM_THRESHOLD1);
+	if (stageVal == 2)
+		BloomHighPass.SendUniform("uThreshold", BLOOM_THRESHOLD2);
+	if (stageVal == 3)
+		BloomHighPass.SendUniform("uThreshold", BLOOM_THRESHOLD3);
 
 	WorkBuffer1.Bind();
 
@@ -3091,7 +3140,9 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		break;
 	case '.': //a
 		//GBufferPass.ReloadShader();
-		AdShader.ReloadShader();
+		//AdShader.ReloadShader();
+		//BloomHighPass.ReloadShader();
+		PointLight.ReloadShader();
 		std::cout << "Reloaded Shaders\n";
 		//inputs2[4] = false;
 		break;

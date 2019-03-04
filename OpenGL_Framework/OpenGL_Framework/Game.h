@@ -41,8 +41,10 @@
 #define FULLSCREEN_WIDTH		1920
 #define FULLSCREEN_HEIGHT		1080
 #define FRAMES_PER_SECOND		60
-#define BLOOM_THRESHOLD			0.33f
-#define BLOOM_DOWNSCALE			3.0f
+#define BLOOM_THRESHOLD1		0.31f //Threshold value for basic court
+#define BLOOM_THRESHOLD2		0.24f //Threshold value for knight court
+#define BLOOM_THRESHOLD3		0.33f //Threshold value for ninja court
+#define BLOOM_DOWNSCALE			3.0f //The number of times you down sample the pixels (how many times we divide the resolution)
 #define BLOOM_BLUR_PASSES		8	//How many times to repeat the blur process?
 #define SHADOW_RESOLUTION		4096
 
@@ -178,6 +180,13 @@ public:
 	Transform hudProjection;
 
 	Transform ViewToShadowMap;
+
+	///God Rays Stuff
+	/*FrameBuffer godRaysBuffer1;
+	FrameBuffer godRaysBuffer2;
+
+	ShaderProgram godRaysRadialBlur;
+	ShaderProgram godRaysComposite;*/
 
 	void updateInputs();
 	//controller
