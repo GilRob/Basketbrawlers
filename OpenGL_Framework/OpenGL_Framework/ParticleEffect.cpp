@@ -173,7 +173,7 @@ bool ParticleEffect::PartiParse(const std::string & ParseFile, const std::string
 		}
 		if (!inputLine.find("m")) {
 			circleSpawner = true;
-			sscanf_s(inputLine.c_str(), "m%f,%f", &circleRadius, &ringRadius);
+			sscanf_s(inputLine.c_str(), "m%f,%f, %f", &circleRadius, &ringRadius, &ringWidth);
 			std::cout << circleRadius << "," << ringRadius;
 			continue;
 		}
@@ -218,7 +218,8 @@ void ParticleEffect::Update(float elapsed)
 		if (circleSpawner) {
 			glm::vec3 offset = glm::vec3(RandomRangef(-1.0f, 1.0f), RandomRangef(-1.0f, 1.0f), 0.0f);
 			offset = glm::normalize(offset);
-			_Particles.Positions[_NumCurrentParticles] += offset * RandomRangef(ringRadius, circleRadius);
+			_Particles.Positions[_NumCurrentParticles] += offset * RandomRangef(ringRadius, circleRadius) * glm::vec3(ringWidth,1.0f,0.0f);
+
 		}
 
 

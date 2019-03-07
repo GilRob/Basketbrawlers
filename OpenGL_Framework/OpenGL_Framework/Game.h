@@ -60,11 +60,13 @@ public:
 
 	void initializeGame();
 	void update();
+	void updateEndScreen();
 	void updateScene();
 	void updateMenu();
 	void updateCSS();
 	void updateSSS();
 	void draw();
+	void drawEndScreen();
 	void drawScene();
 	void drawCSS();
 	void drawSSS();
@@ -116,6 +118,7 @@ public:
 	std::vector<Object*> menuObjects;
 	std::vector<Object*> cssObjects;
 	std::vector<Object*> sssObjects;
+	std::vector<Object*> endObjects;
 
 	unsigned int scene = 0; //0=menu, 1=selecting, 2=fighting
 	bool gameDone = false;
@@ -138,6 +141,9 @@ public:
 	std::vector<std::string> default_court_objs;
 	std::vector<std::string> knight_court_objs;
 	std::vector<std::string> ninja_court_objs;
+
+	//End Screen
+	bool endGame = false;
 
 	Mesh HudObj;
 	Texture P1Hud;

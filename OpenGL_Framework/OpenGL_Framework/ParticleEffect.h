@@ -61,6 +61,7 @@ public:
 	float circleRadius = 0.0f;
 	float ringRadius = 0.0f;
 	bool circleSpawner = false;
+	float ringWidth = 1.0f;
 
 	//noise
 	float noiseStrength = 0;

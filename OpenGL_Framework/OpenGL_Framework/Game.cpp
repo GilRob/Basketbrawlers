@@ -364,6 +364,15 @@ void Game::initializeGame()
 	sssObjects[7]->RotateY(90.0f);
 	sssObjects[7]->setPosition(glm::vec3(0, -300, 0));
 
+	//End Screen Assets
+	///Background image
+	endObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/GameOver.png", "gameOverBKG", true));
+	if (FULLSCREEN)
+		endObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
+	else
+		endObjects[0]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
+	endObjects[0]->RotateY(90);
+	endObjects[0]->setPosition(glm::vec3(0, -555, -1));
 
 //================================================================//
 	//Init PointLights
@@ -800,7 +809,10 @@ void Game::update()
 {
 	//auto end = chrono::steady_clock::now();
 	//auto start = chrono::steady_clock::now();
-
+	if (scene == 4)
+	{
+		updateEndScreen();
+	}
 	if (scene == 3) {
 		updateScene();
 
@@ -829,6 +841,32 @@ void Game::update()
 	//end = chrono::steady_clock::now();
 	//cout << chrono::duration_cast<chrono::microseconds>(end - start).count() << ":";
 
+}
+
+void Game::updateEndScreen()
+{
+	// update our clock so we have the delta time since the last update
+	updateTimer->tick();
+	float deltaTime = updateTimer->getElapsedTimeSeconds();
+	TotalGameTime += deltaTime;
+
+	updateInputs();
+
+	//press
+	if (inputs[6] || inputs2[6]) {
+		lastInputTime = 0.0f;
+		inputs[6] = 0;
+		inputs2[6] = 0;
+		endGame = true;
+	}
+
+	if (endGame)
+	{
+		scene = 0;
+		TotalGameTime = 0.0f;
+		deltaTime = 0;
+		updateTimer = new Timer();
+	}
 }
 
 void Game::updateMenu()
@@ -1560,6 +1598,18 @@ void Game::updateScene()
 		findLight("p2Score")->active = temp;
 	}
 
+	//End Game
+	if (score1 == 10 || score2 == 10)
+	{
+		std::cout << "end game";
+		XBoxController.SetVibration(0, 0, 0);//controller 0, power 0 on left and right (off)
+		XBoxController.SetVibration(1, 0, 0);//controller , power 0 on left and right (off)
+		scene = 4;
+		TotalGameTime = 0.0f;
+		deltaTime = 0;
+		updateTimer = new Timer();
+	}
+
 	///Court specific functionality
 	//Basic Court
 	if (stageVal == 1)
@@ -1629,6 +1679,9 @@ How are we rendering it
 
 void Game::draw()
 {
+	if (scene == 4) {
+		drawEndScreen();
+	}
 	if (scene == 3) {
 		drawScene();
 	}
@@ -1641,6 +1694,193 @@ void Game::draw()
 	else {
 		drawMenu();
 	}
+}
+
+void Game::drawEndScreen()
+{
+	/// Clear Buffers ///
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glClearColor(0.1f, 0.2f, 0.3f, 0);
+	DeferredComposite.Clear();
+
+	glClearColor(0.0f, 0.0f, 0.0f, 0);
+	GBuffer.Clear();
+	ShadowMap.Clear();
+	HudMap.Clear();
+	WorkBuffer1.Clear();
+	WorkBuffer2.Clear();
+
+	/// Create Scene From GBuffer ///
+	if (FULLSCREEN)
+		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	else
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	DeferredLighting.Bind();
+	DeferredLighting.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
+	DeferredLighting.SendUniform("uScene", 0);
+	DeferredLighting.SendUniform("uShadowMap", 1);
+	DeferredLighting.SendUniform("uNormalMap", 2);
+	DeferredLighting.SendUniform("uPositionMap", 3);
+	//DeferredLighting.SendUniform("uEdgeMap", 4);
+	//DeferredLighting.SendUniform("uStepTexture", 4);
+
+	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
+	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
+
+	DeferredComposite.Bind();
+
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
+
+
+
+	DrawFullScreenQuad();
+
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
+
+	DeferredComposite.UnBind();
+	DeferredLighting.UnBind();
+
+	//===============================================================
+		//DeferredComposite.Bind();
+	DeferredComposite.Bind();
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask(GL_FALSE);  // disable writes to Z-Buffer
+	glDisable(GL_DEPTH_TEST);  // disable depth-testing
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_LIGHTING);
+
+	//new projection
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();//save old state
+	glLoadIdentity();//reset
+	if (FULLSCREEN)
+		gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
+	else
+		gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();//save old state
+	glLoadIdentity();//reset
+
+//////////////////////////
+	//now ready to draw 2d
+//////////////////////////
+	GBufferPass.Bind();
+	hudTransform = Transform::Identity();
+	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+
+	//draws everything in menu
+	sortObjects(4);
+	for (int i = 0; i < (int)endObjects.size(); i++) {
+		endObjects[0]->draw(GBufferPass, 1);
+	}
+
+	GBufferPass.UnBind();
+
+	//restore projection matrix
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();//restore state
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();//restore state
+
+	DeferredComposite.UnBind();
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_LIGHTING);
+	glDisable(GL_BLEND);
+	//===============================================================
+
+		/// Compute High Pass ///
+	if (FULLSCREEN)
+		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
+	else
+		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+	//Moving data to the back buffer, at the same time as our last post process
+	BloomHighPass.Bind();
+	BloomHighPass.SendUniform("uTex", 0);
+	BloomHighPass.SendUniform("uThreshold", 1.0f);
+	WorkBuffer1.Bind();
+	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	DrawFullScreenQuad();
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	WorkBuffer1.UnBind();
+	BloomHighPass.UnBind();
+
+	/// Compute Blur ///
+	if (FULLSCREEN)
+		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
+	else
+		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+	for (int i = 0; i < BLOOM_BLUR_PASSES; i++)
+	{
+		//Horizontal Blur
+		BlurHorizontal.Bind();
+		BlurHorizontal.SendUniform("uTex", 0);
+		if (FULLSCREEN)
+			BlurHorizontal.SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
+		else
+			BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
+		WorkBuffer2.Bind();
+		glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+		WorkBuffer2.UnBind();
+		BlurHorizontal.UnBind();
+
+		//Vertical Blur
+		BlurVertical.Bind();
+		BlurVertical.SendUniform("uTex", 0);
+		if (FULLSCREEN)
+			BlurVertical.SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
+		else
+			BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
+		WorkBuffer1.Bind();
+		glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+		WorkBuffer1.UnBind();
+		BlurVertical.UnBind();
+	}
+
+	/// Composite To Back Buffer ///
+	if (FULLSCREEN)
+		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	else
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	BloomComposite.Bind();
+	BloomComposite.SendUniform("uScene", 0);
+	BloomComposite.SendUniform("uBloom", 1);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+	DrawFullScreenQuad();
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	BloomComposite.UnBind();
+
+	glutSwapBuffers();
 }
 
 void Game::drawScene()
