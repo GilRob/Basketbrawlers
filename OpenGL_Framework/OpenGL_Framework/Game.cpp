@@ -11,7 +11,7 @@ $$$ - Particle Signal
 #define VSYNC true
 
 Game::Game()
-	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(1)//, godRaysBuffer1(1), godRaysBuffer2(1)
+	//: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(1)//, godRaysBuffer1(1), godRaysBuffer2(1)
 	//This constructor in the initializer list is to solve the issue of creating a frame buffer object without no default constructor
 	//This will occur before the brackets of the constructor starts (Reference at Week #6 video Time: 47:00)
 	//The number is the number of color textures
@@ -658,49 +658,70 @@ void Game::initializeGame()
 
 //=======================================================================//
 	//Init Scene & Frame Buffers
+	Framebuffer::initFrameBuffers();
 	if (FULLSCREEN) {
-		GBuffer.InitDepthTexture(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+		/*GBuffer.InitDepthTexture(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
 		//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
 		//These parameters can be changed to whatever you want
 		GBuffer.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE); //Flat color
 		GBuffer.InitColorTexture(1, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGB16, GL_NEAREST, GL_CLAMP_TO_EDGE); //Normals (xyz)
 		//Buffer explained at Week 10 time: 5:30 - 7:45
-		GBuffer.InitColorTexture(2, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE); //View Space Positions (xyz)
+		GBuffer.InitColorTexture(2, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE); //View Space Positions (xyz)*/
+		GBuffer.addColorTarget(GL_RGB8);
+		GBuffer.addColorTarget(GL_RGB16);
+		GBuffer.addColorTarget(GL_RGB32F);
+		GBuffer.init(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+		GBuffer.setDebugNames();
 	}
 	else {
-		GBuffer.InitDepthTexture(WINDOW_WIDTH, WINDOW_HEIGHT);
+		/*GBuffer.InitDepthTexture(WINDOW_WIDTH, WINDOW_HEIGHT);
 		//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
 		//These parameters can be changed to whatever you want
 		GBuffer.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE); //Flat color
 		GBuffer.InitColorTexture(1, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB16, GL_NEAREST, GL_CLAMP_TO_EDGE); //Normals (xyz)
 		//Buffer explained at Week 10 time: 5:30 - 7:45
-		GBuffer.InitColorTexture(2, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE); //View Space Positions (xyz)
+		GBuffer.InitColorTexture(2, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE); //View Space Positions (xyz)*/
+		GBuffer.addColorTarget(GL_RGB8);
+		GBuffer.addColorTarget(GL_RGB16);
+		GBuffer.addColorTarget(GL_RGB32F);
+		GBuffer.init(WINDOW_WIDTH, WINDOW_HEIGHT);
+		GBuffer.setDebugNames();
 	}
-	if (!GBuffer.CheckFBO())
+	/*if (!GBuffer.CheckFBO())
 	{
 		std::cout << "GB FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
-	}
+	}*/
 
 	if (FULLSCREEN)
-		DeferredComposite.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	{
+		//DeferredComposite.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
+		DeferredComposite.addColorTarget(GL_RGBA8);
+		DeferredComposite.init(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	}
 	else
-	DeferredComposite.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
-	if (!DeferredComposite.CheckFBO())
+	{
+		//DeferredComposite.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
+		DeferredComposite.addColorTarget(GL_RGBA8);
+		DeferredComposite.init(WINDOW_WIDTH, WINDOW_HEIGHT);
+	}
+	/*if (!DeferredComposite.CheckFBO())
 	{
 		std::cout << "DC FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
-	}
+	}*/
 
-	ShadowMap.InitDepthTexture(SHADOW_RESOLUTION, SHADOW_RESOLUTION);
-	if (!ShadowMap.CheckFBO())
+	//ShadowMap.InitDepthTexture(SHADOW_RESOLUTION, SHADOW_RESOLUTION);
+	ShadowMap.addDepthTarget();
+	ShadowMap.init(SHADOW_RESOLUTION, SHADOW_RESOLUTION);
+	/*if (!ShadowMap.CheckFBO())
 	{
 		std::cout << "SM FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
-	}
+	}*/
 
 	/*if (FULLSCREEN)
 		godRaysBuffer1.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGBA8, GL_LINEAR, GL_CLAMP_TO_EDGE);
@@ -725,38 +746,62 @@ void Game::initializeGame()
 	}*/
 
 	if (FULLSCREEN)
-		WorkBuffer1.InitColorTexture(0,FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	{
+		//WorkBuffer1.InitColorTexture(0, FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+		WorkBuffer1.addColorTarget(GL_RGB8);
+		WorkBuffer1.init(FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE);
+	}
 	else
-	WorkBuffer1.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
-	if (!WorkBuffer1.CheckFBO())
+	{
+		//WorkBuffer1.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+		WorkBuffer1.addColorTarget(GL_RGB8);
+		WorkBuffer1.init(WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE);
+	}
+	/*if (!WorkBuffer1.CheckFBO())
 	{
 		std::cout << "WB1 FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
-	}
+	}*/
 
 	if (FULLSCREEN)
-		WorkBuffer2.InitColorTexture(0, FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	{
+		//WorkBuffer2.InitColorTexture(0, FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+		WorkBuffer2.addColorTarget(GL_RGB8);
+		WorkBuffer2.init(FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE);
+	}
 	else
-	WorkBuffer2.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
-	if (!WorkBuffer2.CheckFBO())
+	{
+		//WorkBuffer2.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+		WorkBuffer2.addColorTarget(GL_RGB8);
+		WorkBuffer2.init(WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE);
+	}
+	/*if (!WorkBuffer2.CheckFBO())
 	{
 		std::cout << "WB2 FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
-	}
+	}*/
 	//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
 	//These parameters can be changed to whatever you want
 	if (FULLSCREEN)
-		HudMap.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	{
+		//HudMap.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
+		HudMap.addColorTarget(GL_RGBA8);
+		HudMap.init(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	}
 	else
-	HudMap.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
-	if (!HudMap.CheckFBO())
+	{
+		//HudMap.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
+		HudMap.addColorTarget(GL_RGBA8);
+		HudMap.init(WINDOW_WIDTH, WINDOW_HEIGHT);
+	}
+	/*if (!HudMap.CheckFBO())
 	{
 		std::cout << "HudMap FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
-	}
+	}*/
 
 //================================================================//
 	//Camera Init
@@ -1734,25 +1779,34 @@ void Game::drawEndScreen()
 
 	DeferredComposite.Bind();
 
-	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+	/*glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
 	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));*/
 
-
+	GBuffer.bindColorAsTexture(0, 0);
+	ShadowMap.bindDepthAsTexture(1);
+	GBuffer.bindColorAsTexture(1, 3);
+	GBuffer.bindColorAsTexture(2, 4);
+	GBuffer.bindResolution();
 
 	DrawFullScreenQuad();
 
-	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	GBuffer.unbindTexture(3);
+	GBuffer.unbindTexture(2);
+	ShadowMap.unbindTexture(1);
+	GBuffer.unbindTexture(0);
+
+	/*glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);*/ //Why was this not here in week 10 vid?
 
 	DeferredComposite.UnBind();
 	DeferredLighting.UnBind();
@@ -1820,7 +1874,8 @@ void Game::drawEndScreen()
 	BloomHighPass.SendUniform("uTex", 0);
 	BloomHighPass.SendUniform("uThreshold", 1.0f);
 	WorkBuffer1.Bind();
-	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	//glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	DeferredComposite.bindColorAsTexture(0, 0);
 	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	WorkBuffer1.UnBind();
@@ -1841,7 +1896,8 @@ void Game::drawEndScreen()
 		else
 			BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
 		WorkBuffer2.Bind();
-		glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+		//glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+		WorkBuffer1.bindColorAsTexture(0, 0);
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		WorkBuffer2.UnBind();
@@ -1855,7 +1911,8 @@ void Game::drawEndScreen()
 		else
 			BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
 		WorkBuffer1.Bind();
-		glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
+		//glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
+		WorkBuffer2.bindColorAsTexture(0, 0);
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		WorkBuffer1.UnBind();
@@ -1871,9 +1928,11 @@ void Game::drawEndScreen()
 	BloomComposite.SendUniform("uScene", 0);
 	BloomComposite.SendUniform("uBloom", 1);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	//glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	DeferredComposite.bindColorAsTexture(0, 0);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+	//glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+	WorkBuffer1.bindColorAsTexture(0, 0);
 	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
@@ -1993,7 +2052,8 @@ void Game::drawScene()
 	GBuffer.Bind();
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
+	//glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
+	ShadowMap.bindDepthAsTexture(0);
 	glActiveTexture(GL_TEXTURE0);
 
 	///playerOne->draw(GBufferPass);
@@ -2173,15 +2233,19 @@ void Game::drawScene()
 
 	DeferredComposite.Bind();
 
-	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+	/*glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
 	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));*/
 
-
+	GBuffer.bindColorAsTexture(0, 0);
+	ShadowMap.bindDepthAsTexture(1);
+	GBuffer.bindColorAsTexture(1, 3);
+	GBuffer.bindColorAsTexture(2, 4);
+	GBuffer.bindResolution();
 
 	DrawFullScreenQuad();
 
@@ -2205,14 +2269,18 @@ void Game::drawScene()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_BLEND);
 
+	GBuffer.unbindTexture(3);
+	GBuffer.unbindTexture(2);
+	ShadowMap.unbindTexture(1);
+	GBuffer.unbindTexture(0);
 
-	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	/*glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);*/ //Why was this not here in week 10 vid?
 
 
 	//draw particles
@@ -2259,7 +2327,8 @@ void Game::drawScene()
 
 	WorkBuffer1.Bind();
 
-	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	//glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	DeferredComposite.bindColorAsTexture(0, 0);
 	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
@@ -2284,7 +2353,8 @@ void Game::drawScene()
 
 		WorkBuffer2.Bind();
 
-		glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+		//glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+		WorkBuffer1.bindColorAsTexture(0, 0);
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
@@ -2302,7 +2372,8 @@ void Game::drawScene()
 
 		WorkBuffer1.Bind();
 
-		glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
+		//glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
+		WorkBuffer2.bindColorAsTexture(0, 0);
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
@@ -2325,9 +2396,11 @@ void Game::drawScene()
 	BloomComposite.SendUniform("uBloom", 1);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	//glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	DeferredComposite.bindColorAsTexture(0, 0);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+	//glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+	WorkBuffer1.bindColorAsTexture(0, 1);
 	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
@@ -2377,25 +2450,34 @@ void Game::drawCSS()
 
 	DeferredComposite.Bind();
 
-	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+	/*glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
 	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));*/
 
-
+	GBuffer.bindColorAsTexture(0, 0);
+	ShadowMap.bindDepthAsTexture(1);
+	GBuffer.bindColorAsTexture(1, 3);
+	GBuffer.bindColorAsTexture(2, 4);
+	GBuffer.bindResolution();
 
 	DrawFullScreenQuad();
 
-	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	GBuffer.unbindTexture(3);
+	GBuffer.unbindTexture(2);
+	ShadowMap.unbindTexture(1);
+	GBuffer.unbindTexture(0);
+
+	/*glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);*/ //Why was this not here in week 10 vid?
 
 	DeferredComposite.UnBind();
 	DeferredLighting.UnBind();
@@ -2463,7 +2545,8 @@ void Game::drawCSS()
 	BloomHighPass.SendUniform("uTex", 0);
 	BloomHighPass.SendUniform("uThreshold", 1.0f);
 	WorkBuffer1.Bind();
-	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	//glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	DeferredComposite.bindColorAsTexture(0, 0);
 	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	WorkBuffer1.UnBind();
@@ -2484,7 +2567,8 @@ void Game::drawCSS()
 		else
 			BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
 		WorkBuffer2.Bind();
-		glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+		//glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+		WorkBuffer1.bindColorAsTexture(0, 0);
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		WorkBuffer2.UnBind();
@@ -2498,7 +2582,8 @@ void Game::drawCSS()
 		else
 			BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
 		WorkBuffer1.Bind();
-		glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
+		//glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
+		WorkBuffer2.bindColorAsTexture(0, 0);
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		WorkBuffer1.UnBind();
@@ -2514,9 +2599,11 @@ void Game::drawCSS()
 	BloomComposite.SendUniform("uScene", 0);
 	BloomComposite.SendUniform("uBloom", 1);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	//glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	DeferredComposite.bindColorAsTexture(0, 0);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+	//glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+	WorkBuffer1.bindColorAsTexture(0, 0);
 	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
@@ -2565,25 +2652,34 @@ void Game::drawSSS()
 
 	DeferredComposite.Bind();
 
-	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+	/*glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
 	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));*/
 
-
+	GBuffer.bindColorAsTexture(0, 0);
+	ShadowMap.bindDepthAsTexture(1);
+	GBuffer.bindColorAsTexture(1, 3);
+	GBuffer.bindColorAsTexture(2, 4);
+	GBuffer.bindResolution();
 
 	DrawFullScreenQuad();
 
-	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	GBuffer.unbindTexture(3);
+	GBuffer.unbindTexture(2);
+	ShadowMap.unbindTexture(1);
+	GBuffer.unbindTexture(0);
+
+	/*glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);*/ //Why was this not here in week 10 vid?
 
 	DeferredComposite.UnBind();
 	DeferredLighting.UnBind();
@@ -2651,7 +2747,8 @@ void Game::drawSSS()
 	BloomHighPass.SendUniform("uTex", 0);
 	BloomHighPass.SendUniform("uThreshold", 1.0f);
 	WorkBuffer1.Bind();
-	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	//glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	DeferredComposite.bindColorAsTexture(0, 0);
 	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	WorkBuffer1.UnBind();
@@ -2672,7 +2769,8 @@ void Game::drawSSS()
 		else
 			BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
 		WorkBuffer2.Bind();
-		glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+		//glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+		WorkBuffer1.bindColorAsTexture(0, 0);
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		WorkBuffer2.UnBind();
@@ -2686,7 +2784,8 @@ void Game::drawSSS()
 		else
 			BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
 		WorkBuffer1.Bind();
-		glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
+		//glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
+		WorkBuffer2.bindColorAsTexture(0, 0);
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		WorkBuffer1.UnBind();
@@ -2702,9 +2801,11 @@ void Game::drawSSS()
 	BloomComposite.SendUniform("uScene", 0);
 	BloomComposite.SendUniform("uBloom", 1);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	//glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	DeferredComposite.bindColorAsTexture(0, 0);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+	//glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+	WorkBuffer1.bindColorAsTexture(0, 0);
 	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
@@ -2941,25 +3042,34 @@ void Game::drawMenu()
 
 	DeferredComposite.Bind();
 
-	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+	/*glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
 	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));*/
 
-
+	GBuffer.bindColorAsTexture(0, 0);
+	ShadowMap.bindDepthAsTexture(1);
+	GBuffer.bindColorAsTexture(1, 3);
+	GBuffer.bindColorAsTexture(2, 4);
+	GBuffer.bindResolution();
 
 	DrawFullScreenQuad();
 
-	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	GBuffer.unbindTexture(3);
+	GBuffer.unbindTexture(2);
+	ShadowMap.unbindTexture(1);
+	GBuffer.unbindTexture(0);
+
+	/*glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);*/ //Why was this not here in week 10 vid?
 
 	DeferredComposite.UnBind();
 	DeferredLighting.UnBind();
@@ -3033,7 +3143,8 @@ void Game::drawMenu()
 
 	WorkBuffer1.Bind();
 
-	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	//glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	DeferredComposite.bindColorAsTexture(0, 0);
 	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
@@ -3058,7 +3169,8 @@ void Game::drawMenu()
 
 		WorkBuffer2.Bind();
 
-		glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+		//glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+		WorkBuffer1.bindColorAsTexture(0, 0);
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
@@ -3076,7 +3188,8 @@ void Game::drawMenu()
 
 		WorkBuffer1.Bind();
 
-		glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
+		//glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
+		WorkBuffer2.bindColorAsTexture(0, 0);
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
@@ -3099,9 +3212,11 @@ void Game::drawMenu()
 	BloomComposite.SendUniform("uBloom", 1);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	//glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	DeferredComposite.bindColorAsTexture(0, 0);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+	//glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+	WorkBuffer1.bindColorAsTexture(0, 0);
 	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);

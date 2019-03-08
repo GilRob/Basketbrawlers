@@ -6,6 +6,8 @@
 #include "Mesh.h"
 #include "Texture.h"
 #include "FrameBuffer.h"
+#include "UniformBuffer.h"
+#include "VertexBufferObject.h"
 #include "ParticleEffect.h"
 #include "Object.h"
 #include "PointLightObj.h"
@@ -166,14 +168,14 @@ public:
 	std::vector<Hitbox*>Netbox;//2
 
 	/// FRAMEBUFFERS ///
-	FrameBuffer GBuffer; //Utility buffer to hold positions and normals
-	FrameBuffer DeferredComposite; //Where the actual scene is loaded to
-	FrameBuffer ShadowMap;
+	Gbuffer GBuffer; //Utility buffer to hold positions and normals
+	Framebuffer DeferredComposite; //Where the actual scene is loaded to
+	Framebuffer ShadowMap;
 	//FrameBuffer EdgeMap;
 	//Bloom work buffers
-	FrameBuffer WorkBuffer1;
-	FrameBuffer WorkBuffer2;
-	FrameBuffer HudMap;
+	Framebuffer WorkBuffer1;
+	Framebuffer WorkBuffer2;
+	Framebuffer HudMap;
 
 	//Transform CameraTransform;
 	//Transform CameraProjection;

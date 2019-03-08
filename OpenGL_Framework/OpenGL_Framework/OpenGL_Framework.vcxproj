@@ -46,7 +46,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -61,7 +61,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -80,6 +80,7 @@
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="hitbox.cpp" />
+    <ClCompile Include="IO.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="object.cpp" />
@@ -89,7 +90,9 @@
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="UniformBuffer.cpp" />
     <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="VertexBufferObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -101,6 +104,7 @@
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="hitbox.h" />
+    <ClInclude Include="IO.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="Particle.h" />
@@ -111,7 +115,9 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="UniformBuffer.h" />
     <ClInclude Include="Utilities.h" />
+    <ClInclude Include="VertexBufferObject.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\AnimationShader.vert" />
