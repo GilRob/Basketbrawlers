@@ -7,7 +7,7 @@ $$$ - Particle Signal
 
 */
 
-#define FULLSCREEN true
+#define FULLSCREEN false
 #define VSYNC true
 
 Game::Game()
@@ -3056,7 +3056,9 @@ void Game::drawMenu()
 	GBuffer.bindColorAsTexture(2, 4);
 	GBuffer.bindResolution();
 
-	DrawFullScreenQuad();
+	//DrawFullScreenQuad();
+	GBuffer.renderToFSQ();
+	ShadowMap.renderToFSQ();
 
 	GBuffer.unbindTexture(3);
 	GBuffer.unbindTexture(2);
@@ -3145,7 +3147,8 @@ void Game::drawMenu()
 
 	//glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
 	DeferredComposite.bindColorAsTexture(0, 0);
-	DrawFullScreenQuad();
+	//DrawFullScreenQuad();
+	DeferredComposite.renderToFSQ();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
 	WorkBuffer1.UnBind();
@@ -3171,7 +3174,8 @@ void Game::drawMenu()
 
 		//glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
 		WorkBuffer1.bindColorAsTexture(0, 0);
-		DrawFullScreenQuad();
+		//DrawFullScreenQuad();
+		WorkBuffer1.renderToFSQ();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
 		WorkBuffer2.UnBind();
@@ -3190,7 +3194,8 @@ void Game::drawMenu()
 
 		//glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
 		WorkBuffer2.bindColorAsTexture(0, 0);
-		DrawFullScreenQuad();
+		//DrawFullScreenQuad();
+		WorkBuffer2.renderToFSQ();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
 		WorkBuffer1.UnBind();
@@ -3217,13 +3222,15 @@ void Game::drawMenu()
 	glActiveTexture(GL_TEXTURE1);
 	//glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
 	WorkBuffer1.bindColorAsTexture(0, 0);
-	DrawFullScreenQuad();
+	//DrawFullScreenQuad();
+	WorkBuffer1.renderToFSQ();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
 	BloomComposite.UnBind();
 
+	Framebuffer::drawFSQ();
 
 	glutSwapBuffers();
 }
