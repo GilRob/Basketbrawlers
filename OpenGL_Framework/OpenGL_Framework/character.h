@@ -21,9 +21,14 @@
 enum Particall
 {
 	NOACTION,
+	LANDDUST,
 	LDASHDUST,
 	RDASHDUST,
-	LANDDUST,
+	LAUNCHDUST,
+	HITSPARKL,
+	HITSPARKR,
+	METERFLAME,
+	ULTFX,
 };
 
 //Will be the parent class for all other charcaters
@@ -214,6 +219,8 @@ public:
 	Texture hurtTexture;
 	float aniTimer;
 	unsigned int index;
+
+	bool ultFrame1;
 protected:
 	//model
 

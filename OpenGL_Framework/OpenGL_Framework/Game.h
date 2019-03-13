@@ -123,6 +123,7 @@ public:
 	unsigned int scene = 0; //0=menu, 1=selecting, 2=fighting
 	bool gameDone = false;
 	bool stun = true;
+	int ultRumbleTimer = 0;
 
 	//Menu
 	unsigned int selectedButton = 0;
@@ -160,6 +161,16 @@ public:
 	ParticleEffect DustLand;
 	ParticleEffect DustDashL;	
 	ParticleEffect DustDashR;
+
+	//new
+	ParticleEffect DustLaunch;
+	ParticleEffect HitSparkL;
+	ParticleEffect HitSparkR;
+	ParticleEffect MeterFlame1;
+	ParticleEffect MeterFlame2;
+
+	ParticleEffect KnightUltFX;
+	ParticleEffect NinjaUltFX;
 
 
 	std::vector<Texture*> time;

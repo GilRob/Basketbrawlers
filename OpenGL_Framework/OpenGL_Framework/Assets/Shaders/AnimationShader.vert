@@ -4,18 +4,12 @@ uniform mat4 uModel;
 uniform mat4 uView;
 uniform mat4 uProj;
 
-layout(location = 0) in vec4 in_vert;
-layout(location = 1) in vec4 in_uv;
-layout(location = 2) in vec4 in_normal;
-layout(location = 3) in vec4 in_vert2;
-layout(location = 4) in vec4 in_uv2;
-layout(location = 5) in vec4 in_normal2;
-/*layout(location = 6) in vec4 in_vert3;
-layout(location = 7) in vec4 in_uv3;
-layout(location = 8) in vec4 in_normal3;
-layout(location = 9) in vec4 in_vert4;
-layout(location = 10) in vec4 in_uv4;
-layout(location = 11) in vec4 in_normal4;*/
+layout(location = 0) in vec3 in_vert;
+layout(location = 1) in vec2 in_uv;
+layout(location = 2) in vec3 in_normal;
+layout(location = 3) in vec3 in_vert2;
+layout(location = 4) in vec2 in_uv2;
+layout(location = 5) in vec3 in_normal2;
 
 uniform float interp = 0.5;
 //uniform int index = 0; 
@@ -44,28 +38,23 @@ vec4 catmull(vec4 p0, vec4 p1, vec4 p2, vec4 p3, float t)
 
 void main()
 {
-	texcoord = in_uv.xy;
+
+	vec2 interpUV;
+	interpUV = mix(in_uv, in_uv2, interp);
+	
+	texcoord = interpUV;
 	
 	//normals
-	vec4 interpNorm;
-	//if (index == 0)
-		interpNorm = mix(in_normal, in_normal2, interp);
-	//else if (index == 1)
-	//	interpNorm = mix(in_normal2, in_normal, interp);
-	//else
-	//	interpNorm = in_normal;
+	vec3 interpNorm;
+	interpNorm = mix(in_normal, in_normal2, interp);
 	
-	norm = mat3(uView) * mat3(uModel) * interpNorm.xyz;
+	norm = mat3(uView) * mat3(uModel) * interpNorm;
 	
 	//vertex
-	vec4 lerp; 
-	//if (index == 0)
-		lerp = mix(in_vert, in_vert2, interp);
-	//else if (index == 1)
-	//	lerp = mix(in_vert2, in_vert, interp);
-	//else lerp = in_vert;
-	
-	pos = (uView * uModel * vec4(lerp)).xyz;
+	vec3 lerp; 
+	lerp = mix(in_vert, in_vert2, interp);
+		
+	pos = (uView * uModel * vec4(lerp, 1.0f)).xyz;
 
 	gl_Position = uProj * vec4(pos, 1.0);
 }

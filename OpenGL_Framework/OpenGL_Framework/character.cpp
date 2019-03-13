@@ -40,6 +40,11 @@ void Character::update(int t, std::vector<bool> inputs) {
 	//COMBO METER
 	comboTick();
 
+	//meter flame
+	if ((comboMeter > 150 && action != ACTION_HIT && action != ACTION_IN_NET) || action == ACTION_RESPAWN || ultMode) {
+		partiQueue.push(METERFLAME);						//$$$
+	}
+
 	//actual update
 	force.x = 0;
 	transform = atkInputHandler(inputs);
@@ -136,13 +141,12 @@ void Character::update(int t, std::vector<bool> inputs) {
 			action = ACTION_PLACEHOLDER;
 			idle();
 			//velocity.x *= 0.7f;
-			partiQueue.push(LANDDUST);				//$$$
+			partiQueue.push(LANDDUST);						//$$$
 		}
 		else if (currentFrame < activeFrames - 5 && (action == ACTION_SIDE_AERIAL || action == ACTION_UP_AERIAL || action == ACTION_DOWN_AERIAL || action == ACTION_NEUTRAL_AERIAL)) {//landing lag
 			currentFrame = activeFrames - 3;
 			index = aniFrames[action].size() -1;
 			//velocity.x *= 0.7f;
-			partiQueue.push(LANDDUST);				//$$$
 		}
 	}
 	else {
@@ -394,8 +398,10 @@ Transform Character::atkInputHandler(std::vector<bool> inputs)
 		//If in Hitstun reduce directional influence
 		if (currentFrame != 1) {
 			force.x = (inputs[1] - inputs[3]) *  diMultiplier;
-			if (currentFrame < (unsigned int)hitframes)//only launched for hitframes, character will just be stunned for the remaining frames (hitstun + moves kb)
-				velocity = hitForce = hitForce * 0.99f;
+			if (currentFrame < (unsigned int)hitframes) {//only launched for hitframes, character will just be stunned for the remaining frames (hitstun + moves kb)
+				velocity = hitForce = hitForce * 0.99f;			
+				partiQueue.push(LAUNCHDUST);				//$$$
+			}
 			else
 				result.RotateZ((float)(currentFrame - hitframes)*(-0.5f + (int)facingRight));
 		}
@@ -403,8 +409,11 @@ Transform Character::atkInputHandler(std::vector<bool> inputs)
 			force = glm::vec3(0, 0, 0);
 			acceleration = glm::vec3(0, 0, 0);
 			velocity = glm::vec3(0, 0, 0);
+			if (facingRight) 
+				partiQueue.push(HITSPARKL);				//$$$
+			else
+				partiQueue.push(HITSPARKR);				//$$$
 		}
-
 		if (facingRight)
 			result.RotateY(-45.0f);
 		else
@@ -638,10 +647,6 @@ Transform Character::initialDash(bool right, bool left)
 		int direction = (int)facingRight;
 		if (facingRight == 0) {
 			direction = -1;
-			partiQueue.push(RDASHDUST);						//$$$
-		}
-		else {
-			partiQueue.push(LDASHDUST);						//$$$
 		}
 
 
@@ -661,8 +666,11 @@ Transform Character::initialDash(bool right, bool left)
 		int direction = (int)facingRight;
 		if (facingRight == 0) {
 			direction = -1;
+			partiQueue.push(RDASHDUST);						//$$$
 		}
-
+		else {
+			partiQueue.push(LDASHDUST);						//$$$
+		}
 		//dashdancing
 		if (direction == 1 && left == true) { 
 			velocity.x *= -0.1f; 
@@ -774,6 +782,7 @@ Transform Character::jump()
 		currentFrame = 1;
 		interuptable = false;
 		velocity.x *= 0.9f;
+		partiQueue.push(LANDDUST);						//$$$
 	}
 	else if (action == ACTION_JUMP && currentFrame <= activeFrames) {
 
@@ -802,6 +811,7 @@ Transform Character::jump2()
 		interuptable = false;
 		jumpsLeft--;
 		velocity.x *= 0.5f;
+		partiQueue.push(LANDDUST);						//$$$
 	}
 	else if (action == ACTION_JUMP2 && currentFrame <= activeFrames) {
 

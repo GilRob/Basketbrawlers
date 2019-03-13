@@ -113,8 +113,10 @@ public:
 
 	void update(int t, std::vector<bool> inputs) {
 		//check for ult
-		if (inputs[9] && comboMeter > 0) {
+		if (inputs[9] && comboMeter > 0 && !ultMode) {
 			ultMode = true;
+			partiQueue.push(ULTFX);						//$$$
+			ultFrame1 = true;
 		}
 
 		if (ultMode) {

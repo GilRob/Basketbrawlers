@@ -585,6 +585,9 @@ void Game::initializeGame()
 
 
 	ConfettiEffectRedLeft.PartiParse("./Assets/Data/redleftconf.txt", "./Assets/Textures/RedConfetti.png");
+	
+
+
 
 	//if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)30))
 	//{
@@ -603,58 +606,187 @@ void Game::initializeGame()
 	//ConfettiEffectRedLeft.Mass = 2.0f;
 	//ConfettiEffectRedLeft.Gravity = 0.2f;
 
-	if (!DustLand.Init("./Assets/Textures/dust.png", (unsigned int)50, (unsigned int)3))
+	if (!DustLand.Init("./Assets/Textures/fog.png", (unsigned int)50, (unsigned int)2))
 	{
 		std::cout << "Dust Particle-Effect failed ot initialize.\n";
 		system("pause");
 		exit(0);
 	}
-	DustLand.LerpAlpha = glm::vec2(1.0f, 1.0f);
-	DustLand.LerpSize = glm::vec2(1.0f, 2.0f);
-	DustLand.RangeLifetime = glm::vec2(0.3f, 0.6f);
-	DustLand.RangeVelocity = glm::vec2(1.0f, 2.0f);
-	DustLand.RangeZ = glm::vec2(-1.0f, -1.0f);
-	DustLand.InitialXRange = glm::vec2(-1.0f, 1.0f);
-	DustLand.InitialYRange = glm::vec2(1.0f, 1.0f);
+	DustLand.LerpAlpha = glm::vec2(0.8f, 0.0f);
+	DustLand.LerpSize = glm::vec2(1.0f, 3.0f);
+	DustLand.RangeLifetime = glm::vec2(0.1f, 0.5f);
+	DustLand.RangeVelocity = glm::vec2(3.0f, 7.0f);
+	DustLand.RangeZ = glm::vec2(-2.1f, -2.0f);
+	DustLand.InitialXRange = glm::vec2(-15.0f, 15.0f);
+	DustLand.InitialYRange = glm::vec2(0.1f, 0.5f);
 	DustLand.HaveGravity = true;
 	DustLand.Mass = 1.0f;
-	DustLand.Gravity = 0.0f;
+	DustLand.Gravity = -0.15f;
 
-	if (!DustDashL.Init("./Assets/Textures/dust.png", (unsigned int)50, (unsigned int)1))
+	if (!DustDashL.Init("./Assets/Textures/fog.png", (unsigned int)50, (unsigned int)1))
 	{
 		std::cout << "Dust Particle-Effect failed ot initialize.\n";
 		system("pause");
 		exit(0);
 	}
-	DustDashL.LerpAlpha = glm::vec2(1.0f, 1.0f);
-	DustDashL.LerpSize = glm::vec2(1.0f, 2.0f);
-	DustDashL.RangeLifetime = glm::vec2(0.3f, 0.6f);
-	DustDashL.RangeVelocity = glm::vec2(1.0f, 2.0f);
-	DustDashL.RangeZ = glm::vec2(-1.0f, -1.0f);
-	DustDashL.InitialXRange = glm::vec2(-1.0f, -1.0f);
-	DustDashL.InitialYRange = glm::vec2(1.0f, 1.0f);
+	DustDashL.LerpAlpha = glm::vec2(1.0f, 0.0f);
+	DustDashL.LerpSize = glm::vec2(1.5f, 3.0f);
+	DustDashL.RangeLifetime = glm::vec2(0.1f, 0.5f);
+	DustDashL.RangeVelocity = glm::vec2(1.0f, 5.0f);
+	DustDashL.RangeZ = glm::vec2(-2.1f, -2.1f);
+	DustDashL.InitialXRange = glm::vec2(-5.0f, -3.0f);
+	DustDashL.InitialYRange = glm::vec2(0.5f, 1.0f);
 	DustDashL.HaveGravity = true;
 	DustDashL.Mass = 1.0f;
-	DustDashL.Gravity = 0.0f;
+	DustDashL.Gravity = -0.15f;
 
-	if (!DustDashR.Init("./Assets/Textures/dust.png", (unsigned int)50, (unsigned int)1))
+	if (!DustDashR.Init("./Assets/Textures/fog.png", (unsigned int)50, (unsigned int)1))
 	{
 		std::cout << "Dust Particle-Effect failed ot initialize.\n";
 		system("pause");
 		exit(0);
 	}
-	DustDashR.LerpAlpha = glm::vec2(1.0f, 1.0f);
-	DustDashR.LerpSize = glm::vec2(1.0f, 2.0f);
-	DustDashR.RangeLifetime = glm::vec2(0.3f, 0.6f);
-	DustDashR.RangeVelocity = glm::vec2(1.0f, 2.0f);
-	DustDashR.RangeZ = glm::vec2(-1.0f, -1.0f);
-	DustDashR.InitialXRange = glm::vec2(1.0f, 1.0f);
-	DustDashR.InitialYRange = glm::vec2(1.0f, 1.0f);
+	DustDashR.LerpAlpha = glm::vec2(1.0f, 0.0f);
+	DustDashR.LerpSize = glm::vec2(1.5f, 3.0f);
+	DustDashR.RangeLifetime = glm::vec2(0.1f, 0.5f);
+	DustDashR.RangeVelocity = glm::vec2(1.0f, 5.0f);
+	DustDashR.RangeZ = glm::vec2(-2.1f, -2.1f);
+	DustDashR.InitialXRange = glm::vec2(3.0f, 5.0f);
+	DustDashR.InitialYRange = glm::vec2(0.5f, 1.0f);
 	DustDashR.HaveGravity = true;
 	DustDashR.Mass = 1.0f;
-	DustDashR.Gravity = 0.0f;
+	DustDashR.Gravity = -0.15f;
 
+	if (!DustLaunch.Init("./Assets/Textures/fog.png", (unsigned int)100, (unsigned int)5))
+	{
+		std::cout << "Dust Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	DustLaunch.LerpAlpha = glm::vec2(0.5f, 0.0f);
+	DustLaunch.LerpSize = glm::vec2(1.5f, 2.0f);
+	DustLaunch.RangeLifetime = glm::vec2(0.1f, 1.5f);
+	DustLaunch.RangeVelocity = glm::vec2(1.0f, 2.0f);
+	DustLaunch.RangeZ = glm::vec2(1.0f, 1.0f);
+	DustLaunch.InitialXRange = glm::vec2(-1.0f, 1.0f);
+	DustLaunch.InitialYRange = glm::vec2(-2.0f, 2.0f);
+	DustLaunch.HaveGravity = true;
+	DustLaunch.Mass = 1.0f;
+	DustLaunch.Gravity = 0.01f;
 
+	if (!HitSparkR.Init("./Assets/Textures/RedConfetti.png", (unsigned int)500, (unsigned int)30))
+	{
+		std::cout << "Spark Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	HitSparkR.LerpAlpha = glm::vec2(0.5f, 0.0f);
+	HitSparkR.LerpSize = glm::vec2(0.2f, 0.3f);
+	HitSparkR.RangeLifetime = glm::vec2(0.9f, 1.2f);
+	HitSparkR.RangeVelocity = glm::vec2(10.0f, 20.0f);
+	HitSparkR.RangeZ = glm::vec2(-1.0f, -1.0f);
+	HitSparkR.InitialXRange = glm::vec2(-0.1f, 1.0f);
+	HitSparkR.InitialYRange = glm::vec2(-0.4f, 0.9f);
+	HitSparkR.HaveGravity = true;
+	HitSparkR.Mass = 1.0f;
+	HitSparkR.Gravity = 0.6f;
+	HitSparkR.noiseOn = true;
+	HitSparkR.noiseStrength = 1;
+
+	if (!HitSparkL.Init("./Assets/Textures/RedConfetti.png", (unsigned int)500, (unsigned int)30))
+	{
+		std::cout << "Spark Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	HitSparkL.LerpAlpha = glm::vec2(0.5f, 0.0f);
+	HitSparkL.LerpSize = glm::vec2(0.2f, 0.3f);
+	HitSparkL.RangeLifetime = glm::vec2(0.9f, 1.2f);
+	HitSparkL.RangeVelocity = glm::vec2(10.0f, 20.0f);
+	HitSparkL.RangeZ = glm::vec2(-1.0f, -1.0f);
+	HitSparkL.InitialXRange = glm::vec2(-1.0f, 0.1f);
+	HitSparkL.InitialYRange = glm::vec2(-0.4f, 0.9f);
+	HitSparkL.HaveGravity = true;
+	HitSparkL.Mass = 1.0f;
+	HitSparkL.Gravity = 0.6f;
+	HitSparkL.noiseOn = true;
+	HitSparkL.noiseStrength = 1;
+
+	if (!MeterFlame1.Init("./Assets/Textures/redFog.png", (unsigned int)500, (unsigned int)20))
+	{
+		std::cout << "MeterFlame Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	MeterFlame1.LerpAlpha = glm::vec2(0.1f, 0.0f);
+	MeterFlame1.LerpSize = glm::vec2(1.0f, 1.5f);
+	MeterFlame1.RangeLifetime = glm::vec2(0.2f, 0.6f);
+	MeterFlame1.RangeVelocity = glm::vec2(1.0f, 5.0f);
+	MeterFlame1.RangeZ = glm::vec2(-1.0f, -1.0f);
+	MeterFlame1.InitialXRange = glm::vec2(-5.0f, 5.0f);
+	MeterFlame1.InitialYRange = glm::vec2(0.0f, 1.0f);
+	MeterFlame1.HaveGravity = true;
+	MeterFlame1.Mass = 1.0f;
+	MeterFlame1.Gravity = -0.3f;
+	MeterFlame1.noiseOn = true;
+	MeterFlame1.noiseStrength = 10;
+	
+	if (!MeterFlame2.Init("./Assets/Textures/blueFog.png", (unsigned int)500, (unsigned int)20))
+	{
+		std::cout << "MeterFlame Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	MeterFlame2.LerpAlpha = glm::vec2(0.1f, 0.0f);
+	MeterFlame2.LerpSize = glm::vec2(1.0f, 1.5f);
+	MeterFlame2.RangeLifetime = glm::vec2(0.2f, 0.6f);
+	MeterFlame2.RangeVelocity = glm::vec2(1.0f, 5.0f);
+	MeterFlame2.RangeZ = glm::vec2(-1.0f, -1.0f);
+	MeterFlame2.InitialXRange = glm::vec2(-5.0f, 5.0f);
+	MeterFlame2.InitialYRange = glm::vec2(0.0f, 1.0f);
+	MeterFlame2.HaveGravity = true;
+	MeterFlame2.Mass = 1.0f;
+	MeterFlame2.Gravity = -0.3f;
+	MeterFlame2.noiseOn = true;
+	MeterFlame2.noiseStrength = 10;
+
+	if (!KnightUltFX.Init("./Assets/Textures/RedConfetti.png", (unsigned int)500, (unsigned int)60))
+	{
+		std::cout << "Spark Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	KnightUltFX.LerpAlpha = glm::vec2(0.5f, 0.0f);
+	KnightUltFX.LerpSize = glm::vec2(0.2f, 0.3f);
+	KnightUltFX.RangeLifetime = glm::vec2(0.9f, 1.2f);
+	KnightUltFX.RangeVelocity = glm::vec2(10.0f, 20.0f);
+	KnightUltFX.RangeZ = glm::vec2(-1.0f, -1.0f);
+	KnightUltFX.InitialXRange = glm::vec2(-1.0f, 1.0f);
+	KnightUltFX.InitialYRange = glm::vec2(-0.4f, 0.9f);
+	KnightUltFX.HaveGravity = true;
+	KnightUltFX.Mass = 1.0f;
+	KnightUltFX.Gravity = 0.6f;
+	KnightUltFX.noiseOn = true;
+	KnightUltFX.noiseStrength = 1;
+
+	if (!NinjaUltFX.Init("./Assets/Textures/fog.png", (unsigned int)500, (unsigned int)30))
+	{
+		std::cout << "Spark Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	NinjaUltFX.LerpAlpha = glm::vec2(0.7f, 0.0f);
+	NinjaUltFX.LerpSize = glm::vec2(1.5f, 2.0f);
+	NinjaUltFX.RangeLifetime = glm::vec2(0.5f, 0.8f);
+	NinjaUltFX.RangeVelocity = glm::vec2(2.0f, 10.0f);
+	NinjaUltFX.RangeZ = glm::vec2(-1.0f, -1.0f);
+	NinjaUltFX.InitialXRange = glm::vec2(-1.0f, 1.0f);
+	NinjaUltFX.InitialYRange = glm::vec2(-0.4f, 0.9f);
+	NinjaUltFX.HaveGravity = true;
+	NinjaUltFX.Mass = 1.0f;
+	NinjaUltFX.Gravity = 0.05f;
+	NinjaUltFX.noiseOn = true;
+	NinjaUltFX.noiseStrength = 1;
 
 //=======================================================================//
 	//Init Scene & Frame Buffers
@@ -1322,6 +1454,21 @@ void Game::updateScene()
 	}
 
 	updateInputs();
+
+	//make camera rumble when ult is activated
+	if (players[0]->ultFrame1 || players[1]->ultFrame1) {
+		players[0]->ultFrame1 = false;
+		players[1]->ultFrame1 = false;
+		ultRumbleTimer = 0;
+	}
+	else if (ultRumbleTimer < 5) {
+		GameCamera.rumble = true;
+		ultRumbleTimer++;
+	}
+	else if (ultRumbleTimer == 5) {
+		GameCamera.rumble = false;
+		ultRumbleTimer = 6;
+	}
 	
 	players[0]->update((int)deltaTime, inputs);
 	players[1]->update((int)deltaTime, inputs2);
@@ -1341,6 +1488,7 @@ void Game::updateScene()
 			players[i]->ultMode = false;
 			players[i]->setMeter(players[i]->getMeter() + 100);
 		}
+		//actual ult here
 		else if (players[i]->type == 2 && players[i]->ultMode) {
 			//swap positions
 			glm::vec3 temp = players[i]->getPosition();
@@ -1364,7 +1512,9 @@ void Game::updateScene()
 			players[(i + 1) % 2]->currentFrame = players[i]->activeFrames - 1;
 
 			//turn ult off
+			players[i]->partiQueue.push(ULTFX);						//$$$
 			players[i]->ultMode = false;
+			players[i]->ultFrame1 = true;
 
 			//correct hit
 			if (players[i]->action == players[i]->ACTION_HIT)
@@ -1373,58 +1523,127 @@ void Game::updateScene()
 		}
 	}
 	
-	//particle listener
-	if (players[0]->partiQueue.size() > 0) {
-		//cout << "Spawned";
-		switch (players[0]->partiQueue.front())
-		{
-		case LDASHDUST:
-			DustDashL.RangeX = glm::vec2(players[0]->getPosition().x + 1.0f, players[0]->getPosition().x - 1.0f);
-			DustDashL.RangeY = glm::vec2(players[0]->getPosition().y-1.4f, players[0]->getPosition().y-1.6f);
-			DustDashL.Spawn(0.05f);
-			break;
-		case RDASHDUST:
-			DustDashR.RangeX = glm::vec2(players[0]->getPosition().x + 1.0f, players[0]->getPosition().x - 1.0f);
-			DustDashR.RangeY = glm::vec2(players[0]->getPosition().y-1.4f, players[0]->getPosition().y-1.6f);
-			DustDashR.Spawn(0.05f);
-			break;
-		case LANDDUST:
-			DustLand.RangeX = glm::vec2(players[0]->getPosition().x + 1.0f, players[0]->getPosition().x - 1.0f);
-			DustLand.RangeY = glm::vec2(players[0]->getPosition().y-1.4f, players[0]->getPosition().y-1.6f);
-			DustLand.Spawn(0.05f);
-			break;
-		default:
-			break;
+	for (int i = 0; i < 2; i++) {
+		//check 2 per loop
+		///only checking 1 per frame caused issues with spawn timing (if statement)
+		///checking everything in queue every frame caused issues with random frame drops (while loop)
+
+		//particle listener
+		if (players[0]->partiQueue.size() > 0) {
+			//cout << "Spawned";
+			switch (players[0]->partiQueue.front())
+			{
+			case LANDDUST:
+				DustLand.RangeX = glm::vec2(players[0]->getPosition().x + 0.5f, players[0]->getPosition().x - 0.5f);
+				DustLand.RangeY = glm::vec2(players[0]->getPosition().y - 1.4f, players[0]->getPosition().y - 1.6f);
+				DustLand.Spawn(0.05f);
+				break;
+			case LDASHDUST:
+				DustDashL.RangeX = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().x - 1.0f);
+				DustDashL.RangeY = glm::vec2(players[0]->getPosition().y - 1.4f, players[0]->getPosition().y - 1.6f);
+				DustDashL.Spawn(0.05f);
+				break;
+			case RDASHDUST:
+				DustDashR.RangeX = glm::vec2(players[0]->getPosition().x + 1.0f, players[0]->getPosition().x);
+				DustDashR.RangeY = glm::vec2(players[0]->getPosition().y - 1.4f, players[0]->getPosition().y - 1.6f);
+				DustDashR.Spawn(0.05f);
+				break;
+			case LAUNCHDUST:
+				DustLaunch.RangeX = glm::vec2(players[0]->getPosition().x + 0.7f, players[0]->getPosition().x - 0.7f);
+				DustLaunch.RangeY = glm::vec2(players[0]->getPosition().y + 1.5f, players[0]->getPosition().y + 3.0f);
+				DustLaunch.Spawn(0.05f);
+				break;
+			case HITSPARKL:
+				HitSparkL.RangeX = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().x);
+				HitSparkL.RangeY = glm::vec2(players[0]->getPosition().y + 1.5f, players[0]->getPosition().y + 1.5f);
+				HitSparkL.Spawn(0.05f);
+				break;
+			case HITSPARKR:
+				HitSparkR.RangeX = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().x);
+				HitSparkR.RangeY = glm::vec2(players[0]->getPosition().y + 1.5f, players[0]->getPosition().y + 1.5f);
+				HitSparkR.Spawn(0.05f);
+				break;
+			case METERFLAME:
+				MeterFlame1.RangeX = glm::vec2(players[0]->getPosition().x + 0.7f, players[0]->getPosition().x - 1.7f);
+				MeterFlame1.RangeY = glm::vec2(players[0]->getPosition().y - 0.7f, players[0]->getPosition().y + 4.0f);
+				MeterFlame1.Spawn(0.001f);
+				break;
+			case ULTFX:
+				if (players[0]->type == 1) {
+					KnightUltFX.RangeX = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().x);
+					KnightUltFX.RangeY = glm::vec2(players[0]->getPosition().y + 1.5f, players[0]->getPosition().y + 1.5f);
+					KnightUltFX.Spawn(0.05f);
+				}
+				if (players[0]->type == 2) {
+					NinjaUltFX.RangeX = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().x);
+					NinjaUltFX.RangeY = glm::vec2(players[0]->getPosition().y + 1.5f, players[0]->getPosition().y + 1.5f);
+					NinjaUltFX.Spawn(0.05f);
+				}
+				break;
+			default:
+				break;
+			}
+
+			players[0]->partiQueue.pop();
 		}
+		if (players[1]->partiQueue.size() > 0) {
+			//cout << "Spawned";
+			switch (players[1]->partiQueue.front())
+			{
+			case LANDDUST:
+				DustLand.RangeX = glm::vec2(players[1]->getPosition().x + 0.5f, players[1]->getPosition().x - 0.5f);
+				DustLand.RangeY = glm::vec2(players[1]->getPosition().y - 1.4f, players[1]->getPosition().y - 1.6f);
+				DustLand.Spawn(0.05f);
+				break;
+			case LDASHDUST:
+				DustDashL.RangeX = glm::vec2(players[1]->getPosition().x + 1.0f, players[1]->getPosition().x - 1.0f);
+				DustDashL.RangeY = glm::vec2(players[1]->getPosition().y - 1.4f, players[1]->getPosition().y - 1.6f);
+				DustDashL.Spawn(0.05f);
+				break;
+			case RDASHDUST:
+				DustDashR.RangeX = glm::vec2(players[1]->getPosition().x + 1.0f, players[1]->getPosition().x - 1.0f);
+				DustDashR.RangeY = glm::vec2(players[1]->getPosition().y - 1.4f, players[1]->getPosition().y - 1.6f);
+				DustDashR.Spawn(0.05f);
+				break;
+			case LAUNCHDUST:
+				DustLaunch.RangeX = glm::vec2(players[1]->getPosition().x + 0.7f, players[1]->getPosition().x - 0.7f);
+				DustLaunch.RangeY = glm::vec2(players[1]->getPosition().y + 1.5f, players[1]->getPosition().y + 3.0f);
+				DustLaunch.Spawn(0.05f);
+				break;
+			case HITSPARKL:
+				HitSparkL.RangeX = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().x);
+				HitSparkL.RangeY = glm::vec2(players[1]->getPosition().y + 1.5f, players[1]->getPosition().y + 1.5f);
+				HitSparkL.Spawn(0.05f);
+				break;
+			case HITSPARKR:
+				HitSparkR.RangeX = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().x);
+				HitSparkR.RangeY = glm::vec2(players[1]->getPosition().y + 1.5f, players[1]->getPosition().y + 1.5f);
+				HitSparkR.Spawn(0.05f);
+				break;
+			case METERFLAME:
+				MeterFlame2.RangeX = glm::vec2(players[1]->getPosition().x + 0.7f, players[1]->getPosition().x - 1.7f);
+				MeterFlame2.RangeY = glm::vec2(players[1]->getPosition().y - 0.7f, players[1]->getPosition().y + 4.0f);
+				MeterFlame2.Spawn(0.001f);
+				break;
+			case ULTFX:
+				if (players[1]->type == 1) {
+					KnightUltFX.RangeX = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().x);
+					KnightUltFX.RangeY = glm::vec2(players[1]->getPosition().y + 1.5f, players[1]->getPosition().y + 1.5f);
+					KnightUltFX.Spawn(0.05f);
+				}
+				if (players[1]->type == 2) {
+					NinjaUltFX.RangeX = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().x);
+					NinjaUltFX.RangeY = glm::vec2(players[1]->getPosition().y + 1.5f, players[1]->getPosition().y + 1.5f);
+					NinjaUltFX.Spawn(0.05f);
+				}
+				break;
+			default:
+				break;
+			}
 
-		players[0]->partiQueue.pop();
-	}
-	else if (players[1]->partiQueue.size() > 0) {
-		//cout << "Spawned";
-		switch (players[1]->partiQueue.front())
-		{
+			players[1]->partiQueue.pop();
 
-		case LDASHDUST:
-			DustDashL.RangeX = glm::vec2(players[1]->getPosition().x + 1.0f, players[1]->getPosition().x - 1.0f);
-			DustDashL.RangeY = glm::vec2(players[1]->getPosition().y-1.4f, players[1]->getPosition().y-1.6f);
-			DustDashL.Spawn(0.05f);
-			break;
-		case RDASHDUST:
-			DustDashR.RangeX = glm::vec2(players[1]->getPosition().x + 1.0f, players[1]->getPosition().x - 1.0f);
-			DustDashR.RangeY = glm::vec2(players[1]->getPosition().y-1.4f, players[1]->getPosition().y-1.6f);
-			DustDashR.Spawn(0.05f);
-			break;
-		case LANDDUST:
-			DustLand.RangeX = glm::vec2(players[1]->getPosition().x + 1.0f, players[1]->getPosition().x - 1.0f);
-			DustLand.RangeY = glm::vec2(players[1]->getPosition().y-1.4f, players[1]->getPosition().y-1.6f);
-			DustLand.Spawn(0.05f);
-			break;
-		default:
-			break;
 		}
-
-		players[1]->partiQueue.pop();
-
 	}
 
 	//new score code
@@ -1572,7 +1791,13 @@ void Game::updateScene()
 	DustDashL.Update(deltaTime);
 	DustDashR.Update(deltaTime);
 	DustLand.Update(deltaTime);
-
+	DustLaunch.Update(deltaTime);
+	HitSparkL.Update(deltaTime);
+	HitSparkR.Update(deltaTime);
+	MeterFlame1.Update(deltaTime);
+	MeterFlame2.Update(deltaTime);
+	KnightUltFX.Update(deltaTime);
+	NinjaUltFX.Update(deltaTime);
 
 	//additional lights
 	if (p1Score == true)
@@ -2232,6 +2457,13 @@ void Game::drawScene()
 	DustDashL.Render();
 	DustDashR.Render();
 	DustLand.Render();
+	DustLaunch.Render();
+	HitSparkL.Render();
+	HitSparkR.Render();
+	MeterFlame1.Render();
+	MeterFlame2.Render();
+	KnightUltFX.Render();
+	NinjaUltFX.Render();
 
 	ParticleProgram.UnBind();
 
