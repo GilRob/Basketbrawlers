@@ -131,10 +131,16 @@ void Character::update(int t, std::vector<bool> inputs) {
 		//called on landing
 		position.y = 0.0f;
 		jumpsLeft = airJumps;
-		if (action == ACTION_HIT) {
+		if (action == ACTION_HIT && currentFrame < activeFrames) {
 			velocity.y *= -0.75f;
 			velocity.x *= 0.5f;
 			hitForce.y *= -0.9f;
+		}
+		else if (action == ACTION_HIT)
+		{
+			interuptable = true;
+			action = ACTION_PLACEHOLDER;
+			fall();
 		}
 		else if ((currentFrame >= activeFrames || interuptable == true) && (action == ACTION_FALL || action == ACTION_SIDE_AERIAL || action == ACTION_UP_AERIAL || action == ACTION_DOWN_AERIAL || action == ACTION_NEUTRAL_AERIAL)) {
 			interuptable = true;

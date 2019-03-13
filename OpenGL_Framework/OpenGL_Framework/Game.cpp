@@ -92,13 +92,13 @@ void Game::initializeGame()
 //=================================================================//
 	//Load All Game Objects
 	///Object(*mesh path*, *texture path*, *enable blending?* = false by deafult);
-
+		
 	//load objects for scene
 	gameObjects.push_back(new Object("./Assets/Models/basicCourt", "./Assets/Textures/basicCourt.png", "default_court"));
 	gameObjects.push_back(new Object("./Assets/Models/basicFloor", "./Assets/Textures/basicFloor.png", "default_floor"));
 	default_court_objs.push_back("default_floor");
-	gameObjects.push_back(new Object("./Assets/Models/nets", "./Assets/Textures/net.png", "default_net", true));
-	default_court_objs.push_back("default_net");
+	//gameObjects.push_back(new Object("./Assets/Models/nets", "./Assets/Textures/net.png", "default_net", true));
+	//default_court_objs.push_back("default_net");
 	gameObjects.push_back(new Object("./Assets/Models/chairs", "./Assets/Textures/chair.png", "default_chairs"));
 	default_court_objs.push_back("default_chairs");
 	gameObjects.push_back(new Object("./Assets/Models/lightsJumbo", "./Assets/Textures/lightJumboTex.png", "default_jumbotron", true));
@@ -115,6 +115,10 @@ void Game::initializeGame()
 	default_court_objs.push_back("default_crowd2");
 	gameObjects.push_back(new Object("./Assets/Models/basicCrowd3", "./Assets/Textures/crowd.png", "default_crowd3"));
 	default_court_objs.push_back("default_crowd3");
+
+	gameObjects.push_back(new Object("./Assets/Models/nets", "./Assets/Textures/smokeNet.png", "smoke_net"));
+	default_court_objs.push_back("smoke_net");
+
 
 	gameObjects.push_back(new Object("./Assets/Models/basicBricks", "./Assets/Textures/basicBricks.png", "default_bricks"));
 	default_court_objs.push_back("default_bricks");
@@ -142,6 +146,8 @@ void Game::initializeGame()
 	knight_court_objs.push_back("knight_jumbo");
 	gameObjects.push_back(new Object("./Assets/Models/ad", "./Assets/Textures/words.png", "default_words"));
 	knight_court_objs.push_back("default_words");
+	gameObjects.push_back(new Object("./Assets/Models/nets", "./Assets/Textures/fireNet.png", "fire_net"));
+	knight_court_objs.push_back("fire_net");
 
 	//load objects for ninja scene
 	gameObjects.push_back(new Object("./Assets/Models/ninjaCourt", "./Assets/Textures/ninjaCourt.png", "ninja_court"));
@@ -164,6 +170,9 @@ void Game::initializeGame()
 	ninja_court_objs.push_back("ninja_jumbo");
 	gameObjects.push_back(new Object("./Assets/Models/ad", "./Assets/Textures/words.png", "default_words"));
 	ninja_court_objs.push_back("default_words");
+	gameObjects.push_back(new Object("./Assets/Models/nets", "./Assets/Textures/petalNet.png", "petals_net"));
+	ninja_court_objs.push_back("petals_net");
+
 
 	//hitbox
 	hitboxObj = new Object("./Assets/Models/Hitbox", "./Assets/Textures/redclear.png", "hitbox", true);
@@ -506,7 +515,18 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}
-
+	if (!GrayScale.Load("./Assets/Shaders/Passthrough.vert", "./Assets/Shaders/GreyScalePost.frag"))
+	{
+		std::cout << "ADS Shaders failed to initialize. \n";
+		system("pause");
+		exit(0);
+	}
+	if (!NetShader.Load("./Assets/Shaders/NetShader.vert", "./Assets/Shaders/GBufferPass.frag"))
+	{
+		std::cout << "NS Shaders failed to initialize. \n";
+		system("pause");
+		exit(0);
+	}
 	//Load the god rays shaders here
 
 //================================================================//
@@ -522,7 +542,7 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	if (!ConfettiEffectBlueRight.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)30))
+	/*if (!ConfettiEffectBlueRight.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)30))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -538,9 +558,9 @@ void Game::initializeGame()
 	ConfettiEffectBlueRight.RangeZ = glm::vec2(-15.0f, -15.0f);
 	ConfettiEffectBlueRight.HaveGravity = true;
 	ConfettiEffectBlueRight.Mass = 2.0f;
-	ConfettiEffectBlueRight.Gravity = 0.2f;
+	ConfettiEffectBlueRight.Gravity = 0.2f;*/
 
-	if (!ConfettiEffectBlueLeft.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)30))
+	/*if (!ConfettiEffectBlueLeft.Init("./Assets/Textures/BlueConfetti.png", (unsigned int)50, (unsigned int)30))
 	{
 		std::cout << "Confetti Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -555,10 +575,10 @@ void Game::initializeGame()
 	ConfettiEffectBlueLeft.RangeZ = glm::vec2(-15.0f, -15.0f);
 	ConfettiEffectBlueLeft.HaveGravity = true;
 	ConfettiEffectBlueLeft.Mass = 2.0f;
-	ConfettiEffectBlueLeft.Gravity = 0.2f;
+	ConfettiEffectBlueLeft.Gravity = 0.2f;*/
 
 	//better version
-	ConfettiEffectRedRight.PartiParse("./Assets/Data/text.txt", "./Assets/Textures/RedConfetti.png");
+	//ConfettiEffectRedRight.PartiParse("./Assets/Data/text.txt", "./Assets/Textures/RedConfetti.png");
 	
 	
 	NinjaPetals.PartiParse("./Assets/Data/petals.txt", "./Assets/Textures/petals.png");
@@ -584,9 +604,26 @@ void Game::initializeGame()
 	//ConfettiEffectRedRight.Gravity = 0.2f;
 
 
-	ConfettiEffectRedLeft.PartiParse("./Assets/Data/redleftconf.txt", "./Assets/Textures/RedConfetti.png");
-	
+	knightLeftNet.PartiParse("./Assets/Data/leftNet.txt", "./Assets/Textures/RedConfetti.png");
+	knightRightNet.PartiParse("./Assets/Data/rightNet.txt", "./Assets/Textures/RedConfetti.png");
 
+	basicLeftNet.PartiParse("./Assets/Data/leftNet.txt", "./Assets/Textures/RedConfetti.png");
+	basicRightNet.PartiParse("./Assets/Data/rightNet.txt", "./Assets/Textures/RedConfetti.png");
+
+	ninjaLeftNet.PartiParse("./Assets/Data/leftNet.txt", "./Assets/Textures/RedConfetti.png");
+	ninjaRightNet.PartiParse("./Assets/Data/rightNet.txt", "./Assets/Textures/RedConfetti.png");
+
+	ConfettiEffectRedRight.PartiParse("./Assets/Data/redRight.txt", "./Assets/Textures/red.png");
+	ConfettiEffectOrangeRight.PartiParse("./Assets/Data/redRight.txt", "./Assets/Textures/orange.png");
+
+	ConfettiEffectRedLeft.PartiParse("./Assets/Data/left.txt", "./Assets/Textures/red.png");
+	ConfettiEffectOrangeLeft.PartiParse("./Assets/Data/left.txt", "./Assets/Textures/orange.png");
+
+	ConfettiEffectBlueLeft.PartiParse("./Assets/Data/left.txt", "./Assets/Textures/blue.png");
+	ConfettiEffectPurpleLeft.PartiParse("./Assets/Data/left.txt", "./Assets/Textures/purple.png");
+
+	ConfettiEffectBlueRight.PartiParse("./Assets/Data/redRight.txt", "./Assets/Textures/blue.png");
+	ConfettiEffectPurpleRight.PartiParse("./Assets/Data/redRight.txt", "./Assets/Textures/purple.png");
 
 
 	//if (!ConfettiEffectRedLeft.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)30))
@@ -929,11 +966,11 @@ void Game::initializeGame()
 	updateTimer = new Timer();
 
 
-	gameTheme.Load("./Assets/Media/Theme.wav");
+	gameTheme.Load("./Assets/Media/GameMusic.wav");
 
 	soundPos = { 0.0f, 0.0f, 0.0f };
 	soundChannel = gameTheme.Play(true);
-	gameSound.Load("./Assets/Media/hypebbrawl.wav");
+	gameSound.Load("./Assets/Media/GameMusic.wav");
 }
 
 
@@ -1660,6 +1697,8 @@ void Game::updateScene()
 				//i = 100;
 				ConfettiEffectRedRight.Spawn(1.0f);
 				ConfettiEffectRedLeft.Spawn(1.0f);
+				ConfettiEffectOrangeRight.Spawn(1.0f);
+				ConfettiEffectOrangeLeft.Spawn(1.0f);
 				j = 100;
 				GameCamera.reset();
 
@@ -1677,6 +1716,8 @@ void Game::updateScene()
 				//i = 100;
 				ConfettiEffectBlueRight.Spawn(1.0f);
 				ConfettiEffectBlueLeft.Spawn(1.0f);
+				ConfettiEffectPurpleRight.Spawn(1.0f);
+				ConfettiEffectPurpleLeft.Spawn(1.0f);
 				j = 100;
 				GameCamera.reset();
 			}
@@ -1786,6 +1827,16 @@ void Game::updateScene()
 	ConfettiEffectBlueLeft.Update(deltaTime);
 	ConfettiEffectRedRight.Update(deltaTime);
 	ConfettiEffectRedLeft.Update(deltaTime);
+	ConfettiEffectOrangeRight.Update(deltaTime);
+	ConfettiEffectOrangeLeft.Update(deltaTime);
+	ConfettiEffectPurpleRight.Update(deltaTime);
+	ConfettiEffectPurpleLeft.Update(deltaTime);
+	basicLeftNet.Update(deltaTime);
+	basicRightNet.Update(deltaTime);
+	ninjaLeftNet.Update(deltaTime);
+	ninjaRightNet.Update(deltaTime);
+	knightLeftNet.Update(deltaTime);
+	knightRightNet.Update(deltaTime);
 	NinjaPetals.Update(deltaTime);
 	NinjaPetals2.Update(deltaTime);
 	DustDashL.Update(deltaTime);
@@ -1849,6 +1900,9 @@ void Game::updateScene()
 		float movementVal3 = (cos((TotalGameTime * 7) + 25) + .25f);
 		findObjects(3, "default_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
 
+		basicLeftNet.Spawn(1.0f);
+		basicRightNet.Spawn(1.0f);
+
 		//Additional lights in the basic court
 		findLight("lightLeft")->active = true;
 		findLight("lightRight")->active = true;
@@ -1866,6 +1920,9 @@ void Game::updateScene()
 
 		float movementVal3 = (cos((TotalGameTime * 7) + 25) + .73f);
 		findObjects(3, "knight_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
+
+		knightLeftNet.Spawn(1.0f);
+		knightRightNet.Spawn(1.0f);
 
 		//Turn off the lights from the basic court
 		findLight("lightLeft")->active = false;
@@ -1888,6 +1945,9 @@ void Game::updateScene()
 		//Flower petal effect
 		NinjaPetals.Spawn(1.0f);
 		NinjaPetals2.Spawn(1.0f);
+		ninjaLeftNet.Spawn(1.0f);
+		ninjaRightNet.Spawn(1.0f);
+
 
 		//Turn off the lights from the basic court
 		findLight("lightLeft")->active = false;
@@ -2239,6 +2299,20 @@ void Game::drawScene()
 
 			AdShader.UnBind();
 		}
+		else if (gameObjects[i] == findObjects(3, "smoke_net") || gameObjects[i] == findObjects(3, "fire_net") || gameObjects[i] == findObjects(3, "petals_net"))
+		{
+			glEnable(GL_BLEND);
+			NetShader.Bind();
+			NetShader.SendUniformMat4("uModel", Transform().data, true);
+			NetShader.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+			NetShader.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
+			NetShader.SendUniform("uTex", 0);
+			NetShader.SendUniform("uTime", TotalGameTime);
+			gameObjects[i]->draw(NetShader, 1);
+
+			NetShader.UnBind();
+			glDisable(GL_BLEND);
+		}
 		else
 		{
 			GBufferPass.Bind();
@@ -2343,11 +2417,23 @@ void Game::drawScene()
 
 	drawScore();
 	drawTime();
+	//Black and white
+	if (grayscale == true)
+	{
+		GrayScale.Bind();
+		GrayScale.SendUniform("uTex", 0);
 
+		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+		GrayScale.UnBind();
+	}
 	AniShader.UnBind();
 	GBuffer.UnBind();
 	GBufferPass.UnBind();
 
+	
 
 	/// Detect Edges ///
 	if (FULLSCREEN)
@@ -2450,8 +2536,18 @@ void Game::drawScene()
 	//render all particles
 	ConfettiEffectRedRight.Render();
 	ConfettiEffectRedLeft.Render();
+	ConfettiEffectOrangeRight.Render();
+	ConfettiEffectOrangeLeft.Render();
+	ConfettiEffectPurpleRight.Render();
+	ConfettiEffectPurpleLeft.Render();
 	ConfettiEffectBlueRight.Render();
 	ConfettiEffectBlueLeft.Render();
+	basicLeftNet.Render();
+	basicRightNet.Render();
+	ninjaLeftNet.Render();
+	ninjaRightNet.Render();
+	knightLeftNet.Render();
+	knightRightNet.Render();
 	NinjaPetals.Render();
 	NinjaPetals2.Render();
 	DustDashL.Render();
@@ -3596,7 +3692,10 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		//inputs[4] = false;
 		break;
 	case 'b': //m
-		// inputs[5] = false;
+		if (grayscale == false)
+			grayscale = true;
+		else if (grayscale == true)
+			grayscale = false;
 		break;
 	case 'i': //up
 		//inputs2[0] = false;
@@ -3614,7 +3713,8 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		//GBufferPass.ReloadShader();
 		//AdShader.ReloadShader();
 		//BloomHighPass.ReloadShader();
-		PointLight.ReloadShader();
+		//PointLight.ReloadShader();
+		NetShader.ReloadShader();
 		std::cout << "Reloaded Shaders\n";
 		//inputs2[4] = false;
 		break;

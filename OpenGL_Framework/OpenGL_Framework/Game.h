@@ -99,6 +99,8 @@ public:
 	ShaderProgram PointLight;
 	ShaderProgram ParticleProgram;
 	ShaderProgram AdShader;
+	ShaderProgram GrayScale;
+	ShaderProgram NetShader;
 
 	Mesh boxMesh;
 	Texture boxTexture;
@@ -156,6 +158,16 @@ public:
 	ParticleEffect ConfettiEffectBlueLeft;
 	ParticleEffect ConfettiEffectRedRight;
 	ParticleEffect ConfettiEffectRedLeft;
+	ParticleEffect ConfettiEffectOrangeRight;
+	ParticleEffect ConfettiEffectOrangeLeft;
+	ParticleEffect ConfettiEffectPurpleRight;
+	ParticleEffect ConfettiEffectPurpleLeft;
+	ParticleEffect basicLeftNet;
+	ParticleEffect basicRightNet;
+	ParticleEffect knightLeftNet;
+	ParticleEffect knightRightNet;
+	ParticleEffect ninjaLeftNet;
+	ParticleEffect ninjaRightNet;
 	ParticleEffect NinjaPetals;
 	ParticleEffect NinjaPetals2;
 	ParticleEffect DustLand;
@@ -227,6 +239,7 @@ public:
 
 	bool soundPlaying = false;
 
+	bool grayscale = false;
 	Sound gameSound;
 	Sound gameTheme;
 
