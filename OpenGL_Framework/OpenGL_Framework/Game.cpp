@@ -965,12 +965,18 @@ void Game::initializeGame()
 	//start timer
 	updateTimer = new Timer();
 
+//=================================================================//
+	//Sound Stuff
 
-	gameTheme.Load("./Assets/Media/GameMusic.wav");
+	gameTheme.Load("./Assets/Media/GameMusic.wav", false, true);
 
-	soundPos = { 0.0f, 0.0f, 0.0f };
-	soundChannel = gameTheme.Play(true);
-	gameSound.Load("./Assets/Media/GameMusic.wav");
+	themePos = { 0.0f, 0.0f, 0.0f };
+	themeChannel = gameTheme.Play(themePos, themePos, true);
+	//gameSound.Load("./Assets/Media/GameMusic.wav");
+
+	//Create a pitch shift effect
+	Sound::engine.system->createDSPByType(FMOD_DSP_TYPE_PITCHSHIFT, &pitchShift);
+	pitchShift->setParameterFloat(FMOD_DSP_PITCHSHIFT_PITCH, 0.5f);
 }
 
 
@@ -985,7 +991,7 @@ void Game::update()
 	if (scene == 3) {
 		updateScene();
 
-		if (!soundPlaying)
+		/*if (!soundPlaying)
 		{
 			soundChannel->setPaused(true);
 
@@ -995,17 +1001,57 @@ void Game::update()
 		}
 
 		Sound::SetPosition(gameSoundChannel, gameSoundPos);
-		Sound::engine.update();
+		Sound::engine.update();*/
+
+		//gameTheme.Stop(themeChannel);
+		//themeChannel = gameTheme.Play();
+
+		if (!soundPitched)
+		{
+			pitchShift->setParameterFloat(FMOD_DSP_PITCHSHIFT_PITCH, 0.5f);
+			themeChannel->addDSP(0, pitchShift);
+
+			themeChannel->setFrequency(60000.0f);
+			soundPitched = true;
+			soundNormalized = false;
+		}
 
 	}
 	else if (scene == 2) {
 		updateSSS();
+		
+		if (!soundNormalized)
+		{
+			//themeChannel->removeDSP(pitchShift);
+			gameTheme.Stop(themeChannel);
+			themeChannel = gameTheme.Play(themePos, themePos, true);
+			soundNormalized = true;
+			soundPitched = false;
+		}
 	}
 	else if (scene == 1) {
 		updateCSS();
+		
+		if (!soundNormalized)
+		{
+			//themeChannel->removeDSP(pitchShift);
+			gameTheme.Stop(themeChannel);
+			themeChannel = gameTheme.Play(themePos, themePos, true);
+			soundNormalized = true;
+			soundPitched = false;
+		}
 	}
 	else {
 		updateMenu();
+		
+		if (!soundNormalized)
+		{
+			//themeChannel->removeDSP(pitchShift);
+			gameTheme.Stop(themeChannel);
+			themeChannel = gameTheme.Play(themePos, themePos, true);
+			soundNormalized = true;
+			soundPitched = false;
+		}
 	}
 	//end = chrono::steady_clock::now();
 	//cout << chrono::duration_cast<chrono::microseconds>(end - start).count() << ":";

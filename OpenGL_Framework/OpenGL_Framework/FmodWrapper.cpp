@@ -1,5 +1,3 @@
-//Zachary Allen
-//100650188
 #include "FmodWrapper.h"
 #include "FMOD/inc/fmod.hpp"
 
@@ -63,6 +61,7 @@ bool SoundEngine::Init()
 
 	return true;
 }
+
 FMOD_RESULT Sound::result;
 SoundEngine Sound::engine;
 
@@ -70,22 +69,35 @@ Sound::~Sound()
 {
 	if (init)
 	{
-		result = sound->release();
+		result = soundData->release();
 		FmodErrorCheck(result);
 	}
 }
 
-bool Sound::Load(const char * fileName)
+bool Sound::Load(const char * fileName, bool is3D, bool loop)
 {
 	if (!init)
 	{
 		engine.Init();
-		result = engine.system->createSound(fileName, FMOD_3D, 0, &sound);
+
+		this->is3D = is3D;
+		FMOD_MODE mode = FMOD_DEFAULT;
+		if (is3D) mode = mode | FMOD_3D;
+		else mode = mode | FMOD_2D;
+
+		if (loop) mode = mode | FMOD_LOOP_NORMAL;
+		else mode = mode | FMOD_LOOP_OFF;
+
+		result = engine.system->createSound(fileName, mode, 0, &soundData);
 		FmodErrorCheck(result);
 		if (result != FMOD_OK) return false;
 
-		result = sound->set3DMinMaxDistance(0.5f, 500.0f);
-		FmodErrorCheck(result);
+		if (is3D)
+		{
+			result = soundData->set3DMinMaxDistance(0.5f, 500.0f);
+			FmodErrorCheck(result);
+		}
+
 		init = true;
 	}
 	return true;
@@ -93,17 +105,18 @@ bool Sound::Load(const char * fileName)
 
 }
 
-FMOD::Channel * Sound::Play(bool loop)
+FMOD::Channel* Sound::Play(FMOD_VECTOR startPos, FMOD_VECTOR startVel, bool loop)
 {
-	
-	
-
 	if (init)
 	{
-		result = engine.system->playSound(sound, 0, true, &channel); //changing channel example
+		result = engine.system->playSound(soundData, 0, true, &channel); //changing channel example
 		FmodErrorCheck(result);
-		result = channel->set3DAttributes(&pos, &vel);
-		FmodErrorCheck(result);
+
+		if (is3D)
+		{
+			result = channel->set3DAttributes(&startPos, &startVel);
+			FmodErrorCheck(result);
+		}
 
 		if (loop)
 		{
@@ -123,7 +136,77 @@ FMOD::Channel * Sound::Play(bool loop)
 	return channel;
 }
 
+//Better solution could be to set volume to zero then wait a bit then stop
+void Sound::Stop(FMOD::Channel* thisChannel)
+{
+	if (thisChannel)
+	{
+		thisChannel->stop(); //This can cause audio pops
+		thisChannel = NULL;
+	}
+}
+
 void Sound::SetPosition(FMOD::Channel * thisChannel, FMOD_VECTOR newPos, FMOD_VECTOR newVel)
 {
-	thisChannel->set3DAttributes(&newPos, &newVel);
+	//Check to make sure the channel is playing
+	bool isPlaying;
+	thisChannel->isPlaying(&isPlaying);
+	if (isPlaying)
+	{
+		result = thisChannel->set3DAttributes(&newPos, &newVel);
+		FmodErrorCheck(result);
+	}
+}
+
+void Sound::SetRollOff(FMOD::Channel * thisChannel, bool linear, float min, float max)
+{
+	//Check to make sure the channel is playing
+	bool isPlaying;
+	thisChannel->isPlaying(&isPlaying);
+	if (isPlaying)
+	{
+		result = thisChannel->set3DMinMaxDistance(min, max);
+		FmodErrorCheck(result);
+
+		if (linear)
+			thisChannel->setMode(FMOD_3D_LINEARROLLOFF);
+		else
+			thisChannel->setMode(FMOD_3D_INVERSEROLLOFF);
+	}
+}
+//Generates a random float between min and max
+float Sound::Random(float min, float max)
+{
+	return (float(rand()) / float(RAND_MAX))*(max - min) + min;
+}
+
+ReverbManager::~ReverbManager()
+{
+	Clear();
+}
+
+void ReverbManager::AddNode(FMOD_VECTOR pos, float min, float max, FMOD_REVERB_PROPERTIES props)
+{
+	ReverbData tempData;
+
+	tempData.pos = pos;
+	tempData.min = min;
+	tempData.max = max;
+
+	Sound::engine.system->createReverb3D(&tempData.reverb);
+	tempData.reverb->setProperties(&props);
+
+	tempData.reverb->set3DAttributes(&pos, min, max);
+	tempData.reverb->setActive(true);
+
+	nodes.push_back(tempData);
+}
+
+void ReverbManager::Clear()
+{
+	for (unsigned int i = 0; i < nodes.size(); i++)
+	{
+		nodes[i].reverb->release();
+	}
+	nodes.clear();
 }

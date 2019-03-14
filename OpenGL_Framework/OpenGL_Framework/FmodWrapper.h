@@ -6,6 +6,7 @@
 
 #include <Windows.h>
 #include <iostream>
+#include <vector>
 
 #include "FMOD/inc/fmod.hpp"
 #include"FMOD/inc/fmod_errors.h"
@@ -21,23 +22,23 @@ struct Listener
 	FMOD_VECTOR forward = { 0.0f, 0.0f, 1.0f };
 	FMOD_VECTOR up = { 0.0f, 1.0f, 0.0f };
 };
+
 //Sound engine class
 class SoundEngine
 {
 public:
 	~SoundEngine();
-	FMOD::System    *system;
-	void update();
-	Listener listener;
 	bool Init();
-
-
+	void update();
+	
+	FMOD::System *system;
+	Listener listener;
 
 private:
-	unsigned int     version;
-	void            *extradriverdata = 0;
+	unsigned int version;
+	void *extradriverdata = 0;
 	bool init = false;
-	FMOD_RESULT      result;
+	FMOD_RESULT result;
 
 };
 //Sound Class
@@ -45,18 +46,44 @@ class Sound
 {
 public:
 	~Sound();
-	bool Load(const char* fileName);
-	FMOD::Channel* Play(bool loop);
+	bool Load(const char* fileName, bool is3D = false, bool loop = false);
+	static void Stop(FMOD::Channel* thisChannel);	//stops sound from playing
+	FMOD::Channel* Play(FMOD_VECTOR startPos = { 0.0f, 0.0f, 0.0f }, FMOD_VECTOR startVel = { 0.0f, 0.0f, 0.0f }, bool loop = false);
 	static void SetPosition(FMOD::Channel* thisChannel, FMOD_VECTOR newPos, FMOD_VECTOR newVel = {0.0f, 0.0f, 0.0f});
+	static void SetRollOff(FMOD::Channel * thisChannel, bool linear, float min, float max);
 
-	FMOD::Sound     *sound;
-	FMOD::Sound		*gameSound;
-	FMOD_VECTOR pos = { -10.0f, 0.0f, 0.0f };
+	float Random(float min, float max);
+
+	FMOD::Sound *soundData;
+	FMOD::Sound	*gameSound;
+	FMOD_VECTOR pos = { 0.0f, 0.0f, 0.0f };
 	FMOD_VECTOR vel = { 0.0f, 0.0f, 0.0f };
+
 	static SoundEngine engine;
 
 private:
-	FMOD::Channel   *channel = 0; //channel is the sound that is playing, ref this if u want to move etc. 
+	FMOD::Channel *channel = 0; //channel is the sound that is playing, ref this if u want to move etc. 
 	bool init = false;
 	static FMOD_RESULT result;
+	bool is3D;
+};
+
+struct ReverbData
+{
+	FMOD::Reverb3D *reverb;
+	FMOD_VECTOR pos = { 0.0f, 0.0f, 0.0f };
+	float min = 10.0f;
+	float max = 70.0f;
+};
+
+class ReverbManager
+{
+public:
+	~ReverbManager();
+	void AddNode(FMOD_VECTOR pos, float min, float max, FMOD_REVERB_PROPERTIES props);
+	void Clear();
+	//Add a get node function
+	//Add a remove node function
+	std::vector<ReverbData> nodes;
+
 };

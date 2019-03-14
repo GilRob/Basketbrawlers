@@ -237,17 +237,21 @@ public:
 	bool p1Score = false;
 	bool p2Score = false;
 
-	bool soundPlaying = false;
-
 	bool grayscale = false;
-	Sound gameSound;
+	
+	///Sound Stuff
+	bool soundPlaying = false;
+	bool soundPitched = false;
+	bool soundNormalized = true;
+	//Sound gameSound;
 	Sound gameTheme;
 
-	FMOD_VECTOR soundPos;
-	FMOD_VECTOR gameSoundPos;
+	FMOD_VECTOR themePos;
+	//FMOD_VECTOR gameSoundPos;
 
-	FMOD::Channel* soundChannel;
-	FMOD::Channel* gameSoundChannel;
+	FMOD::Channel* themeChannel = NULL;
+	//FMOD::Channel* gameSoundChannel;
+	FMOD::DSP *pitchShift;
 
 private:
 
