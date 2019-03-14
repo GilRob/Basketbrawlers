@@ -11,7 +11,7 @@ $$$ - Particle Signal
 #define VSYNC true
 
 Game::Game()
-	: GBuffer(3), DeferredComposite(1), ShadowMap(0), /*EdgeMap(1),*/ WorkBuffer1(1), WorkBuffer2(1), HudMap(1)//, godRaysBuffer1(1), godRaysBuffer2(1)
+	: GBuffer(3), DeferredComposite(1), ShadowMap(0), EdgeMap(1), WorkBuffer1(1), WorkBuffer2(1), HudMap(1)//, godRaysBuffer1(1), godRaysBuffer2(1)
 	//This constructor in the initializer list is to solve the issue of creating a frame buffer object without no default constructor
 	//This will occur before the brackets of the constructor starts (Reference at Week #6 video Time: 47:00)
 	//The number is the number of color textures
@@ -29,6 +29,7 @@ Game::~Game()
 	BloomComposite.UnLoad();
 	GBufferPass.UnLoad();
 	DeferredLighting.UnLoad();
+	SobelPass.UnLoad();
 	AniShader.UnLoad();
 	HudShader.UnLoad();
 	PointLight.UnLoad();
@@ -40,6 +41,7 @@ Game::~Game()
 	P1Bar.Unload();
 	P2Hud.Unload();
 	P2Bar.Unload();
+	StepTexture.Unload();
 }
 
 bool WGLExtensionSupported(const char *extension_name)
@@ -425,6 +427,14 @@ void Game::initializeGame()
 		exit(0);
 	}
 
+	if (!StepTexture.Load("./Assets/Textures/StepTexture.png"))
+	{
+		std::cout << "Step Texture failed to load.\n";
+		system("pause");
+		exit(0);
+	}
+	StepTexture.SetNearestFilter();
+
 
 //===================================================================//
 	//Init Controls and Players
@@ -515,15 +525,24 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}
+
 	if (!GrayScale.Load("./Assets/Shaders/Passthrough.vert", "./Assets/Shaders/GreyScalePost.frag"))
 	{
 		std::cout << "ADS Shaders failed to initialize. \n";
 		system("pause");
 		exit(0);
 	}
+
 	if (!NetShader.Load("./Assets/Shaders/NetShader.vert", "./Assets/Shaders/GBufferPass.frag"))
 	{
 		std::cout << "NS Shaders failed to initialize. \n";
+		system("pause");
+		exit(0);
+	}
+
+	if (!SobelPass.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Toon/Sobel.frag"))
+	{
+		std::cout << "SP Shaders failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
@@ -892,6 +911,18 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}*/
+
+	//THis is a single channel texture explained at Week 11 time: ~3:30
+	if (FULLSCREEN)
+		EdgeMap.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_R8, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	else
+		EdgeMap.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_R8, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	if (!EdgeMap.CheckFBO())
+	{
+		std::cout << "EM FBO failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
 
 	if (FULLSCREEN)
 		WorkBuffer1.InitColorTexture(0,FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
@@ -2488,10 +2519,13 @@ void Game::drawScene()
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	//Rednering it with the shader
-	/*SobelPass.Bind();
+	SobelPass.Bind();
 	SobelPass.SendUniform("uNormalMap", 0);
 	SobelPass.SendUniform("uDepthMap", 1);
-	SobelPass.SendUniform("uPixelSize", vec2(1.0f / WINDOW_WIDTH, 1.0f / WINDOW_HEIGHT));
+	if (FULLSCREEN)
+		SobelPass.SendUniform("uPixelSize", glm::vec2(1.0f / FULLSCREEN_WIDTH, 1.0f / FULLSCREEN_HEIGHT));
+	else
+		SobelPass.SendUniform("uPixelSize", glm::vec2(1.0f / WINDOW_WIDTH, 1.0f / WINDOW_HEIGHT));
 
 	//Where we are rendering
 	EdgeMap.Bind();
@@ -2505,7 +2539,7 @@ void Game::drawScene()
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
 	EdgeMap.UnBind();
-	SobelPass.UnBind();*/
+	SobelPass.UnBind();
 
 	/// Create Scene From GBuffer ///
 	if (FULLSCREEN)
@@ -2519,14 +2553,15 @@ void Game::drawScene()
 	DeferredLighting.SendUniform("uShadowMap", 1);
 	DeferredLighting.SendUniform("uNormalMap", 2);
 	DeferredLighting.SendUniform("uPositionMap", 3);
-	//DeferredLighting.SendUniform("uEdgeMap", 4);
-	//DeferredLighting.SendUniform("uStepTexture", 4);
+	DeferredLighting.SendUniform("uEdgeMap", 4);
+	DeferredLighting.SendUniform("uStepTexture", 5);
 
 	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
 	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
 	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
 	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
 	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
+	DeferredLighting.SendUniform("uToonActive", toonActive);
 
 	DeferredComposite.Bind();
 
@@ -2537,8 +2572,10 @@ void Game::drawScene()
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
-
-
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, EdgeMap.GetColorHandle(0));
+	glActiveTexture(GL_TEXTURE5);
+	StepTexture.Bind();
 
 	DrawFullScreenQuad();
 
@@ -2562,7 +2599,10 @@ void Game::drawScene()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_BLEND);
 
-
+	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Could I do StepTexture.UnBInd()?
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
@@ -3755,12 +3795,25 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 	case 'j': //left
 		//inputs2[3] = false;
 		break;
+	case 't':
+		if (toonActive)
+		{
+			toonActive = false;
+			std::cout << "toon OFF" << std::endl;
+		}
+		else if (!toonActive)
+		{
+			toonActive = true;
+			std::cout << "toon ON" << std::endl;
+		}
+		break;
 	case '.': //a
 		//GBufferPass.ReloadShader();
 		//AdShader.ReloadShader();
 		//BloomHighPass.ReloadShader();
 		//PointLight.ReloadShader();
-		NetShader.ReloadShader();
+		//NetShader.ReloadShader();
+		DeferredLighting.ReloadShader();
 		std::cout << "Reloaded Shaders\n";
 		//inputs2[4] = false;
 		break;

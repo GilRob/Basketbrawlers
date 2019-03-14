@@ -90,7 +90,7 @@ public:
 	ShaderProgram StaticGeometry;
 	ShaderProgram GBufferPass;
 	ShaderProgram BloomHighPass;
-	//ShaderProgram SobelPass;
+	ShaderProgram SobelPass;
 	ShaderProgram BlurHorizontal;
 	ShaderProgram BlurVertical;
 	ShaderProgram BloomComposite;
@@ -153,6 +153,7 @@ public:
 	Texture P1Bar;
 	Texture P2Hud;
 	Texture P2Bar;
+	Texture StepTexture;
 	//Particle Effects
 	ParticleEffect ConfettiEffectBlueRight;
 	ParticleEffect ConfettiEffectBlueLeft;
@@ -192,7 +193,7 @@ public:
 	FrameBuffer GBuffer; //Utility buffer to hold positions and normals
 	FrameBuffer DeferredComposite; //Where the actual scene is loaded to
 	FrameBuffer ShadowMap;
-	//FrameBuffer EdgeMap;
+	FrameBuffer EdgeMap;
 	//Bloom work buffers
 	FrameBuffer WorkBuffer1;
 	FrameBuffer WorkBuffer2;
@@ -238,6 +239,7 @@ public:
 	bool p2Score = false;
 
 	bool grayscale = false;
+	bool toonActive = false;
 	
 	///Sound Stuff
 	bool soundPlaying = false;

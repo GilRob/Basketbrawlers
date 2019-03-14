@@ -18,8 +18,8 @@ uniform sampler2D uScene;
 uniform sampler2D uShadowMap;
 uniform sampler2D uNormalMap;
 uniform sampler2D uPositionMap;
-//uniform sampler2D uEdgeMap;
-//uniform sampler2D uStepTexture;
+uniform sampler2D uEdgeMap;
+uniform sampler2D uStepTexture;
 
 //Spotlight Uniforms
 uniform vec3 uSceneAmbient = vec3(0.0, 1.0, 0.0);
@@ -27,13 +27,15 @@ uniform vec3 uLightPosition = vec3(3.0, 0.0, 0.0);
 uniform vec3 uLightColor = vec3(0.0, 1.0, 0.0);
 uniform float uLightSpecularExponent = 16.0;
 
+uniform bool uToonActive;
+
 in vec2 texcoord;
 in vec3 norm;
 in vec3 pos;
 
 out vec4 outColor;
 
-void SpotLight()
+/*void SpotLight()
 {
 	vec4 tempColor;
 	tempColor.rgb = uSceneAmbient;
@@ -73,7 +75,7 @@ void SpotLight()
 	//outColor.rgb += vec3(1,0,0);
 	//outColor = max(attenuation * diffuse + specular, uSceneAmbient);
 	outColor = outColor + tempColor;
-}
+}*/
 
 void DirectionalLight()
 {
@@ -81,8 +83,8 @@ void DirectionalLight()
 	vec3 textureColor = texture(uScene, texcoord).rgb;
 	vec3 normal = texture(uNormalMap, texcoord).xyz * 2.0 - 1.0; //Unpack
 	vec3 pos = texture(uPositionMap, texcoord).xyz;
-	//float edgeFactor = texture(uEdgeMap, texcoord).r; //Will be zero if there is an edge
-
+	float edgeFactor = texture(uEdgeMap, texcoord).r; //Will be zero if there is an edge
+	
 	if (length(pos) == 0.0)
 	{
 		discard;
@@ -92,7 +94,7 @@ void DirectionalLight()
 	outColor.rgb = LightAmbient;
 
 	float NdotL = dot(normal, LightDirection);
-	//float blocky = texture(uStepTexture, vec2(NdotL, 0.5)).r;
+	float blocky = texture(uStepTexture, vec2(NdotL, 0.5)).r;
 
 	/// Determine if we are shadowed ///
 	vec4 shadowCoord = ViewToShadowMap * vec4(pos, 1.0);
@@ -122,8 +124,15 @@ void DirectionalLight()
 		outColor.rgb += LightSpecular * pow(NdotHV, LightSpecularExponent);
 	}
 
-	outColor.rgb *= textureColor.rgb; //* edgeFactor * blocky;
-
+	if (uToonActive)
+	{
+		outColor.rgb *= textureColor.rgb * edgeFactor * blocky;
+	}
+	else
+	{
+		outColor.rgb *= textureColor.rgb;
+	}
+	
 	outColor.a = 1.0;
 }
 
