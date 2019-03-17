@@ -64,7 +64,7 @@ public:
 	float ringWidth = 1.0f;
 
 	//noise
-	float noiseStrength = 0;
+	float noiseStrength = 0.0f;
 	int noiseFrequency = 0;
 	bool noiseOn = false;
 

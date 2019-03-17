@@ -260,10 +260,10 @@ void ParticleEffect::Update(float elapsed)
 			}
 
 			//noise
-			if (_Particles.frequency[i] >= 100 && noiseOn)
+			if (_Particles.frequency[i] >= noiseFrequency && noiseOn)
 			{
-				_Particles.Velocities[i] += glm::vec3(RandomRangef(-1.0f, 1.0f), 0, RandomRangef(-1.0f, 1.0f)) * noiseStrength;
-				_Particles.frequency[i] = noiseFrequency;
+					_Particles.Velocities[i] += glm::vec3(RandomRangef(-1.0f, 1.0f), RandomRangef(-1.0f, 1.0f),0) * noiseStrength;
+				_Particles.frequency[i] = 0;
 			}
 
 			//physics update

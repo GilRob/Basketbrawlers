@@ -90,6 +90,7 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="VectorField.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -112,6 +113,7 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Utilities.h" />
+    <ClInclude Include="VectorField.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\AnimationShader.vert" />
