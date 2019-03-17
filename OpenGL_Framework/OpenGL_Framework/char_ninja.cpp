@@ -30,42 +30,42 @@ Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
 	//======================================================//
 		//ANIMATIONS
 		///IDLE
-	int length = 9;
+	int length = 5;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
 	for (int c = 0; c < length; ++c)//9
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string((int)((c + 1) % length))  );
+		frame.push_back("./Assets/Models/NinjaAnimations/IdlePoses/Idle" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/IdlePoses/Idle" + std::to_string((int)((c + 1) % length))  );
 
 		Mesh* idle = new Mesh();
 		idle->LoadFromFile(frame);
 		aniFrames[ACTION_IDLE].push_back(idle);
 	}
 	///WALK
-	length = 14;
+	length = 9;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
 	for (int c = 0; c < length; ++c)//14
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/WalkPoses/Walk" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/WalkPoses/Walk" + std::to_string((int)((c + 1) % length))  );
+		frame.push_back("./Assets/Models/NinjaAnimations/WalkPoses/Walk" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/WalkPoses/Walk" + std::to_string((int)((c + 1) % length))  );
 
 		Mesh* walk = new Mesh();
 		walk->LoadFromFile(frame);
 		aniFrames[ACTION_WALK].push_back(walk);
 	}
 	///pre jump
-	length = 2;
+	length = 1;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/PreJumpPose/Ascent" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/PreJumpPose/Ascent" + std::to_string((int)((c + 1) % length))  );
+		frame.push_back("./Assets/Models/NinjaAnimations/JumpPoses/Jump" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/JumpPoses/Jump" + std::to_string((int)((c + 1) % length))  );
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -78,8 +78,8 @@ Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/FallPoses/Fall" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/FallPoses/Fall" + std::to_string((int)((c + 1) % length))  );
+		frame.push_back("./Assets/Models/NinjaAnimations/JumpPoses/Jump" + std::to_string(c));
+		frame.push_back("./Assets/Models/NinjaAnimations/JumpPoses/Jump" + std::to_string((int)((c + 1) % length)));
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -92,8 +92,8 @@ Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/JumpPoses/JumpAir" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/JumpPoses/JumpAir" + std::to_string((int)((c + 1) % length))  );
+		frame.push_back("./Assets/Models/NinjaAnimations/JumpPoses/Jump" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/JumpPoses/Jump" + std::to_string((int)((c + 1) % length))  );
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -110,22 +110,22 @@ Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/HurtPoses/Hurt" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/HurtPoses/Hurt" + std::to_string((int)((c + 1) % length))  );
+		frame.push_back("./Assets/Models/NinjaAnimations/HurtPoses/Hurt" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/HurtPoses/Hurt" + std::to_string((int)((c + 1) % length))  );
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_HIT].push_back(jab);
 	}
 	///initial dash
-	length = 8;
+	length = 1;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string((int)((c + 1) % length))  );
+		frame.push_back("./Assets/Models/NinjaAnimations/DashPoses/Dash" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/DashPoses/Dash" + std::to_string((int)((c + 1) % length))  );
 
 
 		Mesh* jab = new Mesh();
@@ -133,14 +133,14 @@ Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
 		aniFrames[ACTION_INTIAL_DASH].push_back(jab);
 	}
 	///dash
-	length = 2;
+	length = 1;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
-	for (int c = 8; c < 10; ++c)
+	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string((int)((c + 1) % length))  );
+		frame.push_back("./Assets/Models/NinjaAnimations/DashPoses/Dash" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/DashPoses/Dash" + std::to_string((int)((c + 1) % length))  );
 
 
 		Mesh* jab = new Mesh();
@@ -148,14 +148,14 @@ Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
 		aniFrames[ACTION_DASH].push_back(jab);
 	}
 	///run
-	length = 6;
+	length = 5;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/RunPoses/Run" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/RunPoses/Run" + std::to_string((int)((c + 1) % length))  );
+		frame.push_back("./Assets/Models/NinjaAnimations/RunPoses/Run" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/RunPoses/Run" + std::to_string((int)((c + 1) % length))  );
 
 
 		Mesh* jab = new Mesh();
@@ -166,56 +166,56 @@ Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
 	//==================================================================//
 		//ATTACKS
 		///JAB
-	length = 11;
+	length = 6;
 	if (G_ATK_ANI_TOGGLE == false)
 		length = 1;
 	for (int c = 0; c < length; ++c)//14
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/JabPoses/Jab" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/JabPoses/Jab" + std::to_string((int)((c + 1) % length))  );
+		frame.push_back("./Assets/Models/NinjaAnimations/JabPoses/Jab" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/JabPoses/Jab" + std::to_string((int)((c + 1) % length))  );
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_JAB].push_back(jab);
 	}
 	///SIDE ATTACK
-	length = 10;
+	length = 5;
 	if (G_ATK_ANI_TOGGLE == false)
 		length = 1;
 	for (int c = 0; c < length; ++c)//14
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/SideAttackPoses/SideAttack" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/SideAttackPoses/SideAttack" + std::to_string((int)((c + 1) % length))  );
+		frame.push_back("./Assets/Models/NinjaAnimations/ForwardTiltPoses/ForwardTilt" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/ForwardTiltPoses/ForwardTilt" + std::to_string((int)((c + 1) % length))  );
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_SIDE_ATTACK].push_back(jab);
 	}
 	///UP ATTACK
-	length = 18;
+	length = 11;
 	if (G_ATK_ANI_TOGGLE == false)
 		length = 1;
 	for (int c = 0; c < length; ++c)//14
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/UpAttackPoses/UpAttack" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/UpAttackPoses/UpAttack" + std::to_string((int)((c + 1) % length))  );
+		frame.push_back("./Assets/Models/NinjaAnimations/UpTiltPoses/UpTilt" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/UpTiltPoses/UpTilt" + std::to_string((int)((c + 1) % length))  );
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_UP_ATTACK].push_back(jab);
 	}
 	///DOWN ATTACK
-	length = 10;
+	length = 1;
 	if (G_ATK_ANI_TOGGLE == false)
 		length = 1;
 	for (int c = 0; c < length; ++c)//14
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/DownAttackPoses/DownAttack" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/DownAttackPoses/DownAttack" + std::to_string((int)((c + 1) % length))  );
+		frame.push_back("./Assets/Models/NinjaAnimations/DownTiltPoses/DownTilt" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/DownTiltPoses/DownTilt" + std::to_string((int)((c + 1) % length))  );
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
@@ -224,56 +224,56 @@ Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
 	//==================================================================//
 		//AERIALS
 		///NeutralAir
-	length = 8;
+	length = 1;
 	if (A_ATK_ANI_TOGGLE == false)
 		length = 1;
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/NeutralAirPoses/NeutralAir" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/NeutralAirPoses/NeutralAir" + std::to_string((int)((c + 1) % length))  );
+		frame.push_back("./Assets/Models/NinjaAnimations/NeutralAirPoses/NeutralAir" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/NeutralAirPoses/NeutralAir" + std::to_string((int)((c + 1) % length))  );
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_NEUTRAL_AERIAL].push_back(jab);
 	}
 	///side air
-	length = 11;
-	if (A_ATK_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/SideAirPoses/SideAir" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/SideAirPoses/SideAir" + std::to_string((int)((c + 1) % length))  );
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_SIDE_AERIAL].push_back(jab);
-	}
-	///down aair
-	length = 15;
-	if (A_ATK_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/DownAirPoses/DownAir" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/DownAirPoses/DownAir" + std::to_string((int)((c + 1) % length))  );
-
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_DOWN_AERIAL].push_back(jab);
-	}
-	///up air
 	length = 7;
 	if (A_ATK_ANI_TOGGLE == false)
 		length = 1;
 	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/UpAirPoses/UpAir" + std::to_string(c)  );
-		frame.push_back("./Assets/Models/KnightAnimations/UpAirPoses/UpAir" + std::to_string((int)((c + 1) % length))  );
+		frame.push_back("./Assets/Models/NinjaAnimations/ForwardAirPoses/ForwardAir" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/ForwardAirPoses/ForwardAir" + std::to_string((int)((c + 1) % length))  );
+
+		Mesh* jab = new Mesh();
+		jab->LoadFromFile(frame);
+		aniFrames[ACTION_SIDE_AERIAL].push_back(jab);
+	}
+	///down aair
+	length = 1;
+	if (A_ATK_ANI_TOGGLE == false)
+		length = 1;
+	for (int c = 0; c < length; ++c)
+	{
+		std::vector<std::string> frame;
+		frame.push_back("./Assets/Models/NinjaAnimations/DownAirPoses/DownAir" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/DownAirPoses/DownAir" + std::to_string((int)((c + 1) % length))  );
+
+		Mesh* jab = new Mesh();
+		jab->LoadFromFile(frame);
+		aniFrames[ACTION_DOWN_AERIAL].push_back(jab);
+	}
+	///up air
+	length = 9;
+	if (A_ATK_ANI_TOGGLE == false)
+		length = 1;
+	for (int c = 0; c < length; ++c)
+	{
+		std::vector<std::string> frame;
+		frame.push_back("./Assets/Models/NinjaAnimations/UpAirPoses/UpAir" + std::to_string(c)  );
+		frame.push_back("./Assets/Models/NinjaAnimations/UpAirPoses/UpAir" + std::to_string((int)((c + 1) % length))  );
 
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);

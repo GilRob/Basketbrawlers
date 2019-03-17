@@ -402,24 +402,24 @@ void Game::initializeGame()
 	hud1.push_back("./Assets/Models/UI_Object");
 	HudObj.LoadFromFile(hud1);
 
-	if (!P1Hud.Load("./Assets/Textures/PlayerOneHud.png"))
+	/*if (!P1Hud.Load("./Assets/Textures/PlayerOneHud.png"))
 	{
 		std::cout << "BKG Texture failed to load.\n";
 		system("pause");
 		exit(0);
-	}
+	}*/
 	if (!P1Bar.Load("./Assets/Textures/PlayerOneBar.png"))
 	{
 		std::cout << "BKG Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
-	if (!P2Hud.Load("./Assets/Textures/PlayerTwoHud.png"))
+	/*if (!P2Hud.Load("./Assets/Textures/PlayerTwoHud.png"))
 	{
 		std::cout << "BKG Texture failed to load.\n";
 		system("pause");
 		exit(0);
-	}
+	}*/
 	if (!P2Bar.Load("./Assets/Textures/PlayerTwoBar.png"))
 	{
 		std::cout << "BKG Texture failed to load.\n";
@@ -1000,8 +1000,15 @@ void Game::initializeGame()
 	//Sound Stuff
 
 	gameTheme.Load("./Assets/Media/GameMusic.wav", false, true);
+	knightJump.Load("./Assets/Media/KnightJump.wav", true, false);
+	ninjaJump.Load("./Assets/Media/NinjaJump.wav", true, false);
+	cheer.Load("./Assets/Media/CheerTemp.wav", true, false);
+
 
 	themePos = { 0.0f, 0.0f, 0.0f };
+	knightPos = { 0.0f, 0.0f, 0.0f };
+	ninjaPos = { 0.0f, 0.0f, 0.0f };
+
 	themeChannel = gameTheme.Play(themePos, themePos, true);
 	//gameSound.Load("./Assets/Media/GameMusic.wav");
 
@@ -1433,22 +1440,54 @@ void Game::updateSSS()
 
 		}
 
+		//Player 1 knight
 		if (p1Char == 1) {
 			players[0] = new Knight(knightTemp);
 			players[0]->bodyTexture.Load("./Assets/Textures/player1.png");
+
+			if (!P1Hud.Load("./Assets/Textures/PlayerOneHud.png"))
+			{
+				std::cout << "BKG Texture failed to load.\n";
+				system("pause");
+				exit(0);
+			}
 		}
+		//Player 1 ninja
 		else if (p1Char == 2) {
 			players[0] = new Ninja(ninjaTemp);
 			players[0]->bodyTexture.Load("./Assets/Textures/player1ninja.png");
+
+			if (!P1Hud.Load("./Assets/Textures/PlayerOneHudNinja.png"))
+			{
+				std::cout << "BKG Texture failed to load.\n";
+				system("pause");
+				exit(0);
+			}
 		}
 
+		//Player 2 knight
 		if (p2Char == 1) {
 			players[1] = new Knight(knightTemp);
 			players[1]->bodyTexture.Load("./Assets/Textures/player2.png");
+
+			if (!P2Hud.Load("./Assets/Textures/PlayerTwoHud.png"))
+			{
+				std::cout << "BKG Texture failed to load.\n";
+				system("pause");
+				exit(0);
+			}
 		}
+		//Player 2 ninja
 		else if (p2Char == 2) {
 			players[1] = new Ninja(ninjaTemp);
 			players[1]->bodyTexture.Load("./Assets/Textures/player2ninja.png");
+
+			if (!P2Hud.Load("./Assets/Textures/PlayerTwoHudNinja.png"))
+			{
+				std::cout << "BKG Texture failed to load.\n";
+				system("pause");
+				exit(0);
+			}
 		}
 
 		scene = 3;
@@ -1927,6 +1966,22 @@ void Game::updateScene()
 	KnightUltFX.Update(deltaTime);
 	NinjaUltFX.Update(deltaTime);
 
+	//Sound Effects//
+	knightPos = { players[0]->getPosition().x, players[0]->getPosition().y, players[0]->getPosition().z };
+	ninjaPos = { players[1]->getPosition().x, players[1]->getPosition().y, players[1]->getPosition().z };
+
+	/*if (p1Score || p2Score)
+	{
+		cheerChannel->setVolume(2.0f);
+		cheerChannel = cheer.Play(themePos, themePos, false);
+	}*/
+
+	/*if (players[0]->action)
+	{
+		std::cout << "knight jump sound";
+		knightChannel = knightJump.Play(knightPos, { 0.0f, 0.0f, 0.0f }, false);
+	}*/
+
 	//additional lights
 	if (p1Score == true)
 	{
@@ -1957,10 +2012,20 @@ void Game::updateScene()
 		std::cout << "end game";
 		XBoxController.SetVibration(0, 0, 0);//controller 0, power 0 on left and right (off)
 		XBoxController.SetVibration(1, 0, 0);//controller , power 0 on left and right (off)
+		//scene = 4;
+		//TotalGameTime = 0.0f;
+		//deltaTime = 0;
+		//updateTimer = new Timer();
+
+		stageDone = false;
+		stageVal = 1;
 		scene = 4;
 		TotalGameTime = 0.0f;
-		deltaTime = 0;
-		updateTimer = new Timer();
+		lastInputTime = 0.0f;
+		p1Done = false;
+		p2Done = false;
+		p1Char = 0;
+		p2Char = 0;
 	}
 
 	///Court specific functionality
@@ -3767,6 +3832,15 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		break;
 	case 'd': //d
 		//inputs[1] = false;
+		stageDone = false;
+		stageVal = 1;
+		scene = 4;
+		TotalGameTime = 0.0f;
+		lastInputTime = 0.0f;
+		p1Done = false;
+		p2Done = false;
+		p1Char = 0;
+		p2Char = 0;
 		break;
 	case 's': //s
 		//inputs[2] = false;
@@ -3891,11 +3965,11 @@ void Game::updateInputs()
 			pad = true;
 		}
 		else Bnew = false;
-		if (XBoxController.GetButton(0, Input::Y)) {
+		/*if (XBoxController.GetButton(0, Input::Y)) {
 			Ynew = true;
 			pad = true;
 		}
-		else Ynew = false;
+		else Ynew = false;*/
 		if (XBoxController.GetButton(0, Input::X)) {
 			Xnew = true;
 			pad = true;
@@ -3949,8 +4023,8 @@ void Game::updateInputs()
 			inputs[2] = true;
 		if (Xnew == true && Xold == false)
 			inputs[4] = true;
-		if (Ynew == true && Yold == false)
-			inputs[5] = true;
+		/*if (Ynew == true && Yold == false)
+			inputs[5] = true;*/
 		if (Anew == true && Aold == false)
 			inputs[6] = true;
 		else inputs[6] = false;//A = only on pressed not held
@@ -3986,8 +4060,8 @@ void Game::updateInputs()
 			inputs[2] = false;
 		if (Xnew == false && Xold == true)
 			inputs[4] = false;
-		if (Ynew == false && Yold == true)
-			inputs[5] = false;
+		/*if (Ynew == false && Yold == true)
+			inputs[5] = false;*/
 		if (Anew == false && Aold == true)
 			inputs[6] = false;
 
@@ -4005,7 +4079,7 @@ void Game::updateInputs()
 	//if  not pressed last frame, but is pressed this frame, ButtonPress() == true
 	Aold2 = Anew2;
 	Bold2 = Bnew2;
-	Yold2 = Ynew2;
+	//Yold2 = Ynew2;
 	Xold2 = Xnew2;
 	Sold2 = Snew2;
 	LBold2 = LBnew2;
@@ -4025,11 +4099,11 @@ void Game::updateInputs()
 			pad = true;
 		}
 		else Bnew2 = false;
-		if (XBoxController.GetButton(1, Input::Y)) {
+		/*if (XBoxController.GetButton(1, Input::Y)) {
 			Ynew2 = true;
 			pad = true;
 		}
-		else Ynew2 = false;
+		else Ynew2 = false;*/
 		if (XBoxController.GetButton(1, Input::X)) {
 			Xnew2 = true;
 			pad = true;
@@ -4084,8 +4158,8 @@ void Game::updateInputs()
 			inputs2[2] = true;
 		if (Xnew2 == true && Xold2 == false)
 			inputs2[4] = true;
-		if (Ynew2 == true && Yold2 == false)
-			inputs2[5] = true;
+		/*if (Ynew2 == true && Yold2 == false)
+			inputs2[5] = true;*/
 		if (Anew2 == true && Aold2 == false)
 			inputs2[6] = true;
 		else inputs2[6] = false;//A = only on pressed not held
