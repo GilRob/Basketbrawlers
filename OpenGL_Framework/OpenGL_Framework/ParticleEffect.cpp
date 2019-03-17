@@ -212,7 +212,7 @@ void ParticleEffect::Update(float elapsed)
 		//_Particles.Positions[_NumCurrentParticles] = vec3((RandomRangef(RangeX.x, RangeX.y), RandomRangef(RangeY.x, RangeY.y), RandomRangef(RangeZ.x, RangeZ.y)));
 		_Particles.Positions[_NumCurrentParticles].x = RandomRangef(RangeX.x, RangeX.y);
 		_Particles.Positions[_NumCurrentParticles].y = RandomRangef(RangeY.x, RangeY.y);
-		_Particles.Positions[_NumCurrentParticles].z = RandomRangef(RangeZ.x, RangeZ.y);
+		_Particles.Positions[_NumCurrentParticles].z = 0.0f;
 
 		//custom spawners:
 		if (circleSpawner) {

@@ -5,6 +5,7 @@
 #include "Texture.h"
 #include "Transform.h"
 #include <fstream>
+#include "VectorField.h"
 
 //debugging
 #include <chrono>
