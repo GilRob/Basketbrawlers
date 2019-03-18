@@ -44,6 +44,7 @@ private:
 	Field p2Swing;
 
 	vector<Field>* fields;
+	float headOffSet = 2.0f;
 
 
 };
