@@ -1098,7 +1098,7 @@ void Game::update()
 
 void Game::updateEndScreen()
 {
-	// update our clock so we have the delta time since the last update
+	/*// update our clock so we have the delta time since the last update
 	updateTimer->tick();
 	float deltaTime = updateTimer->getElapsedTimeSeconds();
 	TotalGameTime += deltaTime;
@@ -1119,6 +1119,83 @@ void Game::updateEndScreen()
 		TotalGameTime = 0.0f;
 		deltaTime = 0;
 		updateTimer = new Timer();
+	}*/
+	// update our clock so we have the delta time since the last update
+	updateTimer->tick();
+	float deltaTime = updateTimer->getElapsedTimeSeconds();
+	TotalGameTime += deltaTime;
+
+	updateInputs();
+
+	//check if move input
+	unsigned int oldButton = selectedButton;
+	if (TotalGameTime - lastInputTime > 0.2f) {
+		if (inputs[0] || inputs2[0]) {
+			selectedButton--;
+		}
+		else if (inputs[2] || inputs2[2]) {
+			selectedButton++;
+		}
+	}
+
+	//correction
+	if (selectedButton < 1)
+		selectedButton = 1;
+	else if (selectedButton > 3)
+		selectedButton = 3;
+
+	//change button sizes
+	if (selectedButton != oldButton) {
+		lastInputTime = TotalGameTime;
+		if (selectedButton == 1) {
+			if (FULLSCREEN) {
+				findObjects(0, "button1")->setScale(1.1f * 300.0f);
+				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 300.0f);
+				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 300.0f);
+			}
+			else {
+				findObjects(0, "button1")->setScale(1.1f * 200.0f);
+				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 200.0f);
+				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 200.0f);
+			}
+		}
+		else if (selectedButton == 2) {
+			if (FULLSCREEN) {
+				findObjects(0, "button2")->setScale(1.1f * 300.0f);
+				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 300.0f);
+				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 300.0f);
+			}
+			else {
+				findObjects(0, "button2")->setScale(1.1f * 200.0f);
+				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 200.0f);
+				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 200.0f);
+			}
+		}
+		else if (selectedButton == 3) {
+			if (FULLSCREEN) {
+				findObjects(0, "button3")->setScale(1.1f * 300.0f);
+				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 300.0f);
+				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 300.0f);
+			}
+			else {
+				findObjects(0, "button3")->setScale(1.1f * 200.0f);
+				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 200.0f);
+				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 200.0f);
+			}
+		}
+	}
+
+	//press
+	if (inputs[6] || inputs2[6]) {
+		if (selectedButton == 1) {
+			scene = 0;
+			lastInputTime = 0.0f;
+			inputs[6] = 0;
+			inputs2[6] = 0;
+		}
+		else if (selectedButton == 3) {
+			exit(0);
+		}
 	}
 }
 
@@ -2218,7 +2295,7 @@ void Game::drawEndScreen()
 	//draws everything in menu
 	sortObjects(4);
 	for (int i = 0; i < (int)endObjects.size(); i++) {
-		endObjects[0]->draw(GBufferPass, 1);
+		endObjects[i]->draw(GBufferPass, 1);
 	}
 
 	GBufferPass.UnBind();
@@ -3985,6 +4062,11 @@ void Game::updateInputs()
 			pad = true;
 		}
 		else LBnew = false;
+		/*if (XBoxController.GetButton(0, Input::Start)) {
+			Snew = true;
+			pad = true;
+		}
+		else Snew = false;*/
 
 		XBoxController.GetTriggers(0, lTrig, rTrig);
 		if (rTrig > 0.5) {

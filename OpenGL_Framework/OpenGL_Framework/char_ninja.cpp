@@ -445,7 +445,7 @@ Transform Ninja::jab()
 	if (interuptable == true && action != ACTION_JAB) {
 		interuptable = false;
 		action = ACTION_JAB;
-		activeFrames = 35;
+		activeFrames = 18;
 		currentFrame = 1;
 		aniTimer = 0;
 		index = 0;
@@ -479,7 +479,7 @@ Transform Ninja::sAttack()
 	if (interuptable == true && action != ACTION_SIDE_ATTACK) {
 		interuptable = false;
 		action = ACTION_SIDE_ATTACK;
-		activeFrames = 33;
+		activeFrames = 17;
 		currentFrame = 1;
 		aniTimer = 0;
 		index = 0;
@@ -565,7 +565,7 @@ Transform Ninja::uAttack()
 	if (interuptable == true && action != ACTION_UP_ATTACK) {
 		interuptable = false;
 		action = ACTION_UP_ATTACK;
-		activeFrames = 55;
+		activeFrames = 27;
 		currentFrame = 1;
 		aniTimer = 0;
 		index = 0;
