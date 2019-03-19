@@ -221,6 +221,11 @@ public:
 	unsigned int index;
 
 	bool ultFrame1;
+
+	glm::vec2 pos2d;
+	glm::vec2 lastPos;
+	glm::vec2 movementDir;
+
 protected:
 	//model
 

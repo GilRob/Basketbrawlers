@@ -602,6 +602,9 @@ void Game::initializeGame()
 	
 	NinjaPetals.PartiParse("./Assets/Data/petals.txt", "./Assets/Textures/petals.png");
 	NinjaPetals2.PartiParse("./Assets/Data/petals.txt", "./Assets/Textures/petals2.png");
+	
+	NinjaPetals.mainField.init();
+	NinjaPetals2.mainField.init();
 
 	//Depricated code
 	//if (!ConfettiEffectRedRight.Init("./Assets/Textures/RedConfetti.png", (unsigned int)50, (unsigned int)30))
@@ -2042,6 +2045,14 @@ void Game::updateScene()
 	MeterFlame2.Update(deltaTime);
 	KnightUltFX.Update(deltaTime);
 	NinjaUltFX.Update(deltaTime);
+
+	//Vect Fields//
+	glm::vec2 playerTransform1 = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().y);
+	glm::vec2 playerTransform2 = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().y);
+
+	NinjaPetals.mainField.update(playerTransform1, players[0]->movementDir, playerTransform2, players[1]->movementDir);
+	NinjaPetals2.mainField.update(playerTransform1, players[0]->movementDir, playerTransform1, players[1]->movementDir);
+
 
 	//Sound Effects//
 	knightPos = { players[0]->getPosition().x, players[0]->getPosition().y, players[0]->getPosition().z };

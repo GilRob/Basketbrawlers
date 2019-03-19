@@ -231,6 +231,13 @@ void ParticleEffect::Update(float elapsed)
 		_Particles.Velocities[_NumCurrentParticles].z = 0.0f;
 		_Particles.Velocities[_NumCurrentParticles] = glm::normalize(_Particles.Velocities[_NumCurrentParticles]);
 		_Particles.Velocities[_NumCurrentParticles] *= RandomRangef(RangeVelocity.x, RangeVelocity.y);
+
+		//adds feild weight if exists
+		if (mainField.used) {
+			glm::vec2 totalWeight = mainField.totalWeight(_Particles.Positions[_NumCurrentParticles]);
+			_Particles.Velocities[_NumCurrentParticles] += glm::vec3(totalWeight, 0.0f);
+		}
+
 		_Particles.frequency[_NumCurrentParticles] = noiseFrequency;
 
 		//counters...

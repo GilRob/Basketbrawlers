@@ -80,6 +80,10 @@ void Character::update(int t, std::vector<bool> inputs) {
 	//Update Position
 	position = position + (velocity);
 
+	//update movement dir
+	pos2d = glm::vec2(position.x, position.y);
+	movementDir = (pos2d - lastPos);
+	lastPos = pos2d;
 
 	///Rotate the player to the correct way they should look
 	if (facingRight == true)

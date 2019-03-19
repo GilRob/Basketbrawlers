@@ -24,7 +24,7 @@ public:
 	VectorField();
 	~VectorField();
 
-	void init(glm::vec2 p1, glm::vec2 p2);
+	void init();
 
 	//returns the total weight of all fields, or 0
 	glm::vec2 totalWeight(glm::vec2 position);
@@ -34,6 +34,7 @@ public:
 	void update(glm::vec2 p1, glm::vec2 p1Dir, glm::vec2 p2, glm::vec2 p2Dir);
 
 	float range;
+	bool used;
 
 private:
 	Field p1Legs;

@@ -75,7 +75,8 @@ public:
 	float Gravity = 0.0f;
 	glm::vec3 force;
 	glm::vec3 acceleration;
-
+	
+	VectorField mainField;
 
 private:
 	ParticleList _Particles;

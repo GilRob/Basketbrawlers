@@ -345,6 +345,7 @@ Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
 
 	//Set Physics
 	position = glm::vec3(0, 0, 0);
+	lastPos = glm::vec3(0, 0, 0);
 	velocity = glm::vec3(0, 0, 0);
 	acceleration = glm::vec3(0, 0, 0);
 	force = glm::vec3(0, 0, 0);
