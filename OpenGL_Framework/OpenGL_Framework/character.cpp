@@ -484,18 +484,18 @@ Transform Character::atkInputHandler(std::vector<bool> inputs)
 		result = jab();
 	}
 	//SPECIALS
-	else if ((inputs[2] && inputs[5]) || action == ACTION_DOWN_SPECIAL) {//down + B = down Special
-		result = dSpecial();
-	}
-	else if ((inputs[0] && inputs[5]) || action == ACTION_UP_SPECIAL) {//up + B = up Special
-		result = uSpecial();
-	}
-	else if (((inputs[1] || inputs[3]) && inputs[5]) || action == ACTION_SIDE_SPECIAL) {//left or right + B = side Special
-		result = sSpecial();
-	}
-	else if ((inputs[5]) || action == ACTION_NEUTRAL_SPECIAL) {//just B = Neutral Special
-		result = nSpecial(inputs[5]);
-	}
+	//else if ((inputs[2] && inputs[5]) || action == ACTION_DOWN_SPECIAL) {//down + B = down Special
+	//	result = dSpecial();
+	//}
+	//else if ((inputs[0] && inputs[5]) || action == ACTION_UP_SPECIAL) {//up + B = up Special
+	//	result = uSpecial();
+	//}
+	//else if (((inputs[1] || inputs[3]) && inputs[5]) || action == ACTION_SIDE_SPECIAL) {//left or right + B = side Special
+	//	result = sSpecial();
+	//}
+	//else if ((inputs[5]) || action == ACTION_NEUTRAL_SPECIAL) {//just B = Neutral Special
+	//	result = nSpecial(inputs[5]);
+	//}
 	//NON-OFFENSIVE
 	///intial dash
 	else if (((((inputs[7] || inputs[8]) && (action == ACTION_IDLE || (action == ACTION_WALK && currentFrame < activeFrames*0.5f))) || action == ACTION_INTIAL_DASH) && action != ACTION_RUN)) {

@@ -247,12 +247,20 @@ public:
 	bool soundNormalized = true;
 	//Sound gameSound;
 	Sound gameTheme;
+	Sound knightJump;
+	Sound ninjaJump;
+	Sound cheer;
 
 	FMOD_VECTOR themePos;
+	FMOD_VECTOR knightPos;
+	FMOD_VECTOR ninjaPos;
 	//FMOD_VECTOR gameSoundPos;
 
 	FMOD::Channel* themeChannel = NULL;
-	//FMOD::Channel* gameSoundChannel;
+	FMOD::Channel* knightChannel = NULL;
+	FMOD::Channel* ninjaChannel = NULL;
+	FMOD::Channel* cheerChannel = NULL;
+	
 	FMOD::DSP *pitchShift;
 
 private:
