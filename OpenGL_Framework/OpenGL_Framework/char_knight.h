@@ -98,11 +98,17 @@ public:
 	//Attributes
 	float ultMass = 10;
 	float ultGravity = 0.7f;
-	float ultRunSpeed = 0.2f;
-	float ultRunAccel = 0.65f;
+	float ultRunSpeed = 1.0f;
+	float ultRunAccel = 0.5f;
 	float ultAirAccel = 0.1f;
-	float ultJumpForce = 0.5f;
+	float ultJumpForce = 0.8f;
 	float ultDashMultiplier = 1.2f;
+	float ultScaleX = 1.5f;
+	float ultScaleY = 1.5f;
+	float ultScaleZ = 1.5f;
+	float normalScaleX;
+	float normalScaleY;
+	float normalScaleZ;
 	float normMass;
 	float normGravity;
 	float normRunSpeed;
@@ -122,7 +128,7 @@ public:
 
 		if (ultMode) {
 			//drain and stop mode
-			comboMeter--;
+				comboMeter -= 0.25;
 			if (comboMeter <= 0)
 				ultMode = false;
 
@@ -155,6 +161,18 @@ public:
 				normDashMultiplier = dashMultiplier;
 				dashMultiplier = ultDashMultiplier;
 			}
+			if (ultScaleX != scaleX) {
+				normalScaleX = scaleX;
+				scaleX = ultScaleX;
+			}
+			if (ultScaleY != scaleY) {
+				normalScaleY = scaleY;
+				scaleY = ultScaleY;
+			}
+			if (ultScaleZ != scaleZ) {
+				normalScaleZ = scaleZ;
+				scaleZ = ultScaleZ;
+			}
 		}
 		else {
 			if (ultMass == mass) {
@@ -177,6 +195,18 @@ public:
 			}
 			if (ultDashMultiplier == dashMultiplier) {
 				dashMultiplier = normDashMultiplier;
+			}
+			if (ultScaleX == scaleX)
+			{
+				scaleX = normalScaleX;
+			}
+			if (ultScaleY == scaleY)
+			{
+				scaleY = normalScaleY;
+			}
+			if (ultScaleZ == scaleZ)
+			{
+				scaleZ = normalScaleZ;
 			}
 		}
 		Character::update(t, inputs);

@@ -144,7 +144,7 @@ void Game::initializeGame()
 	knight_court_objs.push_back("knight_torch");
 	gameObjects.push_back(new Object("./Assets/Models/knightBricks", "./Assets/Textures/knightBricks.png", "knight_bricks"));
 	knight_court_objs.push_back("knight_bricks");
-	gameObjects.push_back(new Object("./Assets/Models/knightJumbo", "./Assets/Textures/lightJumboTex.png", "knight_jumbo"));
+	gameObjects.push_back(new Object("./Assets/Models/knightJumbo", "./Assets/Textures/knightJumbo.png", "knight_jumbo"));
 	knight_court_objs.push_back("knight_jumbo");
 	gameObjects.push_back(new Object("./Assets/Models/ad", "./Assets/Textures/words.png", "default_words"));
 	knight_court_objs.push_back("default_words");
@@ -168,7 +168,7 @@ void Game::initializeGame()
 	ninja_court_objs.push_back("ninja_sides");
 	gameObjects.push_back(new Object("./Assets/Models/score", "./Assets/Textures/score.png", "ninja_score"));
 	ninja_court_objs.push_back("ninja_score");
-	gameObjects.push_back(new Object("./Assets/Models/knightJumbo", "./Assets/Textures/lightJumboTex.png", "ninja_jumbo"));
+	gameObjects.push_back(new Object("./Assets/Models/knightJumbo", "./Assets/Textures/knightJumbo.png", "ninja_jumbo"));
 	ninja_court_objs.push_back("ninja_jumbo");
 	gameObjects.push_back(new Object("./Assets/Models/ad", "./Assets/Textures/words.png", "default_words"));
 	ninja_court_objs.push_back("default_words");
@@ -377,13 +377,37 @@ void Game::initializeGame()
 
 	//End Screen Assets
 	///Background image
-	endObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/GameOver.png", "gameOverBKG", true));
+	endObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/knightRedWin.png", "redKnightEnd", true));
 	if (FULLSCREEN)
 		endObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
 	else
 		endObjects[0]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
 	endObjects[0]->RotateY(90);
 	endObjects[0]->setPosition(glm::vec3(0, -555, -1));
+
+	endObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/knightBlueWin.png", "blueKnightEnd", true));
+	if (FULLSCREEN)
+		endObjects[1]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
+	else
+		endObjects[1]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
+	endObjects[1]->RotateY(90);
+	endObjects[1]->setPosition(glm::vec3(0, -555, -1));
+
+	endObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/ninjaRedWin.png", "redNinjaRed", true));
+	if (FULLSCREEN)
+		endObjects[2]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
+	else
+		endObjects[2]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
+	endObjects[2]->RotateY(90);
+	endObjects[2]->setPosition(glm::vec3(0, -555, -1));
+
+	endObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/ninjaBlueWin.png", "blueNinjaEnd", true));
+	if (FULLSCREEN)
+		endObjects[3]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
+	else
+		endObjects[3]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
+	endObjects[3]->RotateY(90);
+	endObjects[3]->setPosition(glm::vec3(0, -555, -1));
 
 //================================================================//
 	//Init PointLights
@@ -749,7 +773,7 @@ void Game::initializeGame()
 	HitSparkR.HaveGravity = true;
 	HitSparkR.Mass = 1.0f;
 	HitSparkR.Gravity = 0.6f;
-	HitSparkR.noiseOn = true;
+	HitSparkR.noiseOn = false;
 	HitSparkR.noiseStrength = 1;
 
 	if (!HitSparkL.Init("./Assets/Textures/RedConfetti.png", (unsigned int)500, (unsigned int)30))
@@ -768,7 +792,7 @@ void Game::initializeGame()
 	HitSparkL.HaveGravity = true;
 	HitSparkL.Mass = 1.0f;
 	HitSparkL.Gravity = 0.6f;
-	HitSparkL.noiseOn = true;
+	HitSparkL.noiseOn = false;
 	HitSparkL.noiseStrength = 1;
 
 	if (!MeterFlame1.Init("./Assets/Textures/redFog.png", (unsigned int)500, (unsigned int)20))
@@ -787,7 +811,7 @@ void Game::initializeGame()
 	MeterFlame1.HaveGravity = true;
 	MeterFlame1.Mass = 1.0f;
 	MeterFlame1.Gravity = -0.3f;
-	MeterFlame1.noiseOn = true;
+	MeterFlame1.noiseOn = false;
 	MeterFlame1.noiseStrength = 10;
 	
 	if (!MeterFlame2.Init("./Assets/Textures/blueFog.png", (unsigned int)500, (unsigned int)20))
@@ -806,7 +830,7 @@ void Game::initializeGame()
 	MeterFlame2.HaveGravity = true;
 	MeterFlame2.Mass = 1.0f;
 	MeterFlame2.Gravity = -0.3f;
-	MeterFlame2.noiseOn = true;
+	MeterFlame2.noiseOn = false;
 	MeterFlame2.noiseStrength = 10;
 
 	if (!KnightUltFX.Init("./Assets/Textures/RedConfetti.png", (unsigned int)500, (unsigned int)60))
@@ -825,7 +849,7 @@ void Game::initializeGame()
 	KnightUltFX.HaveGravity = true;
 	KnightUltFX.Mass = 1.0f;
 	KnightUltFX.Gravity = 0.6f;
-	KnightUltFX.noiseOn = true;
+	KnightUltFX.noiseOn = false;
 	KnightUltFX.noiseStrength = 1;
 
 	if (!NinjaUltFX.Init("./Assets/Textures/fog.png", (unsigned int)500, (unsigned int)30))
@@ -844,7 +868,7 @@ void Game::initializeGame()
 	NinjaUltFX.HaveGravity = true;
 	NinjaUltFX.Mass = 1.0f;
 	NinjaUltFX.Gravity = 0.05f;
-	NinjaUltFX.noiseOn = true;
+	NinjaUltFX.noiseOn = false;
 	NinjaUltFX.noiseStrength = 1;
 
 //=======================================================================//
@@ -1017,8 +1041,9 @@ void Game::initializeGame()
 
 	//Create a pitch shift effect
 	Sound::engine.system->createDSPByType(FMOD_DSP_TYPE_PITCHSHIFT, &pitchShift);
-	pitchShift->setParameterFloat(FMOD_DSP_PITCHSHIFT_PITCH, 0.5f);
-}
+	//pitchShift->setParameterFloat(FMOD_DSP_PITCHSHIFT_PITCH, 0.5f);
+
+	Sound::engine.system->createDSPByType(FMOD_DSP_TYPE_HIGHPASS, &highPass);}
 
 
 void Game::update()
@@ -1028,8 +1053,26 @@ void Game::update()
 	if (scene == 4)
 	{
 		updateEndScreen();
+
+		if (!soundHighPassed)
+		{
+			gameTheme.Stop(themeChannel);
+			themeChannel = gameTheme.Play(themePos, themePos, true);
+
+			highPass->setParameterFloat(FMOD_DSP_HIGHPASS_CUTOFF, 1000.0f);
+			themeChannel->addDSP(0, highPass);
+
+			pitchShift->setParameterFloat(FMOD_DSP_PITCHSHIFT_PITCH, 0.8f);
+			themeChannel->addDSP(0, pitchShift);
+
+			themeChannel->setVolume(0.8f);
+
+			soundPitched = false;
+			soundNormalized = false;
+			soundHighPassed = true;
+		}
 	}
-	if (scene == 3) {
+	else if (scene == 3) {
 		updateScene();
 
 		/*if (!soundPlaying)
@@ -1053,8 +1096,10 @@ void Game::update()
 			themeChannel->addDSP(0, pitchShift);
 
 			themeChannel->setFrequency(60000.0f);
+			
 			soundPitched = true;
 			soundNormalized = false;
+			soundHighPassed = false;
 		}
 
 	}
@@ -1066,8 +1111,10 @@ void Game::update()
 			//themeChannel->removeDSP(pitchShift);
 			gameTheme.Stop(themeChannel);
 			themeChannel = gameTheme.Play(themePos, themePos, true);
+			
 			soundNormalized = true;
 			soundPitched = false;
+			soundHighPassed = false;
 		}
 	}
 	else if (scene == 1) {
@@ -1078,8 +1125,10 @@ void Game::update()
 			//themeChannel->removeDSP(pitchShift);
 			gameTheme.Stop(themeChannel);
 			themeChannel = gameTheme.Play(themePos, themePos, true);
+			
 			soundNormalized = true;
 			soundPitched = false;
+			soundHighPassed = false;
 		}
 	}
 	else {
@@ -1090,8 +1139,10 @@ void Game::update()
 			//themeChannel->removeDSP(pitchShift);
 			gameTheme.Stop(themeChannel);
 			themeChannel = gameTheme.Play(themePos, themePos, true);
+			
 			soundNormalized = true;
 			soundPitched = false;
+			soundHighPassed = false;
 		}
 	}
 	//end = chrono::steady_clock::now();
@@ -1101,12 +1152,25 @@ void Game::update()
 
 void Game::updateEndScreen()
 {
-	/*// update our clock so we have the delta time since the last update
+	// update our clock so we have the delta time since the last update
 	updateTimer->tick();
 	float deltaTime = updateTimer->getElapsedTimeSeconds();
 	TotalGameTime += deltaTime;
 
 	updateInputs();
+
+	XBoxController.SetVibration(0, 0, 0);//controller 0, power 0 on left and right (off)
+	XBoxController.SetVibration(1, 0, 0);//controller , power 0 on left and right (off)
+
+	//Reset confetti efects so they are not on screen when game starts up again
+	ConfettiEffectBlueLeft.Reset();
+	ConfettiEffectBlueRight.Reset();
+	ConfettiEffectOrangeLeft.Reset();
+	ConfettiEffectOrangeRight.Reset();
+	ConfettiEffectPurpleLeft.Reset();
+	ConfettiEffectPurpleRight.Reset();
+	ConfettiEffectRedLeft.Reset();
+	ConfettiEffectRedRight.Reset();
 
 	//press
 	if (inputs[6] || inputs2[6]) {
@@ -1116,89 +1180,20 @@ void Game::updateEndScreen()
 		endGame = true;
 	}
 
+	//Once A is pressed go back to menu
 	if (endGame)
 	{
 		scene = 0;
+		p1Char = 0;
+		p2Char = 0;
+		p1KnightWin = false;
+		p1NinjaWin = false;
+		p2KnightWin = false;
+		p2NinjaWin = false;
+		endGame = false;
 		TotalGameTime = 0.0f;
 		deltaTime = 0;
 		updateTimer = new Timer();
-	}*/
-	// update our clock so we have the delta time since the last update
-	updateTimer->tick();
-	float deltaTime = updateTimer->getElapsedTimeSeconds();
-	TotalGameTime += deltaTime;
-
-	updateInputs();
-
-	//check if move input
-	unsigned int oldButton = selectedButton;
-	if (TotalGameTime - lastInputTime > 0.2f) {
-		if (inputs[0] || inputs2[0]) {
-			selectedButton--;
-		}
-		else if (inputs[2] || inputs2[2]) {
-			selectedButton++;
-		}
-	}
-
-	//correction
-	if (selectedButton < 1)
-		selectedButton = 1;
-	else if (selectedButton > 3)
-		selectedButton = 3;
-
-	//change button sizes
-	if (selectedButton != oldButton) {
-		lastInputTime = TotalGameTime;
-		if (selectedButton == 1) {
-			if (FULLSCREEN) {
-				findObjects(0, "button1")->setScale(1.1f * 300.0f);
-				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 300.0f);
-				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 300.0f);
-			}
-			else {
-				findObjects(0, "button1")->setScale(1.1f * 200.0f);
-				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 200.0f);
-				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 200.0f);
-			}
-		}
-		else if (selectedButton == 2) {
-			if (FULLSCREEN) {
-				findObjects(0, "button2")->setScale(1.1f * 300.0f);
-				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 300.0f);
-				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 300.0f);
-			}
-			else {
-				findObjects(0, "button2")->setScale(1.1f * 200.0f);
-				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 200.0f);
-				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 200.0f);
-			}
-		}
-		else if (selectedButton == 3) {
-			if (FULLSCREEN) {
-				findObjects(0, "button3")->setScale(1.1f * 300.0f);
-				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 300.0f);
-				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 300.0f);
-			}
-			else {
-				findObjects(0, "button3")->setScale(1.1f * 200.0f);
-				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 200.0f);
-				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 200.0f);
-			}
-		}
-	}
-
-	//press
-	if (inputs[6] || inputs2[6]) {
-		if (selectedButton == 1) {
-			scene = 0;
-			lastInputTime = 0.0f;
-			inputs[6] = 0;
-			inputs2[6] = 0;
-		}
-		else if (selectedButton == 3) {
-			exit(0);
-		}
 	}
 }
 
@@ -1644,6 +1639,12 @@ void Game::updateScene()
 					players[1]->hit(players[0]->getHitboxes()[i]);
 					players[0]->comboAdd();
 					players[0]->getHitboxes()[i]->setDone();
+
+					if (players[0]->type == 1 && players[0]->ultMode == true)
+					{
+						players[1]->hitForce *= 2.5;
+					}
+
 					i = 100;
 					j = 100;
 				}
@@ -1673,6 +1674,12 @@ void Game::updateScene()
 					players[0]->hit(players[1]->getHitboxes()[i]);
 					players[1]->comboAdd();
 					players[1]->getHitboxes()[i]->setDone();
+
+					if (players[1]->type == 1 && players[1]->ultMode == true) 
+					{
+						players[0]->hitForce *= 2.5;
+					}
+
 					i = 100;
 					j = 100;
 				}
@@ -2095,25 +2102,54 @@ void Game::updateScene()
 	}
 
 	//End Game
-	if (score1 == 10 || score2 == 10)
+	if (score1 == 1 || score2 == 1 || TotalGameTime >= 300)
 	{
-		std::cout << "end game";
-		XBoxController.SetVibration(0, 0, 0);//controller 0, power 0 on left and right (off)
-		XBoxController.SetVibration(1, 0, 0);//controller , power 0 on left and right (off)
-		//scene = 4;
-		//TotalGameTime = 0.0f;
-		//deltaTime = 0;
-		//updateTimer = new Timer();
+		//Make game black and white
+		grayscale = true;
 
-		stageDone = false;
-		stageVal = 1;
-		scene = 4;
-		TotalGameTime = 0.0f;
-		lastInputTime = 0.0f;
-		p1Done = false;
-		p2Done = false;
-		p1Char = 0;
-		p2Char = 0;
+		//Delay timer before going to results screen
+		static float tempTime;
+		tempTime += updateTimer->getElapsedTimeSeconds();
+
+		//Bring volume to 0
+		decreaseVal -= 0.005f;
+		themeChannel->setVolume(decreaseVal);
+
+		//Check if player 1 won
+		if (score1 > score2)
+		{
+			//Check what character they are
+			if (p1Char == 1)
+				p1KnightWin = true;
+			else if (p1Char == 2)
+				p1NinjaWin = true;
+		}
+
+		//Check if player 2 won
+		if (score2 > score1)
+		{
+			//Check what character they are
+			if (p2Char == 1)
+				p2KnightWin = true;
+			else if (p2Char == 2)
+				p2NinjaWin = true;
+		}
+
+		if (tempTime >= 1.5f)
+		{
+			stageDone = false;
+			stageVal = 1;
+			scene = 4;
+			TotalGameTime = 0.0f;
+			lastInputTime = 0.0f;
+			p1Char = 0;
+			p2Char = 0;
+			p1Done = false;
+			p2Done = false;
+			tempTime = 0.0f;
+			decreaseVal = 1.0f;
+			grayscale = false;
+		}
 	}
 
 	///Court specific functionality
@@ -2163,13 +2199,13 @@ void Game::updateScene()
 	if (stageVal == 3)
 	{
 		//Move the crowds up and down
-		float movementVal1 = (cos((TotalGameTime) * 9 + 110) + .6f);
+		float movementVal1 = (cos((TotalGameTime) * 9 + 110) + 1.0f);
 		findObjects(3, "ninja_crowd1")->transform.SetTranslation(glm::vec3(0.0f, movementVal1, 0.0f));
 
-		float movementVal2 = (cos((TotalGameTime) * 5 + 55) + .85f);
+		float movementVal2 = (cos((TotalGameTime) * 5 + 55) + 1.25f);
 		findObjects(3, "ninja_crowd2")->transform.SetTranslation(glm::vec3(0.0f, movementVal2, 0.0f));
 
-		float movementVal3 = (cos((TotalGameTime * 7) + 25) + .73f);
+		float movementVal3 = (cos((TotalGameTime * 7) + 25) + 1.13f);
 		findObjects(3, "ninja_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
 
 		//Flower petal effect
@@ -2197,7 +2233,7 @@ void Game::draw()
 	if (scene == 4) {
 		drawEndScreen();
 	}
-	if (scene == 3) {
+	else if (scene == 3) {
 		drawScene();
 	}
 	else if (scene == 2) {
@@ -2306,7 +2342,14 @@ void Game::drawEndScreen()
 	//draws everything in menu
 	sortObjects(4);
 	for (int i = 0; i < (int)endObjects.size(); i++) {
-		endObjects[i]->draw(GBufferPass, 1);
+		if (p1KnightWin)
+			endObjects[0]->draw(GBufferPass, 1);
+		if (p1NinjaWin)
+			endObjects[2]->draw(GBufferPass, 1);
+		if (p2KnightWin)
+			endObjects[1]->draw(GBufferPass, 1);
+		if (p2NinjaWin)
+			endObjects[3]->draw(GBufferPass, 1);
 	}
 
 	GBufferPass.UnBind();

@@ -147,6 +147,10 @@ public:
 
 	//End Screen
 	bool endGame = false;
+	bool p1KnightWin = false;
+	bool p2KnightWin = false;
+	bool p1NinjaWin = false;
+	bool p2NinjaWin = false;
 
 	Mesh HudObj;
 	Texture P1Hud;
@@ -245,6 +249,10 @@ public:
 	bool soundPlaying = false;
 	bool soundPitched = false;
 	bool soundNormalized = true;
+	bool soundHighPassed = false;
+
+	float decreaseVal = 1.0f;
+
 	//Sound gameSound;
 	Sound gameTheme;
 	Sound knightJump;
@@ -262,6 +270,7 @@ public:
 	FMOD::Channel* cheerChannel = NULL;
 	
 	FMOD::DSP *pitchShift;
+	FMOD::DSP *highPass;
 
 private:
 

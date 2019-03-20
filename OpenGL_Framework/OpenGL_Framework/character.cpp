@@ -196,8 +196,19 @@ glm::vec3 Character::getPosition()
 
 void Character::draw(ShaderProgram shader, float dt) {
 	if (action <= ACTION_DASH) {
-		if (action == ACTION_IDLE || action == ACTION_SIDE_SPECIAL || action == ACTION_UP_SPECIAL)
+		if (action == ACTION_IDLE || action == ACTION_SIDE_SPECIAL || action == ACTION_UP_SPECIAL) {
+			if (type == 2 && action == ACTION_IDLE)
+				aniTimer += dt / 9.0f;//ninja idle speed (larger denominator = slower interp speed)
+			else aniTimer += dt / 5.0f;//knight idle speed
+		}
+		else if (type == 2 && action == ACTION_SIDE_ATTACK)
+		{
+			aniTimer += dt / 7.0f;
+		}
+		else if (type == 2 && action == ACTION_DOWN_ATTACK)
+		{
 			aniTimer += dt / 5.0f;
+		}
 		else
 			aniTimer += dt / 3.1f;
 		while (aniTimer > 1.0f)

@@ -124,8 +124,8 @@ public:
 	glm::vec3 getAccel() { return acceleration; }
 	void setAccel(glm::vec3 accel) { acceleration = accel; }
 
-	int getMeter() { return comboMeter; }
-	void setMeter(int meter) { comboMeter = meter; }
+	float getMeter() { return comboMeter; }
+	void setMeter(float meter) { comboMeter = meter; }
 
 	std::vector<Hitbox*> getHitboxes();
 	std::vector<Hitbox*> getHurtboxes();
@@ -148,7 +148,6 @@ public:
 	std::queue<Particall> partiQueue;
 
 	//Actions
-	Transform idle();
 	Transform walk(bool held);
 	Transform run(bool held);
 	Transform dash(bool left, bool right);
@@ -158,6 +157,7 @@ public:
 	Transform jump2();
 	Transform fall();
 	void hit(Hitbox* hitBy);
+	virtual Transform idle();
 	virtual Transform jab();
 	virtual Transform sAttack();
 	virtual Transform dAttack();
@@ -234,7 +234,6 @@ protected:
 	glm::vec3 velocity;
 	glm::vec3 acceleration;
 	glm::vec3 force;
-	glm::vec3 hitForce;
 
 	//Attributes
 	float mass;
@@ -255,7 +254,7 @@ protected:
 
 	//combo stuff
 	unsigned int comboCount;//counts hits in a row, resets after x time
-	int comboMeter;//total value of combo meter from 0-100
+	float comboMeter;//total value of combo meter from 0-100
 	unsigned int comboTimer;//counts time since last hit in combo
 	unsigned int comboMaxTime;//2 seconds times 60fps
 	float comboHitMult;//multipy combo meter value by this to get knockback
@@ -307,6 +306,7 @@ unsigned int ACTION_DASH			=22;
 unsigned int ACTION_RESPAWN			=24;
 unsigned int ACTION_PLACEHOLDER		=25;
 //===================================================//
+glm::vec3 hitForce;
 
 private:
 };

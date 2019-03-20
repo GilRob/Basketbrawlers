@@ -133,14 +133,14 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 		aniFrames[ACTION_INTIAL_DASH].push_back(jab);
 	}
 	///dash
-	length = 2;
+	length = 1;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
-	for (int c = 8; c < 10; ++c)
+	for (int c = 0; c < length; ++c)
 	{
 		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string(c) );
-		frame.push_back("./Assets/Models/KnightAnimations/DashPoses/Dash" + std::to_string((int)((c + 1) % length)) );
+		frame.push_back("./Assets/Models/KnightAnimations/DashMovePoses/Dash" + std::to_string(c) );
+		frame.push_back("./Assets/Models/KnightAnimations/DashMovePoses/Dash" + std::to_string((int)((c + 1) % length)) );
 
 
 		Mesh* jab = new Mesh();
