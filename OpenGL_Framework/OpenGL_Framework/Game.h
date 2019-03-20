@@ -60,12 +60,14 @@ public:
 
 	void initializeGame();
 	void update();
+	void updateTutScreen();
 	void updateEndScreen();
 	void updateScene();
 	void updateMenu();
 	void updateCSS();
 	void updateSSS();
 	void draw();
+	void drawTutScreen();
 	void drawEndScreen();
 	void drawScene();
 	void drawCSS();
@@ -121,6 +123,7 @@ public:
 	std::vector<Object*> cssObjects;
 	std::vector<Object*> sssObjects;
 	std::vector<Object*> endObjects;
+	std::vector<Object*> tutObjects;
 
 	unsigned int scene = 0; //0=menu, 1=selecting, 2=fighting
 	bool gameDone = false;
@@ -151,6 +154,7 @@ public:
 	bool p2KnightWin = false;
 	bool p1NinjaWin = false;
 	bool p2NinjaWin = false;
+	bool tieGame = false;
 
 	Mesh HudObj;
 	Texture P1Hud;
@@ -169,10 +173,16 @@ public:
 	ParticleEffect ConfettiEffectPurpleLeft;
 	ParticleEffect basicLeftNet;
 	ParticleEffect basicRightNet;
+	ParticleEffect basicLeftNet1;
+	ParticleEffect basicRightNet1;
 	ParticleEffect knightLeftNet;
 	ParticleEffect knightRightNet;
+	ParticleEffect knightLeftNet1;
+	ParticleEffect knightRightNet1;
 	ParticleEffect ninjaLeftNet;
 	ParticleEffect ninjaRightNet;
+	ParticleEffect ninjaLeftNet1;
+	ParticleEffect ninjaRightNet1;
 	ParticleEffect NinjaPetals;
 	ParticleEffect NinjaPetals2;
 	ParticleEffect DustLand;

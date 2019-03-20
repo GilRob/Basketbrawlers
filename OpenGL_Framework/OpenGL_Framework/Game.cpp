@@ -207,7 +207,7 @@ void Game::initializeGame()
 	menuObjects[2]->RotateY(90.0f);
 	menuObjects[2]->setPosition(glm::vec3(570, -450, 0));
 
-	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/creditsButton.png", "button3", true));
+	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/quitButton.png", "button3", true));
 	if (FULLSCREEN)
 		menuObjects[3]->setScale(300.0f);
 	else
@@ -408,6 +408,24 @@ void Game::initializeGame()
 		endObjects[3]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
 	endObjects[3]->RotateY(90);
 	endObjects[3]->setPosition(glm::vec3(0, -555, -1));
+
+	endObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/tie.png", "tieGameEnd", true));
+	if (FULLSCREEN)
+		endObjects[4]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
+	else
+		endObjects[4]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
+	endObjects[4]->RotateY(90);
+	endObjects[4]->setPosition(glm::vec3(0, -555, -1));
+
+	//Tutorial Screen Assets
+	///Background image
+	tutObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/howTo.png", "tutorial", true));
+	if (FULLSCREEN)
+		tutObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
+	else
+		tutObjects[0]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
+	tutObjects[0]->RotateY(90);
+	tutObjects[0]->setPosition(glm::vec3(0, -555, -1));
 
 //================================================================//
 	//Init PointLights
@@ -650,14 +668,20 @@ void Game::initializeGame()
 	//ConfettiEffectRedRight.Gravity = 0.2f;
 
 
-	knightLeftNet.PartiParse("./Assets/Data/leftNet.txt", "./Assets/Textures/RedConfetti.png");
-	knightRightNet.PartiParse("./Assets/Data/rightNet.txt", "./Assets/Textures/RedConfetti.png");
+	knightLeftNet.PartiParse("./Assets/Data/leftNet.txt", "./Assets/Textures/fire2.png");
+	knightRightNet.PartiParse("./Assets/Data/rightNet.txt", "./Assets/Textures/fire2.png");
+	knightLeftNet1.PartiParse("./Assets/Data/leftNet1.txt", "./Assets/Textures/fire1.png");
+	knightRightNet1.PartiParse("./Assets/Data/rightNet1.txt", "./Assets/Textures/fire1.png");
 
-	basicLeftNet.PartiParse("./Assets/Data/leftNet.txt", "./Assets/Textures/RedConfetti.png");
-	basicRightNet.PartiParse("./Assets/Data/rightNet.txt", "./Assets/Textures/RedConfetti.png");
+	basicLeftNet.PartiParse("./Assets/Data/leftNet1.txt", "./Assets/Textures/puff2.png");
+	basicRightNet.PartiParse("./Assets/Data/rightNet1.txt", "./Assets/Textures/puff2.png");
+	basicLeftNet1.PartiParse("./Assets/Data/leftNet.txt", "./Assets/Textures/puff1.png");
+	basicRightNet1.PartiParse("./Assets/Data/rightNet.txt", "./Assets/Textures/puff1.png");
 
-	ninjaLeftNet.PartiParse("./Assets/Data/leftNet.txt", "./Assets/Textures/RedConfetti.png");
-	ninjaRightNet.PartiParse("./Assets/Data/rightNet.txt", "./Assets/Textures/RedConfetti.png");
+	ninjaLeftNet.PartiParse("./Assets/Data/leftNet.txt", "./Assets/Textures/flower2.png");
+	ninjaRightNet.PartiParse("./Assets/Data/rightNet.txt", "./Assets/Textures/flower2.png");
+	ninjaLeftNet1.PartiParse("./Assets/Data/leftNet1.txt", "./Assets/Textures/flower1.png");
+	ninjaRightNet1.PartiParse("./Assets/Data/rightNet1.txt", "./Assets/Textures/flower1.png");
 
 	ConfettiEffectRedRight.PartiParse("./Assets/Data/redRight.txt", "./Assets/Textures/red.png");
 	ConfettiEffectOrangeRight.PartiParse("./Assets/Data/redRight.txt", "./Assets/Textures/orange.png");
@@ -1050,7 +1074,22 @@ void Game::update()
 {
 	//auto end = chrono::steady_clock::now();
 	//auto start = chrono::steady_clock::now();
-	if (scene == 4)
+	if (scene == 5)
+	{
+		updateTutScreen();
+
+		if (!soundNormalized)
+		{
+			//themeChannel->removeDSP(pitchShift);
+			gameTheme.Stop(themeChannel);
+			themeChannel = gameTheme.Play(themePos, themePos, true);
+
+			soundNormalized = true;
+			soundPitched = false;
+			soundHighPassed = false;
+		}
+	}
+	else if (scene == 4)
 	{
 		updateEndScreen();
 
@@ -1150,6 +1189,32 @@ void Game::update()
 
 }
 
+void Game::updateTutScreen()
+{
+	updateTimer->tick();
+	float deltaTime = updateTimer->getElapsedTimeSeconds();
+	TotalGameTime += deltaTime;
+
+	updateInputs();
+
+	//press back to main menu
+	if (inputs[5] || inputs2[5]) {
+		lastInputTime = 0.0f;
+		inputs[5] = 0;
+		inputs2[5] = 0;
+
+		stageDone = false;
+		stageVal = 1;
+		scene = 0;
+		TotalGameTime = 0.0f;
+		lastInputTime = 0.0f;
+		p1Char = 0;
+		p2Char = 0;
+		p1Done = false;
+		p2Done = false;
+	}
+}
+
 void Game::updateEndScreen()
 {
 	// update our clock so we have the delta time since the last update
@@ -1157,7 +1222,8 @@ void Game::updateEndScreen()
 	float deltaTime = updateTimer->getElapsedTimeSeconds();
 	TotalGameTime += deltaTime;
 
-	updateInputs();
+	if (TotalGameTime >= 1.5f)
+		updateInputs();
 
 	XBoxController.SetVibration(0, 0, 0);//controller 0, power 0 on left and right (off)
 	XBoxController.SetVibration(1, 0, 0);//controller , power 0 on left and right (off)
@@ -1173,7 +1239,7 @@ void Game::updateEndScreen()
 	ConfettiEffectRedRight.Reset();
 
 	//press
-	if (inputs[6] || inputs2[6]) {
+	if (inputs[6] || inputs2[6] || inputs[5] || inputs2[5]) {
 		lastInputTime = 0.0f;
 		inputs[6] = 0;
 		inputs2[6] = 0;
@@ -1190,6 +1256,7 @@ void Game::updateEndScreen()
 		p1NinjaWin = false;
 		p2KnightWin = false;
 		p2NinjaWin = false;
+		tieGame = false;
 		endGame = false;
 		TotalGameTime = 0.0f;
 		deltaTime = 0;
@@ -1272,6 +1339,13 @@ void Game::updateMenu()
 			inputs[6] = 0;
 			inputs2[6] = 0;
 		}
+		else if (selectedButton == 2)
+		{
+			scene = 5;
+			lastInputTime = 0.0f;
+			inputs[6] = 0;
+			inputs2[6] = 0;
+		}
 		else if (selectedButton == 3) {
 			exit(0);
 		}
@@ -1287,6 +1361,23 @@ void Game::updateCSS()
 	TotalGameTime += deltaTime;
 
 	updateInputs();
+
+	//Go back to main menu
+	if (inputs[5] || inputs2[5]) {
+		lastInputTime = 0.0f;
+		inputs[5] = 0;
+		inputs2[5] = 0;
+
+		stageDone = false;
+		stageVal = 1;
+		scene = 0;
+		TotalGameTime = 0.0f;
+		lastInputTime = 0.0f;
+		p1Char = 0;
+		p2Char = 0;
+		p1Done = false;
+		p2Done = false;
+	}
 
 	//check inputs
 	//if (TotalGameTime - lastInputTime > 0.2f) {
@@ -1406,6 +1497,23 @@ void Game::updateSSS()
 	TotalGameTime += deltaTime;
 
 	updateInputs();
+
+	//Go back to main menu
+	if (inputs[5] || inputs2[5]) {
+		lastInputTime = 0.0f;
+		inputs[5] = 0;
+		inputs2[5] = 0;
+
+		stageDone = false;
+		stageVal = 1;
+		scene = 0;
+		TotalGameTime = 0.0f;
+		lastInputTime = 0.0f;
+		p1Char = 0;
+		p2Char = 0;
+		p1Done = false;
+		p2Done = false;
+	}
 
 	//check if move input
 	if (TotalGameTime - lastInputTime > 0.2f && !stageDone) {
@@ -1694,6 +1802,23 @@ void Game::updateScene()
 	}
 
 	updateInputs();
+
+	//Go back to main menu
+	if (inputs[5] || inputs2[5]) {
+		lastInputTime = 0.0f;
+		inputs[5] = 0;
+		inputs2[5] = 0;
+
+		stageDone = false;
+		stageVal = 1;
+		scene = 0;
+		TotalGameTime = 0.0f;
+		lastInputTime = 0.0f;
+		p1Char = 0;
+		p2Char = 0;
+		p1Done = false;
+		p2Done = false;
+	}
 
 	//make camera rumble when ult is activated
 	if (players[0]->ultFrame1 || players[1]->ultFrame1) {
@@ -2036,10 +2161,16 @@ void Game::updateScene()
 	ConfettiEffectPurpleLeft.Update(deltaTime);
 	basicLeftNet.Update(deltaTime);
 	basicRightNet.Update(deltaTime);
+	basicLeftNet1.Update(deltaTime);
+	basicRightNet1.Update(deltaTime);
 	ninjaLeftNet.Update(deltaTime);
 	ninjaRightNet.Update(deltaTime);
+	ninjaLeftNet1.Update(deltaTime);
+	ninjaRightNet1.Update(deltaTime);
 	knightLeftNet.Update(deltaTime);
 	knightRightNet.Update(deltaTime);
+	knightLeftNet1.Update(deltaTime);
+	knightRightNet1.Update(deltaTime);
 	NinjaPetals.Update(deltaTime);
 	NinjaPetals2.Update(deltaTime);
 	DustDashL.Update(deltaTime);
@@ -2102,7 +2233,7 @@ void Game::updateScene()
 	}
 
 	//End Game
-	if (score1 == 1 || score2 == 1 || TotalGameTime >= 300)
+	if (score1 == 10 || score2 == 10 || TotalGameTime >= 300)
 	{
 		//Make game black and white
 		grayscale = true;
@@ -2133,6 +2264,11 @@ void Game::updateScene()
 				p2KnightWin = true;
 			else if (p2Char == 2)
 				p2NinjaWin = true;
+		}
+
+		if (score1 == score2)
+		{
+			tieGame = true;
 		}
 
 		if (tempTime >= 1.5f)
@@ -2168,6 +2304,9 @@ void Game::updateScene()
 
 		basicLeftNet.Spawn(1.0f);
 		basicRightNet.Spawn(1.0f);
+		basicLeftNet1.Spawn(1.0f);
+		basicRightNet1.Spawn(1.0f);
+
 
 		//Additional lights in the basic court
 		findLight("lightLeft")->active = true;
@@ -2189,6 +2328,9 @@ void Game::updateScene()
 
 		knightLeftNet.Spawn(1.0f);
 		knightRightNet.Spawn(1.0f);
+		knightLeftNet1.Spawn(1.0f);
+		knightRightNet1.Spawn(1.0f);
+
 
 		//Turn off the lights from the basic court
 		findLight("lightLeft")->active = false;
@@ -2213,6 +2355,8 @@ void Game::updateScene()
 		NinjaPetals2.Spawn(1.0f);
 		ninjaLeftNet.Spawn(1.0f);
 		ninjaRightNet.Spawn(1.0f);
+		ninjaLeftNet1.Spawn(1.0f);
+		ninjaRightNet1.Spawn(1.0f);
 
 
 		//Turn off the lights from the basic court
@@ -2230,7 +2374,11 @@ How are we rendering it
 
 void Game::draw()
 {
-	if (scene == 4) {
+	if (scene == 5)
+	{
+		drawTutScreen();
+	}
+	else if (scene == 4) {
 		drawEndScreen();
 	}
 	else if (scene == 3) {
@@ -2245,6 +2393,193 @@ void Game::draw()
 	else {
 		drawMenu();
 	}
+}
+
+void Game::drawTutScreen()
+{
+	/// Clear Buffers ///
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glClearColor(0.1f, 0.2f, 0.3f, 0);
+	DeferredComposite.Clear();
+
+	glClearColor(0.0f, 0.0f, 0.0f, 0);
+	GBuffer.Clear();
+	ShadowMap.Clear();
+	HudMap.Clear();
+	WorkBuffer1.Clear();
+	WorkBuffer2.Clear();
+
+	/// Create Scene From GBuffer ///
+	if (FULLSCREEN)
+		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	else
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	DeferredLighting.Bind();
+	DeferredLighting.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
+	DeferredLighting.SendUniform("uScene", 0);
+	DeferredLighting.SendUniform("uShadowMap", 1);
+	DeferredLighting.SendUniform("uNormalMap", 2);
+	DeferredLighting.SendUniform("uPositionMap", 3);
+	//DeferredLighting.SendUniform("uEdgeMap", 4);
+	//DeferredLighting.SendUniform("uStepTexture", 4);
+
+	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
+	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
+
+	DeferredComposite.Bind();
+
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
+
+
+
+	DrawFullScreenQuad();
+
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
+
+	DeferredComposite.UnBind();
+	DeferredLighting.UnBind();
+
+	//===============================================================
+		//DeferredComposite.Bind();
+	DeferredComposite.Bind();
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask(GL_FALSE);  // disable writes to Z-Buffer
+	glDisable(GL_DEPTH_TEST);  // disable depth-testing
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_LIGHTING);
+
+	//new projection
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();//save old state
+	glLoadIdentity();//reset
+	if (FULLSCREEN)
+		gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
+	else
+		gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();//save old state
+	glLoadIdentity();//reset
+
+//////////////////////////
+	//now ready to draw 2d
+//////////////////////////
+	GBufferPass.Bind();
+	hudTransform = Transform::Identity();
+	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+
+	//draws everything in menu
+	sortObjects(5);
+	for (int i = 0; i < (int)tutObjects.size(); i++) {
+		tutObjects[i]->draw(GBufferPass, 1);
+	}
+
+	GBufferPass.UnBind();
+
+	//restore projection matrix
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();//restore state
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();//restore state
+
+	DeferredComposite.UnBind();
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_LIGHTING);
+	glDisable(GL_BLEND);
+	//===============================================================
+
+		/// Compute High Pass ///
+	if (FULLSCREEN)
+		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
+	else
+		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+	//Moving data to the back buffer, at the same time as our last post process
+	BloomHighPass.Bind();
+	BloomHighPass.SendUniform("uTex", 0);
+	BloomHighPass.SendUniform("uThreshold", 1.0f);
+	WorkBuffer1.Bind();
+	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	DrawFullScreenQuad();
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	WorkBuffer1.UnBind();
+	BloomHighPass.UnBind();
+
+	/// Compute Blur ///
+	if (FULLSCREEN)
+		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
+	else
+		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+	for (int i = 0; i < BLOOM_BLUR_PASSES; i++)
+	{
+		//Horizontal Blur
+		BlurHorizontal.Bind();
+		BlurHorizontal.SendUniform("uTex", 0);
+		if (FULLSCREEN)
+			BlurHorizontal.SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
+		else
+			BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
+		WorkBuffer2.Bind();
+		glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+		WorkBuffer2.UnBind();
+		BlurHorizontal.UnBind();
+
+		//Vertical Blur
+		BlurVertical.Bind();
+		BlurVertical.SendUniform("uTex", 0);
+		if (FULLSCREEN)
+			BlurVertical.SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
+		else
+			BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
+		WorkBuffer1.Bind();
+		glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+		WorkBuffer1.UnBind();
+		BlurVertical.UnBind();
+	}
+
+	/// Composite To Back Buffer ///
+	if (FULLSCREEN)
+		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	else
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	BloomComposite.Bind();
+	BloomComposite.SendUniform("uScene", 0);
+	BloomComposite.SendUniform("uBloom", 1);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
+	DrawFullScreenQuad();
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	BloomComposite.UnBind();
+
+	glutSwapBuffers();
 }
 
 void Game::drawEndScreen()
@@ -2350,6 +2685,8 @@ void Game::drawEndScreen()
 			endObjects[1]->draw(GBufferPass, 1);
 		if (p2NinjaWin)
 			endObjects[3]->draw(GBufferPass, 1);
+		if (tieGame)
+			endObjects[4]->draw(GBufferPass, 1);
 	}
 
 	GBufferPass.UnBind();
@@ -2826,10 +3163,16 @@ void Game::drawScene()
 	ConfettiEffectBlueLeft.Render();
 	basicLeftNet.Render();
 	basicRightNet.Render();
+	basicLeftNet1.Render();
+	basicRightNet1.Render();
 	ninjaLeftNet.Render();
 	ninjaRightNet.Render();
+	ninjaLeftNet1.Render();
+	ninjaRightNet1.Render();
 	knightLeftNet.Render();
 	knightRightNet.Render();
+	knightLeftNet1.Render();
+	knightRightNet1.Render();
 	NinjaPetals.Render();
 	NinjaPetals2.Render();
 	DustDashL.Render();
@@ -4074,7 +4417,7 @@ void Game::updateInputs()
 	//if  not pressed last frame, but is pressed this frame, ButtonPress() == true
 	Aold = Anew;
 	Bold = Bnew;
-	Yold = Ynew;
+	//Yold = Ynew;
 	Xold = Xnew;
 	Sold = Snew;
 	LBold = LBnew;
@@ -4096,6 +4439,11 @@ void Game::updateInputs()
 			pad = true;
 		}
 		else Bnew = false;
+		if (XBoxController.GetButton(0, Input::Start)) {
+			Snew = true;
+			pad = true;
+		}
+		else Snew = false;
 		/*if (XBoxController.GetButton(0, Input::Y)) {
 			Ynew = true;
 			pad = true;
@@ -4161,6 +4509,8 @@ void Game::updateInputs()
 			inputs[4] = true;
 		/*if (Ynew == true && Yold == false)
 			inputs[5] = true;*/
+		if (Snew == true && Sold == false)
+			inputs[5] = true;
 		if (Anew == true && Aold == false)
 			inputs[6] = true;
 		else inputs[6] = false;//A = only on pressed not held
@@ -4198,6 +4548,8 @@ void Game::updateInputs()
 			inputs[4] = false;
 		/*if (Ynew == false && Yold == true)
 			inputs[5] = false;*/
+		if (Snew == false && Sold == true)
+			inputs[5] = false;
 		if (Anew == false && Aold == true)
 			inputs[6] = false;
 
@@ -4235,6 +4587,11 @@ void Game::updateInputs()
 			pad = true;
 		}
 		else Bnew2 = false;
+		if (XBoxController.GetButton(1, Input::Start)) {
+			Snew2 = true;
+			pad = true;
+		}
+		else Snew2 = false;
 		/*if (XBoxController.GetButton(1, Input::Y)) {
 			Ynew2 = true;
 			pad = true;
@@ -4296,6 +4653,8 @@ void Game::updateInputs()
 			inputs2[4] = true;
 		/*if (Ynew2 == true && Yold2 == false)
 			inputs2[5] = true;*/
+		if (Snew2 == true && Sold2 == false)
+			inputs2[5] = true;
 		if (Anew2 == true && Aold2 == false)
 			inputs2[6] = true;
 		else inputs2[6] = false;//A = only on pressed not held
@@ -4331,7 +4690,9 @@ void Game::updateInputs()
 			inputs2[2] = false;
 		if (Xnew2 == false && Xold2 == true)
 			inputs2[4] = false;
-		if (Ynew2 == false && Yold2 == true)
+		/*if (Ynew2 == false && Yold2 == true)
+			inputs2[5] = false;*/
+		if (Snew2 == false && Sold2 == true)
 			inputs2[5] = false;
 		if (Anew2 == false && Aold2 == true)
 			inputs2[6] = false;
