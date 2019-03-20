@@ -2,7 +2,7 @@
 
 VectorField::VectorField()
 {
-	range = 5;
+	range = 2;
 	used = false;
 }
 
@@ -14,31 +14,31 @@ void VectorField::init()
 {
 	//init vector fields
 	p1Legs.active = false;
-	p1Legs.weight = 1;
+	p1Legs.weight = 20;
 	p1Legs.direction = glm::vec2(0.0f,0.0f);
 	p1Legs.location = glm::vec2(0.0f, 0.0f);
 
 	p2Legs.active = false;
-	p2Legs.weight = 1;
+	p2Legs.weight = 20;
 	p2Legs.direction = glm::vec2(0.0f, 0.0f);
 	p2Legs.location = glm::vec2(0.0f, 0.0f);
 
 	p1Head.active = false;
-	p1Head.weight = 1;
+	p1Head.weight = 20;
 	p1Head.direction = glm::vec2(0.0f, 0.0f);
 	p1Head.location = glm::vec2(0.0f, 0.0f);
 
 	p2Head.active = false;
-	p2Head.weight = 1;
+	p2Head.weight = 20;
 	p2Head.direction = glm::vec2(0.0f, 0.0f);
 	p2Head.location = glm::vec2(0.0f, 0.0f);
 	p1Swing.active = false;
-	p1Swing.weight = 4;
+	p1Swing.weight = 40;
 	p1Swing.direction = glm::vec2(0.0f, 0.0f);
 	p1Swing.location = p1Head.location;
 	  
 	p2Swing.active = false;
-	p2Swing.weight = 4;
+	p2Swing.weight = 40;
 	p2Swing.direction = glm::vec2(0.0f, 0.0f);
 	p2Swing.location = p2Head.location;
 
@@ -49,9 +49,11 @@ void VectorField::init()
 glm::vec2 VectorField::totalWeight(glm::vec2 position)
 {
 	glm::vec2 totalWeight = glm::vec2(0.0f, 0.0f);
-
-	//adds weight of p1's movement
+ 	//adds weight of p1's movement
+	/// !!!!! Fix this so legs are also checked
 	if (p1Head.active && glm::distance(position, p1Head.location) < range ) {
+
+		//cout << position.x - p1Head.location.x << "," << position.y - p1Head.location.y << "/";
 		totalWeight += p1Head.getWeight(position);
 		if (glm::distance(position, p1Legs.location) < range) {
 			totalWeight += p1Legs.getWeight(position);
@@ -95,7 +97,10 @@ void VectorField::update(glm::vec2 p1, glm::vec2 p1Dir, glm::vec2 p2, glm::vec2 
 {
 	
 	//update player 1 attributes
-	if (p1Dir != glm::vec2(0.0f, 0.0f)) {
+	if (p1Dir != glm::vec2(0.0f, 0.0f)) {		
+		//cout << "moved";
+
+
 		p1Legs.active = p1Head.active = true;
 		p1Legs.location = p1;
 		p1Head.location = p1Swing.location = p1 + glm::vec2(0.0f, headOffSet);

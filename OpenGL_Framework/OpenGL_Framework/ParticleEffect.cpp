@@ -232,12 +232,6 @@ void ParticleEffect::Update(float elapsed)
 		_Particles.Velocities[_NumCurrentParticles] = glm::normalize(_Particles.Velocities[_NumCurrentParticles]);
 		_Particles.Velocities[_NumCurrentParticles] *= RandomRangef(RangeVelocity.x, RangeVelocity.y);
 
-		//adds feild weight if exists
-		if (mainField.used) {
-			glm::vec2 totalWeight = mainField.totalWeight(_Particles.Positions[_NumCurrentParticles]);
-			_Particles.Velocities[_NumCurrentParticles] += glm::vec3(totalWeight, 0.0f);
-		}
-
 		_Particles.frequency[_NumCurrentParticles] = noiseFrequency;
 
 		//counters...
@@ -273,6 +267,12 @@ void ParticleEffect::Update(float elapsed)
 				_Particles.frequency[i] = 0;
 			}
 
+			//adds feild weight if exists
+			if (mainField.used) {
+				glm::vec2 totalWeight = mainField.totalWeight(_Particles.Positions[i]);
+				_Particles.Velocities[i] += glm::vec3(totalWeight, 0.0f);
+			}
+
 			//physics update
 			force = glm::vec3(0, 0 - Gravity, 0);
 			acceleration = force / Mass;
@@ -283,6 +283,10 @@ void ParticleEffect::Update(float elapsed)
 
 			_Particles.Alpha[i] = glm::mix(LerpAlpha.x, LerpAlpha.y, interp);
 			_Particles.Size[i] = glm::mix(LerpSize.x, LerpSize.y, interp);
+
+
+
+
 		}
 		//end = chrono::steady_clock::now();
 

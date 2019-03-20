@@ -2,6 +2,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 
@@ -44,7 +45,7 @@ private:
 	Field p1Swing;
 	Field p2Swing;
 
-	float headOffSet = 2.0f;
+	float headOffSet = 5.0f;
 
 
 };

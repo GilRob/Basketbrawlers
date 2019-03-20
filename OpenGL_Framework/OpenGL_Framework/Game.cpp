@@ -2059,7 +2059,7 @@ void Game::updateScene()
 
 	NinjaPetals.mainField.update(playerTransform1, players[0]->movementDir, playerTransform2, players[1]->movementDir);
 	NinjaPetals2.mainField.update(playerTransform1, players[0]->movementDir, playerTransform1, players[1]->movementDir);
-
+	//cout << playerTransform1.x << "," << playerTransform1.y << endl;
 
 	//Sound Effects//
 	knightPos = { players[0]->getPosition().x, players[0]->getPosition().y, players[0]->getPosition().z };
