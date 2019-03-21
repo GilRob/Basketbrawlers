@@ -52,6 +52,6 @@ private:
 
 	float headOffSet = 4.0f;
 	float bodyOffset = 2.0f;
-	float movementWeight = 1.0f;
+	float movementWeight = 1.5f;
 
 };
