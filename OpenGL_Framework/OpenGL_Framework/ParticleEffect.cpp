@@ -270,6 +270,7 @@ void ParticleEffect::Update(float elapsed)
 			//adds feild weight if exists
 			if (mainField.used) {
 				glm::vec2 totalWeight = mainField.totalWeight(_Particles.Positions[i]);
+				_Particles.Velocities[i] *= 0.97f;												//remember to add drag ######################################
 				_Particles.Velocities[i] += glm::vec3(totalWeight, 0.0f);
 			}
 
