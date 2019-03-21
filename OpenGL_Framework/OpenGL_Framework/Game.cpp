@@ -1737,15 +1737,19 @@ void Game::updateScene()
 				XBoxController.SetVibration(0, 0, 0);
 				XBoxController.SetVibration(1, 0, 0);
 
-				if (players[1]->ultMode) {//add only in front condition
-					//players[1]->blockSuccessful = true;
-					players[0]->getHitboxes()[i]->setDone();
-					i = 100;
-					j = 100;
-				}
-				else {
+				//if (players[1]->ultMode) {//add only in front condition
+				//	//players[1]->blockSuccessful = true;
+				//	players[0]->getHitboxes()[i]->setDone();
+				//	i = 100;
+				//	j = 100;
+				//}
+			//	else {
 					players[1]->hit(players[0]->getHitboxes()[i]);
-					players[0]->comboAdd();
+
+					if (players[0]->ultMode == false)
+					{
+						players[0]->comboAdd();
+					}
 					players[0]->getHitboxes()[i]->setDone();
 
 					if (players[0]->type == 1 && players[0]->ultMode == true)
@@ -1755,7 +1759,7 @@ void Game::updateScene()
 
 					i = 100;
 					j = 100;
-				}
+				//}
 			}
 		}
 	}
@@ -1772,15 +1776,18 @@ void Game::updateScene()
 				XBoxController.SetVibration(0, 0, 0);
 				XBoxController.SetVibration(1, 0, 0);
 
-				if (players[0]->ultMode) {//add only in front condition
-					//players[0]->blockSuccessful = true;
-					players[1]->getHitboxes()[i]->setDone();
-					i = 100;
-					j = 100;
-				}
-				else {
+				//if (players[0]->ultMode) {//add only in front condition
+				//	//players[0]->blockSuccessful = true;
+				//	players[1]->getHitboxes()[i]->setDone();
+				//	i = 100;
+				//	j = 100;
+				//}
+				//else {
 					players[0]->hit(players[1]->getHitboxes()[i]);
-					players[1]->comboAdd();
+					if (players[1]->type == 1 && players[1]->ultMode == true)
+					{
+						players[0]->hitForce *= 2.5;
+					}
 					players[1]->getHitboxes()[i]->setDone();
 
 					if (players[1]->type == 1 && players[1]->ultMode == true) 
@@ -1790,7 +1797,7 @@ void Game::updateScene()
 
 					i = 100;
 					j = 100;
-				}
+				//}
 			}
 
 		}

@@ -537,6 +537,15 @@ Transform Ninja::dAttack()
 		index = 0;
 	}
 	if (action == ACTION_DOWN_ATTACK && currentFrame <= activeFrames) {
+		if (currentFrame > 6 && currentFrame < 20)
+		{
+			velocity.x += (-0.5f + (int)facingRight)*0.7f;
+		}
+		else if (currentFrame > 3 && currentFrame < 28) {
+
+
+			velocity.x += (-0.5f + (int)facingRight)*0.3f;
+		}
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
 
@@ -707,6 +716,18 @@ Transform Ninja::dAir()
 		currentFrame = 1;
 	}
 	if (action == ACTION_DOWN_AERIAL && currentFrame <= activeFrames) {
+		if (currentFrame > 20 && currentFrame < 38)
+		{
+			velocity.x += (-0.5f + (int)facingRight)*0.3f;
+			velocity.y -= (-0.5f + (int)facingRight)*0.3f;
+		}
+		else if (currentFrame > 10 && currentFrame < 45) {
+
+
+			velocity.x += (-0.5f + (int)facingRight)*0.7f;
+			velocity.y -= (-0.5f + (int)facingRight)*-0.3f;
+
+		}
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
 		if (currentFrame == 10) {
