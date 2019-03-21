@@ -6,20 +6,23 @@
 
 using namespace std;
 
-//base class for any fields
-struct Field {
+//basic motion motor for generating wind when moving
+struct Motor {
 	bool active = false;
 	float weight = 1.0f;
 	glm::vec2 direction = glm::vec2(0.0f, 0.0f);
 	glm::vec2 location = glm::vec2(0.0f, 0.0f);
 
-	glm::vec2 getWeight(glm::vec2 position) {
-		float dist = glm::distance(position, location);
-		return direction * (weight / (dist + 1.0f));
+	//physics calculation
+	glm::vec2 getForce(glm::vec2 position) {
+		float dist = glm::distance(position, location) + 0.01f;
+		return (direction * weight) /dist;
 	};
 };
 
+//ill abstract this better later if i have time			-John
 
+//Field of vectors for both players
 class VectorField {
 public:
 	VectorField();
@@ -38,14 +41,17 @@ public:
 	bool used;
 
 private:
-	Field p1Legs;
-	Field p2Legs;
-	Field p1Head;
-	Field p2Head;
-	Field p1Swing;
-	Field p2Swing;
+	Motor p1Legs;
+	Motor p2Legs;
+	Motor p1Body;
+	Motor p2Body;
+	Motor p1Head;
+	Motor p2Head;
+	Motor p1Swing;
+	Motor p2Swing;
 
-	float headOffSet = 5.0f;
-
+	float headOffSet = 4.0f;
+	float bodyOffset = 2.0f;
+	float movementWeight = 1.0f;
 
 };
