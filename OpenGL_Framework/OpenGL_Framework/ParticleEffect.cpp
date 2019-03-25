@@ -212,7 +212,7 @@ void ParticleEffect::Update(float elapsed)
 		//_Particles.Positions[_NumCurrentParticles] = vec3((RandomRangef(RangeX.x, RangeX.y), RandomRangef(RangeY.x, RangeY.y), RandomRangef(RangeZ.x, RangeZ.y)));
 		_Particles.Positions[_NumCurrentParticles].x = RandomRangef(RangeX.x, RangeX.y);
 		_Particles.Positions[_NumCurrentParticles].y = RandomRangef(RangeY.x, RangeY.y);
-		_Particles.Positions[_NumCurrentParticles].z = 0.0f;
+		_Particles.Positions[_NumCurrentParticles].z = -100.0f;
 
 		//custom spawners:
 		if (circleSpawner) {
@@ -324,13 +324,13 @@ void ParticleEffect::Render()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//Depth mask disables/enables the ability for a render to write to the depth buffer
-	glDepthMask(GL_FALSE);
+	glDepthMask(GL_TRUE);
 
 	glBindVertexArray(_VAO);
 	glDrawArrays(GL_POINTS, 0, _NumCurrentParticles); //Thousands of particles can be drawn in one call! 
 	glBindVertexArray(GL_NONE);
 
-	glDepthMask(GL_TRUE);
+	glDepthMask(GL_FALSE);
 	glDisable(GL_BLEND);
 	_Texture.UnBind();
 }

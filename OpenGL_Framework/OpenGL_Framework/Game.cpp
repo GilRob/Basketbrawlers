@@ -3129,8 +3129,8 @@ void Game::drawScene()
 	}
 	PointLight.UnBind();
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glDisable(GL_BLEND);
 
 	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Could I do StepTexture.UnBInd()?
 	glActiveTexture(GL_TEXTURE4);
@@ -3188,11 +3188,13 @@ void Game::drawScene()
 
 	ParticleProgram.UnBind();
 
+	glDisable(GL_BLEND);
 
 	DeferredComposite.UnBind();
 	DeferredLighting.UnBind();
 
 	drawHUD();
+
 
 	/// Compute High Pass ///
 	if (FULLSCREEN)
