@@ -259,7 +259,7 @@ protected:
 	unsigned int comboMaxTime;//2 seconds times 60fps
 	float comboHitMult;//multipy combo meter value by this to get knockback
 
-	unsigned int dashTimer;//counts time since last hit in combo
+	unsigned int dashTimer;//counts time since last dash
 
 	//scaling
 	float scaleX;

@@ -116,6 +116,7 @@
     <ClInclude Include="VectorField.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Shaders\AdShader.vert" />
     <None Include="Assets\Shaders\AnimationShader.vert" />
     <None Include="Assets\Shaders\Bloom\BloomComposite.frag" />
     <None Include="Assets\Shaders\Bloom\BloomHighPass.frag" />
@@ -125,6 +126,7 @@
     <None Include="Assets\Shaders\GBufferPass.frag" />
     <None Include="Assets\Shaders\GreyScalePost.frag" />
     <None Include="Assets\Shaders\HudShader.frag" />
+    <None Include="Assets\Shaders\NetShader.vert" />
     <None Include="Assets\Shaders\Particles\BillBoard.frag" />
     <None Include="Assets\Shaders\Particles\BillBoard.geom" />
     <None Include="Assets\Shaders\Particles\BillBoard.vert" />

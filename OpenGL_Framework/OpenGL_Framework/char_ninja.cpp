@@ -528,9 +528,10 @@ Transform Ninja::sAttack()
 Transform Ninja::dAttack()
 {
 	Transform result;
-	if (interuptable == true && action != ACTION_DOWN_ATTACK) {
+	if (interuptable == true && action != ACTION_DOWN_ATTACK && downTiltTimer > 50) {
 		interuptable = false;
 		action = ACTION_DOWN_ATTACK;
+		downTiltTimer = 0;
 		activeFrames = 33;
 		currentFrame = 1;
 		aniTimer = 0;

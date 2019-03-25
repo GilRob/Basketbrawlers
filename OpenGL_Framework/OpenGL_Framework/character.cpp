@@ -41,7 +41,7 @@ void Character::update(int t, std::vector<bool> inputs) {
 	comboTick();
 
 	//meter flame
-	if ((comboMeter > 150 && action != ACTION_HIT && action != ACTION_IN_NET) || action == ACTION_RESPAWN || ultMode) {
+	if ((comboMeter > 100 && action != ACTION_HIT && action != ACTION_IN_NET) || action == ACTION_RESPAWN || ultMode) {
 		partiQueue.push(METERFLAME);						//$$$
 	}
 

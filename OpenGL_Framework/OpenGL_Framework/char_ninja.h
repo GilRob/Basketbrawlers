@@ -97,6 +97,10 @@ public:
 			ultMode = true;
 			comboMeter -= 100;
 		}
+		//Update down tilt timer
+		if (downTiltTimer < 100)
+			downTiltTimer++;
+		std::cout << downTiltTimer;
 		Character::update(t, inputs);
 	}
 
@@ -114,6 +118,6 @@ public:
 	Transform uAir();
 
 protected:
-
+	unsigned int downTiltTimer; //Counts time since last down tilt
 private:
 };

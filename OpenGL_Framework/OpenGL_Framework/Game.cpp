@@ -1810,7 +1810,7 @@ void Game::updateScene()
 
 	updateInputs();
 
-	//Go back to main menu
+	//Go back to main menu on pressing start button
 	if (inputs[5] || inputs2[5]) {
 		lastInputTime = 0.0f;
 		inputs[5] = 0;
@@ -4367,8 +4367,8 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		//AdShader.ReloadShader();
 		//BloomHighPass.ReloadShader();
 		//PointLight.ReloadShader();
-		//NetShader.ReloadShader();
-		DeferredLighting.ReloadShader();
+		NetShader.ReloadShader();
+		//DeferredLighting.ReloadShader();
 		std::cout << "Reloaded Shaders\n";
 		//inputs2[4] = false;
 		break;
