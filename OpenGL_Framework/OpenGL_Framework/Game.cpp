@@ -1074,7 +1074,6 @@ void Game::initializeGame()
 	ninjaJump.Load("./Assets/Media/NinjaJump.wav", true, false);
 	cheer.Load("./Assets/Media/CheerTemp.wav", true, false);
 
-
 	themePos = { 0.0f, 0.0f, 0.0f };
 	knightPos = { 0.0f, 0.0f, 0.0f };
 	ninjaPos = { 0.0f, 0.0f, 0.0f };
@@ -1709,8 +1708,6 @@ void Game::updateSSS()
 
 void Game::updateScene()
 {
-
-	
 	// update our clock so we have the delta time since the last update
 	updateTimer->tick();
 
@@ -4408,6 +4405,10 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		break;
 	case '/': //b
 		//inputs2[5] = false;
+		break;
+	case 'm':
+		for (int i = 0; i < 2; i++)
+			players[i]->setMeter(100);
 		break;
 	}
 }
