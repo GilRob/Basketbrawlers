@@ -194,7 +194,7 @@ Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
 		aniFrames[ACTION_SIDE_ATTACK].push_back(jab);
 	}
 	///UP ATTACK
-	length = 11;
+	length = 8;
 	if (G_ATK_ANI_TOGGLE == false)
 		length = 1;
 	for (int c = 0; c < length; ++c)//14
