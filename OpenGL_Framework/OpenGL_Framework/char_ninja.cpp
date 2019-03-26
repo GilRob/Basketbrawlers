@@ -4,7 +4,7 @@
 #define BASE_ANI_TOGGLE		true	//non-offensive animations
 #define G_ATK_ANI_TOGGLE	true	//ground attacks
 #define A_ATK_ANI_TOGGLE	true	//aerials
-#define S_ATK_ANI_TOGGLE	true	//specials
+#define S_ATK_ANI_TOGGLE	false	//specials
 #define HITBOX_TOGGLE		false	//visual hitboxes
 #define HURTBOX_TOGGLE		false	//visual hurtboxes
 
@@ -553,7 +553,8 @@ Transform Ninja::dAttack()
 		if (currentFrame == 6) {
 			float _kb = 13.0f + (9.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 	//old		//float _kb = 7.0f + (7.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 0.7f, 0.1f), 2.8f, _kb, 80, 7, 0, glm::vec3((-0.5f + (int)facingRight)*1.0f, 0.0f, 0.0f));
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 0.7f, 0.1f), 2.8f, _kb, 80, 7, 0,
+				glm::vec3((-0.5f + (int)facingRight)*1.0f, 0.0f, 0.0f));
 			newAtk->facingRight = facingRight;
 			activeHitboxes.push_back(newAtk);
 		}
@@ -585,17 +586,11 @@ Transform Ninja::uAttack()
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
 
-		if (currentFrame == 15) {
-			float _kb = 13.0f + (7.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			//float _kb = 7.0f + (7.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*2.3f, 1.25f, 0.05f), 3.2f, _kb, 89, 8, 0, glm::vec3((-0.5f + (int)facingRight)*-0.8f, 2.0f, 0.0f));
-			newAtk->spline = true;
+		if (currentFrame == 6) {
+			float _kb = 8.0f + (6.55f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.1f, 2.1f, 0.1f), 3.0f, _kb, 80, 7, 0,
+			glm::vec3(((-0.5f + (int)facingRight)*0.0f), 0.65f, 0.0f));
 			newAtk->facingRight = facingRight;
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 4.9f, -45.0f, 0));
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 5.9f, 2.0f, 0));
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -5.9f, 2.0f, 0));
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -4.9f, -45.0f, 0));
-
 			activeHitboxes.push_back(newAtk);
 		}
 		else if (currentFrame == activeFrames) {
@@ -712,36 +707,39 @@ Transform Ninja::dAir()
 	Transform result;
 	if (action != ACTION_DOWN_AERIAL || interuptable == true) {
 		interuptable = false;
+		if (currentFrame == 1) {
+			interuptable = true;
+		}
 		action = ACTION_DOWN_AERIAL;
 		activeFrames = 45;
 		currentFrame = 1;
 	}
 	if (action == ACTION_DOWN_AERIAL && currentFrame <= activeFrames) {
-		if (currentFrame > 20 && currentFrame < 38)
+		if (currentFrame > 1 && currentFrame < 45)
 		{
-			velocity.x += (-0.5f + (int)facingRight)*0.3f;
-			velocity.y -= (-0.5f + (int)facingRight)*0.3f;
+			velocity.x = (-0.5f + (int)facingRight)*1.0f;
+			velocity.y = -0.5;
 		}
-		else if (currentFrame > 10 && currentFrame < 45) {
 
-
-			velocity.x += (-0.5f + (int)facingRight)*0.7f;
-			velocity.y -= (-0.5f + (int)facingRight)*-0.3f;
-
-		}
 		//Testing Code for Spawning Hitboxes
 		///Will be changed in the future
-		if (currentFrame == 10) {
-			float _kb = 8.0f + (7.0f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
-			Hitbox *newAtk = new Hitbox(glm::vec3(0.0f, 0.5f, 0.05f), 3.5f, _kb, 270, 5, 0, glm::vec3(0, 0, 0.0f));
-			newAtk->spline = true;
+		if (currentFrame == 6) { //frame you want hitbox to appear
+			//create knockback = base knockback value + (knockback growth * (meter%);
+			float _kb = 5.5f + (6.55f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			//create hitbox
+			Hitbox *newAtk = new Hitbox(
+				glm::vec3((-0.5f + (int)facingRight)*0.1f, 3.1f, 0.1f), // starting position offset from player
+				2.7f, _kb, 55, 45, 0,									// size, knockback, angle(degrees), hitbox life in frames, 0
+				glm::vec3(0, 0, 0)// velocity ((-0.5f + (int)facingRight) gives you 0.5 if your facing right, and -0.5 if your facing left)
+																		// allowing you to make it move the way your facing
+			);
+			//set direction
 			newAtk->facingRight = facingRight;
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 4, 50.0f, 0));
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2, 5.5f, 0));
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * 2, 5.5f, 0));
-			newAtk->curve.push_back(glm::vec3((-0.5f + (int)facingRight) * -4, 50.0f, 0));
+			//push to hitboxes
 			activeHitboxes.push_back(newAtk);
+
 		}
+
 		else if (currentFrame == activeFrames) {
 			//if action over, goto fall
 			interuptable = true;

@@ -7,9 +7,9 @@ $$$ - Particle Signal
 */
 
 //new push
-#define BASE_ANI_TOGGLE		false	//non-offensive animations
-#define G_ATK_ANI_TOGGLE	false	//ground attacks
-#define A_ATK_ANI_TOGGLE	false	//aerials
+#define BASE_ANI_TOGGLE		true	//non-offensive animations
+#define G_ATK_ANI_TOGGLE	true	//ground attacks
+#define A_ATK_ANI_TOGGLE	true	//aerials
 #define S_ATK_ANI_TOGGLE	false	//specials
 #define HITBOX_TOGGLE		false	//visual hitboxes
 #define HURTBOX_TOGGLE		false	//visual hurtboxes
@@ -150,20 +150,25 @@ void Character::update(int t, std::vector<bool> inputs) {
 		//called on landing
 		position.y = 0.0f;
 		jumpsLeft = airJumps;
-		if (action == ACTION_HIT && currentFrame < activeFrames) {
+		if (action == ACTION_HIT && currentFrame < activeFrames) { // Bounce
 			velocity.y *= -0.75f;
 			velocity.x *= 0.5f;
 			hitForce.y *= -0.9f;
 		}
-		else if (action == ACTION_HIT)
+		else if (action == ACTION_HIT) //Glitch Fix
 		{
 			interuptable = true;
 			action = ACTION_PLACEHOLDER;
 			fall();
 		}
+		// Landing
 		else if ((currentFrame >= activeFrames || interuptable == true) && (action == ACTION_FALL || action == ACTION_SIDE_AERIAL || action == ACTION_UP_AERIAL || action == ACTION_DOWN_AERIAL || action == ACTION_NEUTRAL_AERIAL)) {
 			interuptable = true;
 			action = ACTION_PLACEHOLDER;
+			// delete all hitboxes
+			for (int i = 0; i < (int)activeHitboxes.size(); i++) {
+				activeHitboxes[i]->setDone();
+			}
 			idle();
 			//velocity.x *= 0.7f;
 			partiQueue.push(LANDDUST);						//$$$

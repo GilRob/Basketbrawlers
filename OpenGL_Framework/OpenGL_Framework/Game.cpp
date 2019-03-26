@@ -1900,8 +1900,12 @@ void Game::updateScene()
 			players[i]->action = players[(i + 1) % 2]->action;
 			players[(i + 1) % 2]->action = tempA;
 			//swap frameLength
-			players[i]->currentFrame = players[(i + 1) % 2]->activeFrames - 1;
-			players[(i + 1) % 2]->currentFrame = players[i]->activeFrames - 1;
+			int tempC = players[i]->activeFrames;
+			players[i]->activeFrames = players[(i + 1) % 2]->activeFrames;
+			players[(i + 1) % 2]->activeFrames = tempC;
+			//swap current frame
+			players[i]->currentFrame = players[i]->activeFrames - 2;
+			players[(i + 1) % 2]->currentFrame = players[(i + 1) % 2]->activeFrames - 2;
 
 			//turn ult off
 			players[i]->partiQueue.push(ULTFX);						//$$$
@@ -1911,6 +1915,8 @@ void Game::updateScene()
 			//correct hit
 			if (players[i]->action == players[i]->ACTION_HIT)
 				players[i]->action = players[i]->ACTION_FALL;
+			if (players[(i + 1) % 2]->action == players[(i + 1) % 2]->ACTION_HIT)
+				players[(i + 1) % 2]->action = players[(i + 1) % 2]->ACTION_FALL;
 			
 		}
 	}
