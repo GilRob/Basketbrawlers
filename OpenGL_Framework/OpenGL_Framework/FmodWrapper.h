@@ -1,5 +1,18 @@
-//Zachary Allen
-//FmodWrapper is from in class tutorials
+/*==============================================================================
+3D Example
+Copyright (c), Firelight Technologies Pty, Ltd 2004-2018.
+This example shows how to basic 3D positioning of sounds.
+
+Brent Cowan Mar. 6, 2019
+
+Zachary Allen February 18, 2019
+- Added the basic FMOD implementation
+John Wang March 1, 2019
+- Added the StopPlaying function
+Gil Robern - March 11, 2019
+- Combined the functionality from the different tutorials into one wrapper
+
+==============================================================================*/
 
 #pragma once	
 #pragma comment(lib, "FMOD/lib/fmod_vc.lib")

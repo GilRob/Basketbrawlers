@@ -100,7 +100,6 @@ public:
 		//Update down tilt timer
 		if (downTiltTimer < 100)
 			downTiltTimer++;
-		std::cout << downTiltTimer;
 		Character::update(t, inputs);
 	}
 

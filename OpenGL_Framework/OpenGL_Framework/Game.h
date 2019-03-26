@@ -197,7 +197,8 @@ public:
 	ParticleEffect MeterFlame2;
 
 	ParticleEffect KnightUltFX;
-	ParticleEffect NinjaUltFX;
+	ParticleEffect NinjaUltFX1;
+	ParticleEffect NinjaUltFX2;
 
 
 	std::vector<Texture*> time;

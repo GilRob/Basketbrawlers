@@ -781,7 +781,7 @@ void Game::initializeGame()
 	DustLaunch.Mass = 1.0f;
 	DustLaunch.Gravity = 0.01f;
 
-	if (!HitSparkR.Init("./Assets/Textures/RedConfetti.png", (unsigned int)500, (unsigned int)30))
+	if (!HitSparkR.Init("./Assets/Textures/Spark.png", (unsigned int)500, (unsigned int)30))
 	{
 		std::cout << "Spark Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -800,7 +800,7 @@ void Game::initializeGame()
 	HitSparkR.noiseOn = false;
 	HitSparkR.noiseStrength = 1;
 
-	if (!HitSparkL.Init("./Assets/Textures/RedConfetti.png", (unsigned int)500, (unsigned int)30))
+	if (!HitSparkL.Init("./Assets/Textures/Spark.png", (unsigned int)500, (unsigned int)30))
 	{
 		std::cout << "Spark Particle-Effect failed ot initialize.\n";
 		system("pause");
@@ -876,24 +876,43 @@ void Game::initializeGame()
 	KnightUltFX.noiseOn = false;
 	KnightUltFX.noiseStrength = 1;
 
-	if (!NinjaUltFX.Init("./Assets/Textures/fog.png", (unsigned int)500, (unsigned int)30))
+	if (!NinjaUltFX1.Init("./Assets/Textures/fog.png", (unsigned int)500, (unsigned int)30))
 	{
 		std::cout << "Spark Particle-Effect failed ot initialize.\n";
 		system("pause");
 		exit(0);
 	}
-	NinjaUltFX.LerpAlpha = glm::vec2(0.7f, 0.0f);
-	NinjaUltFX.LerpSize = glm::vec2(1.5f, 2.0f);
-	NinjaUltFX.RangeLifetime = glm::vec2(0.5f, 0.8f);
-	NinjaUltFX.RangeVelocity = glm::vec2(2.0f, 10.0f);
-	NinjaUltFX.RangeZ = glm::vec2(-1.0f, -1.0f);
-	NinjaUltFX.InitialXRange = glm::vec2(-1.0f, 1.0f);
-	NinjaUltFX.InitialYRange = glm::vec2(-0.4f, 0.9f);
-	NinjaUltFX.HaveGravity = true;
-	NinjaUltFX.Mass = 1.0f;
-	NinjaUltFX.Gravity = 0.05f;
-	NinjaUltFX.noiseOn = false;
-	NinjaUltFX.noiseStrength = 1;
+	NinjaUltFX1.LerpAlpha = glm::vec2(0.7f, 0.0f);
+	NinjaUltFX1.LerpSize = glm::vec2(1.5f, 2.0f);
+	NinjaUltFX1.RangeLifetime = glm::vec2(0.5f, 0.8f);
+	NinjaUltFX1.RangeVelocity = glm::vec2(2.0f, 10.0f);
+	NinjaUltFX1.RangeZ = glm::vec2(-1.0f, -1.0f);
+	NinjaUltFX1.InitialXRange = glm::vec2(-1.0f, 1.0f);
+	NinjaUltFX1.InitialYRange = glm::vec2(-0.4f, 0.9f);
+	NinjaUltFX1.HaveGravity = true;
+	NinjaUltFX1.Mass = 1.0f;
+	NinjaUltFX1.Gravity = 0.05f;
+	NinjaUltFX1.noiseOn = false;
+	NinjaUltFX1.noiseStrength = 1;
+
+	if (!NinjaUltFX2.Init("./Assets/Textures/fog.png", (unsigned int)500, (unsigned int)30))
+	{
+		std::cout << "Spark Particle-Effect failed ot initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	NinjaUltFX2.LerpAlpha = glm::vec2(0.7f, 0.0f);
+	NinjaUltFX2.LerpSize = glm::vec2(1.5f, 2.0f);
+	NinjaUltFX2.RangeLifetime = glm::vec2(0.5f, 0.8f);
+	NinjaUltFX2.RangeVelocity = glm::vec2(2.0f, 10.0f);
+	NinjaUltFX2.RangeZ = glm::vec2(-1.0f, -1.0f);
+	NinjaUltFX2.InitialXRange = glm::vec2(-1.0f, 1.0f);
+	NinjaUltFX2.InitialYRange = glm::vec2(-0.4f, 0.9f);
+	NinjaUltFX2.HaveGravity = true;
+	NinjaUltFX2.Mass = 1.0f;
+	NinjaUltFX2.Gravity = 0.05f;
+	NinjaUltFX2.noiseOn = false;
+	NinjaUltFX2.noiseStrength = 1;
 
 //=======================================================================//
 	//Init Scene & Frame Buffers
@@ -1790,9 +1809,10 @@ void Game::updateScene()
 					}
 					players[1]->getHitboxes()[i]->setDone();
 
-					if (players[1]->type == 1 && players[1]->ultMode == true) 
+					players[0]->hit(players[1]->getHitboxes()[i]);
+					if (players[1]->ultMode == false)
 					{
-						players[0]->hitForce *= 2.5;
+						players[1]->comboAdd();
 					}
 
 					i = 100;
@@ -1947,9 +1967,12 @@ void Game::updateScene()
 					KnightUltFX.Spawn(0.05f);
 				}
 				if (players[0]->type == 2) {
-					NinjaUltFX.RangeX = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().x);
-					NinjaUltFX.RangeY = glm::vec2(players[0]->getPosition().y + 1.5f, players[0]->getPosition().y + 1.5f);
-					NinjaUltFX.Spawn(0.05f);
+					NinjaUltFX1.RangeX = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().x);
+					NinjaUltFX1.RangeY = glm::vec2(players[0]->getPosition().y + 1.5f, players[0]->getPosition().y + 1.5f);
+					NinjaUltFX1.Spawn(0.05f);
+					NinjaUltFX2.RangeX = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().x);
+					NinjaUltFX2.RangeY = glm::vec2(players[1]->getPosition().y + 1.5f, players[1]->getPosition().y + 1.5f);
+					NinjaUltFX2.Spawn(0.05f);
 				}
 				break;
 			default:
@@ -2004,9 +2027,12 @@ void Game::updateScene()
 					KnightUltFX.Spawn(0.05f);
 				}
 				if (players[1]->type == 2) {
-					NinjaUltFX.RangeX = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().x);
-					NinjaUltFX.RangeY = glm::vec2(players[1]->getPosition().y + 1.5f, players[1]->getPosition().y + 1.5f);
-					NinjaUltFX.Spawn(0.05f);
+					NinjaUltFX2.RangeX = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().x);
+					NinjaUltFX2.RangeY = glm::vec2(players[1]->getPosition().y + 1.5f, players[1]->getPosition().y + 1.5f);
+					NinjaUltFX2.Spawn(0.05f);
+					NinjaUltFX1.RangeX = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().x);
+					NinjaUltFX1.RangeY = glm::vec2(players[0]->getPosition().y + 1.5f, players[0]->getPosition().y + 1.5f);
+					NinjaUltFX1.Spawn(0.05f);
 				}
 				break;
 			default:
@@ -2189,7 +2215,8 @@ void Game::updateScene()
 	MeterFlame1.Update(deltaTime);
 	MeterFlame2.Update(deltaTime);
 	KnightUltFX.Update(deltaTime);
-	NinjaUltFX.Update(deltaTime);
+	NinjaUltFX1.Update(deltaTime);
+	NinjaUltFX2.Update(deltaTime);
 
 	//Vect Fields//
 	glm::vec2 playerTransform1 = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().y);
@@ -3191,7 +3218,8 @@ void Game::drawScene()
 	MeterFlame1.Render();
 	MeterFlame2.Render();
 	KnightUltFX.Render();
-	NinjaUltFX.Render();
+	NinjaUltFX1.Render();
+	NinjaUltFX2.Render();
 
 	ParticleProgram.UnBind();
 

@@ -116,7 +116,7 @@ void VectorField::update(glm::vec2 p1, glm::vec2 p1Dir, glm::vec2 p2, glm::vec2 
 	
 	//update player 1 attributes
 	if (p1Dir != glm::vec2(0.0f, 0.0f)) {		
-		cout << "moved";
+		//cout << "moved";
 		//motors are activated on player movement
 		p1Legs.active = p1Head.active = p1Body.active = true;
 		//legs set to player location
