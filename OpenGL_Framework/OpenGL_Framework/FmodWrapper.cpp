@@ -58,22 +58,22 @@ bool SoundEngine::Init()
 
 	if(!init)
 	{
-	result = FMOD::System_Create(&system);
-	FmodErrorCheck(result);
+		result = FMOD::System_Create(&system);
+		FmodErrorCheck(result);
 
-	if (result != FMOD_OK) return false;
+		if (result != FMOD_OK) return false;
 
-	result = system->getVersion(&version);
-	FmodErrorCheck(result);
+		result = system->getVersion(&version);
+		FmodErrorCheck(result);
 
-	result = system->init(100, FMOD_INIT_NORMAL, extradriverdata);
-	FmodErrorCheck(result);
+		result = system->init(100, FMOD_INIT_NORMAL, extradriverdata);
+		FmodErrorCheck(result);
 
-	//Set the distance units
-	result = system->set3DSettings(1.0, 1.0, 1.0f);
-	FmodErrorCheck(result);
+		//Set the distance units
+		result = system->set3DSettings(1.0, 1.0, 1.0f);
+		FmodErrorCheck(result);
 
-	init = true;
+		init = true;
 	}
 
 	return true;

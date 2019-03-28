@@ -96,7 +96,7 @@ void Game::initializeGame()
 	///Object(*mesh path*, *texture path*, *enable blending?* = false by deafult);
 		
 	//load objects for scene
-	gameObjects.push_back(new Object("./Assets/Models/basicCourt", "./Assets/Textures/basicCourt.png", "default_court"));
+	gameObjects.push_back(new Object("./Assets/Models/basicCourtHigh", "./Assets/Textures/basicCourt.png", "default_court"));
 	gameObjects.push_back(new Object("./Assets/Models/basicFloor", "./Assets/Textures/basicFloor.png", "default_floor"));
 	default_court_objs.push_back("default_floor");
 	//gameObjects.push_back(new Object("./Assets/Models/nets", "./Assets/Textures/net.png", "default_net", true));
@@ -126,7 +126,7 @@ void Game::initializeGame()
 	default_court_objs.push_back("default_bricks");
 
 	//load objects for knight scene
-	gameObjects.push_back(new Object("./Assets/Models/knightCourt1", "./Assets/Textures/knightCourt.png", "knight_court"));
+	gameObjects.push_back(new Object("./Assets/Models/knightCourtHigh", "./Assets/Textures/knightCourt.png", "knight_court"));
 	gameObjects.push_back(new Object("./Assets/Models/knightFloor", "./Assets/Textures/knightFloor.png", "knight_floor"));
 	knight_court_objs.push_back("knight_floor");
 
@@ -960,28 +960,6 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	/*if (FULLSCREEN)
-		godRaysBuffer1.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGBA8, GL_LINEAR, GL_CLAMP_TO_EDGE);
-	else
-		godRaysBuffer1.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_LINEAR, GL_CLAMP_TO_EDGE);
-	if (!godRaysBuffer1.CheckFBO())
-	{
-		std::cout << "GR1 FBO failed to initialize.\n";
-		system("pause");
-		exit(0);
-	}
-
-	if (FULLSCREEN)
-		godRaysBuffer2.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGBA8, GL_LINEAR, GL_CLAMP_TO_EDGE);
-	else
-		godRaysBuffer2.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_LINEAR, GL_CLAMP_TO_EDGE);
-	if (!godRaysBuffer2.CheckFBO())
-	{
-		std::cout << "GR2 FBO failed to initialize.\n";
-		system("pause");
-		exit(0);
-	}*/
-
 	//THis is a single channel texture explained at Week 11 time: ~3:30
 	if (FULLSCREEN)
 		EdgeMap.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_R8, GL_NEAREST, GL_CLAMP_TO_EDGE);
@@ -1073,13 +1051,30 @@ void Game::initializeGame()
 	knightJump.Load("./Assets/Media/KnightJump.wav", true, false);
 	ninjaJump.Load("./Assets/Media/NinjaJump.wav", true, false);
 	cheer.Load("./Assets/Media/CheerTemp.wav", true, false);
+	horn.Load("./Assets/Media/Horn.wav", true, false);
+	mumble.Load("./Assets/Media/Mumble.wav", true, true);
+	select.Load("./Assets/Media/SelectSound.wav", true, false);
+	menuMove.Load("./Assets/Media/MenuMove.wav", true, false);
+	assassin.Load("./Assets/Media/Assassin.wav", true, false);
+	gaurdian.Load("./Assets/Media/Gaurdian.wav", true, false);
+	oneMin.Load("./Assets/Media/1Minute.wav", true, false);
+	thirtySec.Load("./Assets/Media/30Seconds.wav", true, false);
 
-	themePos = { 0.0f, 0.0f, 0.0f };
-	knightPos = { 0.0f, 0.0f, 0.0f };
-	ninjaPos = { 0.0f, 0.0f, 0.0f };
+	defaultPos = { 0.0f, 0.0f, 0.0f };
+	p1Pos = { 0.0f, 0.0f, 0.0f };
+	p2Pos = { 0.0f, 0.0f, 0.0f };
 
-	themeChannel = gameTheme.Play(themePos, themePos, true);
+	themeChannel = gameTheme.Play(defaultPos, defaultPos, true);
+	mumbleChannel = mumble.Play(defaultPos, defaultPos, true);
 	//gameSound.Load("./Assets/Media/GameMusic.wav");
+
+	//Set Priorities, 0 being the highest priority and 256 being the lowest priority
+	themeChannel->setPriority(256);
+	mumbleChannel->setPriority(255);
+	selectionChannel->setPriority(10);
+	otherChannel->setPriority(10);
+	knightChannel->setPriority(0);
+	ninjaChannel->setPriority(0);
 
 	//Create a pitch shift effect
 	Sound::engine.system->createDSPByType(FMOD_DSP_TYPE_PITCHSHIFT, &pitchShift);
@@ -1090,6 +1085,7 @@ void Game::initializeGame()
 
 void Game::update()
 {
+	Sound::engine.update();
 	//auto end = chrono::steady_clock::now();
 	//auto start = chrono::steady_clock::now();
 	if (scene == 5)
@@ -1098,9 +1094,12 @@ void Game::update()
 
 		if (!soundNormalized)
 		{
+			//mumble.Stop(mumbleChannel);	
 			//themeChannel->removeDSP(pitchShift);
 			gameTheme.Stop(themeChannel);
-			themeChannel = gameTheme.Play(themePos, themePos, true);
+			themeChannel = gameTheme.Play(defaultPos, defaultPos, true);
+
+			mumbleChannel = mumble.Play(defaultPos, defaultPos, true);
 
 			soundNormalized = true;
 			soundPitched = false;
@@ -1113,8 +1112,9 @@ void Game::update()
 
 		if (!soundHighPassed)
 		{
+			//mumble.Stop(mumbleChannel);
 			gameTheme.Stop(themeChannel);
-			themeChannel = gameTheme.Play(themePos, themePos, true);
+			themeChannel = gameTheme.Play(defaultPos, defaultPos, true);
 
 			highPass->setParameterFloat(FMOD_DSP_HIGHPASS_CUTOFF, 1000.0f);
 			themeChannel->addDSP(0, highPass);
@@ -1123,6 +1123,8 @@ void Game::update()
 			themeChannel->addDSP(0, pitchShift);
 
 			themeChannel->setVolume(0.8f);
+
+			mumbleChannel = mumble.Play(defaultPos, defaultPos, true);
 
 			soundPitched = false;
 			soundNormalized = false;
@@ -1149,11 +1151,14 @@ void Game::update()
 
 		if (!soundPitched)
 		{
+			mumble.Stop(mumbleChannel);
 			pitchShift->setParameterFloat(FMOD_DSP_PITCHSHIFT_PITCH, 0.5f);
 			themeChannel->addDSP(0, pitchShift);
 
 			themeChannel->setFrequency(60000.0f);
 			
+			//mumbleChannel = mumble.Play(deaultPos, deaultPos, true);
+
 			soundPitched = true;
 			soundNormalized = false;
 			soundHighPassed = false;
@@ -1165,9 +1170,12 @@ void Game::update()
 		
 		if (!soundNormalized)
 		{
+			//mumble.Stop(mumbleChannel);
 			//themeChannel->removeDSP(pitchShift);
 			gameTheme.Stop(themeChannel);
-			themeChannel = gameTheme.Play(themePos, themePos, true);
+			themeChannel = gameTheme.Play(defaultPos, defaultPos, true);
+
+			mumbleChannel = mumble.Play(defaultPos, defaultPos, true);
 			
 			soundNormalized = true;
 			soundPitched = false;
@@ -1179,9 +1187,12 @@ void Game::update()
 		
 		if (!soundNormalized)
 		{
+			//mumble.Stop(mumbleChannel);
 			//themeChannel->removeDSP(pitchShift);
 			gameTheme.Stop(themeChannel);
-			themeChannel = gameTheme.Play(themePos, themePos, true);
+			themeChannel = gameTheme.Play(defaultPos, defaultPos, true);
+
+			mumbleChannel = mumble.Play(defaultPos, defaultPos, true);
 			
 			soundNormalized = true;
 			soundPitched = false;
@@ -1193,9 +1204,12 @@ void Game::update()
 		
 		if (!soundNormalized)
 		{
+			//mumble.Stop(mumbleChannel);
 			//themeChannel->removeDSP(pitchShift);
 			gameTheme.Stop(themeChannel);
-			themeChannel = gameTheme.Play(themePos, themePos, true);
+			themeChannel = gameTheme.Play(defaultPos, defaultPos, true);
+
+			mumbleChannel = mumble.Play(defaultPos, defaultPos, true);
 			
 			soundNormalized = true;
 			soundPitched = false;
@@ -1230,6 +1244,10 @@ void Game::updateTutScreen()
 		p2Char = 0;
 		p1Done = false;
 		p2Done = false;
+		isNinja1 = false;
+		isNinja2 = false;
+		onePlaying = false;
+		thirtyPlaying = false;
 	}
 }
 
@@ -1258,6 +1276,9 @@ void Game::updateEndScreen()
 
 	//press
 	if (inputs[6] || inputs2[6] || inputs[5] || inputs2[5]) {
+		//Play Select Sound
+		selectionChannel = select.Play(defaultPos, defaultPos, false);
+		
 		lastInputTime = 0.0f;
 		inputs[6] = 0;
 		inputs2[6] = 0;
@@ -1276,6 +1297,10 @@ void Game::updateEndScreen()
 		p2NinjaWin = false;
 		tieGame = false;
 		endGame = false;
+		isNinja1 = false;
+		isNinja2 = false;
+		onePlaying = false;
+		thirtyPlaying = false;
 		TotalGameTime = 0.0f;
 		deltaTime = 0;
 		updateTimer = new Timer();
@@ -1296,9 +1321,13 @@ void Game::updateMenu()
 	if (TotalGameTime - lastInputTime > 0.2f) {
 		if (inputs[0] || inputs2[0]) {
 			selectedButton--;
+			//Play menu option move sound
+			selectionChannel = menuMove.Play(defaultPos, defaultPos, false);
 		}
 		else if (inputs[2] || inputs2[2]) {
 			selectedButton++;
+			//Play menu option move sound
+			selectionChannel = menuMove.Play(defaultPos, defaultPos, false);
 		}
 	}
 
@@ -1351,6 +1380,10 @@ void Game::updateMenu()
 
 	//press
 	if (inputs[6] || inputs2[6]) {
+
+		//Play Select Sound
+		selectionChannel = select.Play(defaultPos, defaultPos, false);
+
 		if (selectedButton == 1) {
 			scene = 1;
 			lastInputTime = 0.0f;
@@ -1395,24 +1428,48 @@ void Game::updateCSS()
 		p2Char = 0;
 		p1Done = false;
 		p2Done = false;
+		isNinja1 = false;
+		isNinja2 = false;
+		onePlaying = false;
+		thirtyPlaying = false;
 	}
 
 	//check inputs
-	//if (TotalGameTime - lastInputTime > 0.2f) {
+	if (TotalGameTime - lastInputTime > 0.2f) { //This delay needs to be tested
 		if (!p1Done) {
 			if (inputs[8])
+			{
+				lastInputTime = TotalGameTime;
 				p1Char--;
+				//Play menu option move sound
+				selectionChannel = menuMove.Play(defaultPos, defaultPos, false);
+			}
 			else if (inputs[7])
+			{
+				lastInputTime = TotalGameTime;
 				p1Char++;
+				//Play menu option move sound
+				selectionChannel = menuMove.Play(defaultPos, defaultPos, false);
+			}
 		}
 
 		if (!p2Done) {
 			if (inputs2[8])
+			{
+				lastInputTime = TotalGameTime;
 				p2Char--;
+				//Play menu option move sound
+				selectionChannel = menuMove.Play(defaultPos, defaultPos, false);
+			}
 			else if (inputs2[7])
+			{
+				lastInputTime = TotalGameTime;
 				p2Char++;
+				//Play menu option move sound
+				selectionChannel = menuMove.Play(defaultPos, defaultPos, false);
+			}
 		}
-	//}
+	}
 
 	//correction
 	if (p1Char < 1)
@@ -1458,21 +1515,35 @@ void Game::updateCSS()
 	//press
 	if (!p1Done) {
 		if (inputs[6]) {
+			//Play Select Sound
+			selectionChannel = select.Play(defaultPos, defaultPos, false);
+
 			if (p1Char == 1) {
 				p1Done = true;
+				//Announce gaurdian
+				selectionChannel = gaurdian.Play(defaultPos, defaultPos, false);
 			}
 			else if (p1Char == 2) {
 				p1Done = true;
+				//Announce assassin
+				selectionChannel = assassin.Play(defaultPos, defaultPos, false);
 			}
 		}
 	}
 	if (!p2Done) {
 		if (inputs2[6]) {
+			//Play Select Sound
+			selectionChannel = select.Play(defaultPos, defaultPos, false);
+
 			if (p2Char == 1) {
 				p2Done = true;
+				//Announce gaurdian
+				selectionChannel = gaurdian.Play(defaultPos, defaultPos, false);
 			}
 			else if (p2Char == 2) {
 				p2Done = true;
+				//Announce assassin
+				selectionChannel = assassin.Play(defaultPos, defaultPos, false);
 			}
 		}
 	}
@@ -1531,6 +1602,10 @@ void Game::updateSSS()
 		p2Char = 0;
 		p1Done = false;
 		p2Done = false;
+		isNinja1 = false;
+		isNinja2 = false;
+		onePlaying = false;
+		thirtyPlaying = false;
 	}
 
 	//check if move input
@@ -1538,10 +1613,14 @@ void Game::updateSSS()
 		if (inputs[7] || inputs2[7]) {
 			stageVal++;
 			lastInputTime = TotalGameTime;
+			//Play menu option move sound
+			selectionChannel = menuMove.Play(defaultPos, defaultPos, false);
 		}
 		else if (inputs[8] || inputs2[8]) {
 			stageVal--;
 			lastInputTime = TotalGameTime;
+			//Play menu option move sound
+			selectionChannel = menuMove.Play(defaultPos, defaultPos, false);
 		}
 	}
 
@@ -1580,10 +1659,13 @@ void Game::updateSSS()
 
 	//press
 	if ((inputs[6] || inputs2[6]) && !stageDone) {
-			lastInputTime = 0.0f;
-			inputs[6] = 0;
-			inputs2[6] = 0;
-			stageDone = true;
+		//Play Select Sound
+		selectionChannel = select.Play(defaultPos, defaultPos, false);
+		
+		lastInputTime = 0.0f;
+		inputs[6] = 0;
+		inputs2[6] = 0;
+		stageDone = true;
 	}
 
 	//Both Done
@@ -1658,9 +1740,17 @@ void Game::updateSSS()
 			players[0] = new Ninja(ninjaTemp);
 			players[0]->bodyTexture.Load("./Assets/Textures/player1ninja.png");
 
+			isNinja1 = true;
+
 			if (!P1Hud.Load("./Assets/Textures/PlayerOneHudNinja.png"))
 			{
 				std::cout << "BKG Texture failed to load.\n";
+				system("pause");
+				exit(0);
+			}
+			if (!P1Line.Load("./Assets/Textures/Line1.png"))
+			{
+				std::cout << "Line Texture failed to load.\n";
 				system("pause");
 				exit(0);
 			}
@@ -1683,9 +1773,17 @@ void Game::updateSSS()
 			players[1] = new Ninja(ninjaTemp);
 			players[1]->bodyTexture.Load("./Assets/Textures/player2ninja.png");
 
+			isNinja2 = true;
+
 			if (!P2Hud.Load("./Assets/Textures/PlayerTwoHudNinja.png"))
 			{
 				std::cout << "BKG Texture failed to load.\n";
+				system("pause");
+				exit(0);
+			}
+			if (!P2Line.Load("./Assets/Textures/Line2.png"))
+			{
+				std::cout << "Line Texture failed to load.\n";
 				system("pause");
 				exit(0);
 			}
@@ -1699,6 +1797,7 @@ void Game::updateSSS()
 		players[1]->respawn();
 		players[0]->setPosition(glm::vec3(-5, 0, 0));
 		players[1]->setPosition(glm::vec3(5, 0, 0));
+		players[1]->facingRight = false;
 		//updateTimer = new Timer();
 		TotalGameTime = 0.0f;
 		deltaTime = 0;
@@ -1842,6 +1941,10 @@ void Game::updateScene()
 		p2Char = 0;
 		p1Done = false;
 		p2Done = false;
+		isNinja1 = false;
+		isNinja2 = false;
+		onePlaying = false;
+		thirtyPlaying = false;
 	}
 
 	//make camera rumble when ult is activated
@@ -2063,6 +2166,7 @@ void Game::updateScene()
 				ConfettiEffectRedLeft.Spawn(1.0f);
 				ConfettiEffectOrangeRight.Spawn(1.0f);
 				ConfettiEffectOrangeLeft.Spawn(1.0f);
+				p1Score = true;
 				j = 100;
 				GameCamera.reset();
 
@@ -2082,11 +2186,25 @@ void Game::updateScene()
 				ConfettiEffectBlueLeft.Spawn(1.0f);
 				ConfettiEffectPurpleRight.Spawn(1.0f);
 				ConfettiEffectPurpleLeft.Spawn(1.0f);
+				p2Score = true;
 				j = 100;
 				GameCamera.reset();
 			}
 		}
 	}
+
+	/*if (p1Score || p2Score)
+	{
+		static float timePassed;
+		timePassed += updateTimer->getElapsedTimeSeconds();
+
+		if (timePassed >= 5.0f)
+		{
+			p1Score = false;
+			p2Score = false;
+			timePassed = 0.0f;
+		}
+	}*/
 
 	//rumble while in net
 	for (int i = 0; i < 2; i++) {
@@ -2230,20 +2348,78 @@ void Game::updateScene()
 	//cout << playerTransform1.x << "," << playerTransform1.y << endl;
 
 	//Sound Effects//
-	knightPos = { players[0]->getPosition().x, players[0]->getPosition().y, players[0]->getPosition().z };
-	ninjaPos = { players[1]->getPosition().x, players[1]->getPosition().y, players[1]->getPosition().z };
+	p1Pos = { players[0]->getPosition().x, players[0]->getPosition().y, players[0]->getPosition().z };
+	p2Pos = { players[1]->getPosition().x, players[1]->getPosition().y, players[1]->getPosition().z };
 
-	/*if (p1Score || p2Score)
+	if (players[0]->action == 5)
 	{
-		cheerChannel->setVolume(2.0f);
-		cheerChannel = cheer.Play(themePos, themePos, false);
-	}*/
+		//if (knightChannel->isPlaying(p1Jump) == false)
+		if (!p1Jump1)
+		{
+			if (!isNinja1)
+				knightChannel = knightJump.Play(defaultPos, defaultPos, false);
+			else
+				ninjaChannel = ninjaJump.Play(defaultPos, defaultPos, false);
+			p1Jump1 = true;
+		}
+	}
+	if (players[0]->action == 6)
+	{
+		if (!p1Jump2)
+		//if (knightChannel->isPlaying(p1Jump) == false)
+		{
+			if (!isNinja1)
+				knightChannel = knightJump.Play(defaultPos, defaultPos, false);
+			else
+				ninjaChannel = ninjaJump.Play(defaultPos, defaultPos, false);
+			p1Jump2 = true;
+		}
+	}
 
-	/*if (players[0]->action)
+	if (players[0]->action != 5)
 	{
-		std::cout << "knight jump sound";
-		knightChannel = knightJump.Play(knightPos, { 0.0f, 0.0f, 0.0f }, false);
-	}*/
+		//std::cout << "knight jump sound";
+		//if (knightChannel->isPlaying(p1Jump))
+		//if (p1Jump)
+		//{
+			//knightChannel = knightJump.Play(themePos, { 0.0f, 0.0f, 0.0f }, false);
+			//p1Jump = true;
+		//}
+		p1Jump1 = false;
+	}
+	if (players[0]->action != 6)
+	{
+		p1Jump2 = false;
+	}
+
+	if (p1Score == true || p2Score == true)
+	{
+		//otherChannel->setVolume(1.0f);
+		//std::cout << "PLAY CHEER";
+		if (!soundPlaying)
+		{
+			otherChannel = cheer.Play(defaultPos, defaultPos, false);
+			soundPlaying = true;
+		}
+	}
+
+	//Announcer voice effects for times
+	if (TotalGameTime >= 240.0f)
+	{
+		if (!onePlaying)
+		{
+			otherChannel = oneMin.Play(defaultPos, defaultPos, false);
+			onePlaying = true;
+		}
+	}
+	if (TotalGameTime >= 270.0f)
+	{
+		if (!thirtyPlaying)
+		{
+			otherChannel = thirtySec.Play(defaultPos, defaultPos, false);
+			thirtyPlaying = true;
+		}
+	}
 
 	//additional lights
 	if (p1Score == true)
@@ -2255,7 +2431,18 @@ void Game::updateScene()
 		float check = (timer - (int)timer);
 		temp = (bool)(check >= 0.5f && check < 1.0f);
 
+		if (timer >= 4.0f)
+			temp = false;
+
 		findLight("p1Score")->active = temp;
+
+		if (timer >= 4.5f)
+		{
+			p1Score = false;
+			p2Score = false;
+			soundPlaying = false;
+			timer = 0.0f;
+		}
 	}
 	if (p2Score == true)
 	{
@@ -2266,7 +2453,18 @@ void Game::updateScene()
 		float check = (timer - (int)timer);
 		temp = (bool)(check >= 0.5f && check < 1.0f);
 
+		if (timer >= 4.0f)
+			temp = false;
+
 		findLight("p2Score")->active = temp;
+
+		if (timer >= 4.5f)
+		{
+			p1Score = false;
+			p2Score = false;
+			soundPlaying = false;
+			timer = 0.0f;
+		}
 	}
 
 	//End Game
@@ -2278,6 +2476,13 @@ void Game::updateScene()
 		//Delay timer before going to results screen
 		static float tempTime;
 		tempTime += updateTimer->getElapsedTimeSeconds();
+		
+		if (!hornPlaying)
+		{
+			otherChannel->setPriority(0);
+			otherChannel = horn.Play(defaultPos, defaultPos, false);
+			hornPlaying = true;
+		}
 
 		//Bring volume to 0
 		decreaseVal -= 0.005f;
@@ -2322,6 +2527,11 @@ void Game::updateScene()
 			tempTime = 0.0f;
 			decreaseVal = 1.0f;
 			grayscale = false;
+			isNinja1 = false;
+			isNinja2 = false;
+			hornPlaying = false;
+			onePlaying = false;
+			thirtyPlaying = false;
 		}
 	}
 
@@ -3756,6 +3966,7 @@ void Game::drawHUD()
 	P1Hud.Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+	P1Hud.UnBind();
 
 	///draw quad for p1 bar
 	hudLoc = Transform::Identity();
@@ -3774,6 +3985,29 @@ void Game::drawHUD()
 	P1Bar.Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+	P1Bar.UnBind();
+
+	if (isNinja1)
+	{
+		///draw quad for p1 lines
+		hudLoc = Transform::Identity();
+
+		if (FULLSCREEN) {
+			hudLoc.Scale(glm::vec3(150.0f, 150.0f, 150.0f));
+			hudLoc.Translate(glm::vec3(-675, -540, 0));
+		}
+		else {
+			hudLoc.Scale(glm::vec3(100.0f, 100.0f, 100));
+			hudLoc.Translate(glm::vec3(-450, -360, 0));
+		}
+		hudLoc.RotateY(90.0f);
+		GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+
+		P1Line.Bind();
+		glBindVertexArray(HudObj.VAO);
+		glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+		P1Line.UnBind();
+	}
 
 	//Draw Player 2 HUD
 	///draw quad for p2 pic
@@ -3792,6 +4026,7 @@ void Game::drawHUD()
 	P2Hud.Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+	P2Hud.UnBind();
 
 	///draw quad for p2 bar
 	hudLoc = Transform::Identity();
@@ -3811,6 +4046,26 @@ void Game::drawHUD()
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 	P2Bar.UnBind();
 
+	if (isNinja2)
+	{
+		///draw quad for p2 line
+		hudLoc = Transform::Identity();
+		if (FULLSCREEN) {
+			hudLoc.Scale(glm::vec3(150.0f));
+			hudLoc.Translate(glm::vec3(675, -540, 0));
+		}
+		else {
+			hudLoc.Scale(glm::vec3(100.0f));
+			hudLoc.Translate(glm::vec3(450, -360, 0));
+		}
+		hudLoc.RotateY(90.0f);
+		GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+
+		P2Line.Bind();
+		glBindVertexArray(HudObj.VAO);
+		glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+		P2Line.UnBind();
+	}
 
 	GBufferPass.UnBind();
 
@@ -4313,6 +4568,10 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		p2Done = false;
 		p1Char = 0;
 		p2Char = 0;
+		isNinja1 = false;
+		isNinja2 = false;
+		onePlaying = false;
+		thirtyPlaying = false;
 		break;
 	case 'W': //w
 	case 'w': //w
@@ -4325,6 +4584,10 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		p2Done = false;
 		p1Char = 0;
 		p2Char = 0;
+		isNinja1 = false;
+		isNinja2 = false;
+		onePlaying = false;
+		thirtyPlaying = false;
 
 		break;
 	case 'E': //w
@@ -4340,6 +4603,10 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		p2Char = 1;
 		TotalGameTime = 0.0f;
 		lastInputTime = 0.0f;
+		isNinja1 = false;
+		isNinja2 = false;
+		onePlaying = false;
+		thirtyPlaying = false;
 
 		break;
 	case 'd': //d
@@ -4353,6 +4620,10 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		p2Done = false;
 		p1Char = 0;
 		p2Char = 0;
+		isNinja1 = false;
+		isNinja2 = false;
+		onePlaying = false;
+		thirtyPlaying = false;
 		break;
 	case 's': //s
 		//inputs[2] = false;

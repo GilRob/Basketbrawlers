@@ -161,6 +161,8 @@ public:
 	Texture P1Bar;
 	Texture P2Hud;
 	Texture P2Bar;
+	Texture P1Line;
+	Texture P2Line;
 	Texture StepTexture;
 	//Particle Effects
 	ParticleEffect ConfettiEffectBlueRight;
@@ -255,9 +257,20 @@ public:
 
 	bool grayscale = false;
 	bool toonActive = false;
+
+	bool isNinja1 = false;
+	bool isNinja2 = false;
 	
 	///Sound Stuff
 	bool soundPlaying = false;
+	bool p1Jump1 = false;
+	bool p1Jump2 = false;
+	bool p2Jump = false;
+	bool hornPlaying = false;
+	bool thirtyPlaying = false;
+	bool onePlaying = false;
+	//bool knightJump;
+
 	bool soundPitched = false;
 	bool soundNormalized = true;
 	bool soundHighPassed = false;
@@ -269,16 +282,26 @@ public:
 	Sound knightJump;
 	Sound ninjaJump;
 	Sound cheer;
+	Sound horn;
+	Sound mumble;
+	Sound select;
+	Sound menuMove;
+	Sound assassin;
+	Sound gaurdian;
+	Sound oneMin;
+	Sound thirtySec;
 
-	FMOD_VECTOR themePos;
-	FMOD_VECTOR knightPos;
-	FMOD_VECTOR ninjaPos;
+	FMOD_VECTOR defaultPos;
+	FMOD_VECTOR p1Pos;
+	FMOD_VECTOR p2Pos;
 	//FMOD_VECTOR gameSoundPos;
 
 	FMOD::Channel* themeChannel = NULL;
+	FMOD::Channel* mumbleChannel = NULL;
 	FMOD::Channel* knightChannel = NULL;
 	FMOD::Channel* ninjaChannel = NULL;
-	FMOD::Channel* cheerChannel = NULL;
+	FMOD::Channel* otherChannel = NULL;
+	FMOD::Channel* selectionChannel = NULL;
 	
 	FMOD::DSP *pitchShift;
 	FMOD::DSP *highPass;
