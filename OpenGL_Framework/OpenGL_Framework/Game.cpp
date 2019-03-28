@@ -973,9 +973,9 @@ void Game::initializeGame()
 	}
 
 	if (FULLSCREEN)
-		WorkBuffer1.InitColorTexture(0,FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+		WorkBuffer1.InitColorTexture(0,FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8/*GL_R11F_G11F_B10F*/, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
 	else
-	WorkBuffer1.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	WorkBuffer1.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8/*GL_R11F_G11F_B10F*/, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
 	if (!WorkBuffer1.CheckFBO())
 	{
 		std::cout << "WB1 FBO failed to initialize.\n";
@@ -984,9 +984,9 @@ void Game::initializeGame()
 	}
 
 	if (FULLSCREEN)
-		WorkBuffer2.InitColorTexture(0, FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+		WorkBuffer2.InitColorTexture(0, FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, /*GL_R11F_G11F_B10F*/GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
 	else
-	WorkBuffer2.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	WorkBuffer2.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, /*GL_R11F_G11F_B10F*/GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
 	if (!WorkBuffer2.CheckFBO())
 	{
 		std::cout << "WB2 FBO failed to initialize.\n";
@@ -1065,6 +1065,7 @@ void Game::initializeGame()
 	p2Pos = { 0.0f, 0.0f, 0.0f };
 
 	themeChannel = gameTheme.Play(defaultPos, defaultPos, true);
+	themeChannel->setVolume(0.7f);
 	mumbleChannel = mumble.Play(defaultPos, defaultPos, true);
 	//gameSound.Load("./Assets/Media/GameMusic.wav");
 
@@ -1094,10 +1095,12 @@ void Game::update()
 
 		if (!soundNormalized)
 		{
-			//mumble.Stop(mumbleChannel);	
+			mumble.Stop(mumbleChannel);
 			//themeChannel->removeDSP(pitchShift);
 			gameTheme.Stop(themeChannel);
 			themeChannel = gameTheme.Play(defaultPos, defaultPos, true);
+			themeChannel->setVolume(0.7f);
+
 
 			mumbleChannel = mumble.Play(defaultPos, defaultPos, true);
 
@@ -1112,7 +1115,7 @@ void Game::update()
 
 		if (!soundHighPassed)
 		{
-			//mumble.Stop(mumbleChannel);
+			mumble.Stop(mumbleChannel);
 			gameTheme.Stop(themeChannel);
 			themeChannel = gameTheme.Play(defaultPos, defaultPos, true);
 
@@ -1157,6 +1160,8 @@ void Game::update()
 
 			themeChannel->setFrequency(60000.0f);
 			
+			themeChannel->setVolume(0.7f);
+
 			//mumbleChannel = mumble.Play(deaultPos, deaultPos, true);
 
 			soundPitched = true;
@@ -1170,10 +1175,12 @@ void Game::update()
 		
 		if (!soundNormalized)
 		{
-			//mumble.Stop(mumbleChannel);
+			mumble.Stop(mumbleChannel);
 			//themeChannel->removeDSP(pitchShift);
 			gameTheme.Stop(themeChannel);
 			themeChannel = gameTheme.Play(defaultPos, defaultPos, true);
+
+			themeChannel->setVolume(0.7f);
 
 			mumbleChannel = mumble.Play(defaultPos, defaultPos, true);
 			
@@ -1187,13 +1194,15 @@ void Game::update()
 		
 		if (!soundNormalized)
 		{
-			//mumble.Stop(mumbleChannel);
+			mumble.Stop(mumbleChannel);
 			//themeChannel->removeDSP(pitchShift);
 			gameTheme.Stop(themeChannel);
 			themeChannel = gameTheme.Play(defaultPos, defaultPos, true);
 
 			mumbleChannel = mumble.Play(defaultPos, defaultPos, true);
 			
+			themeChannel->setVolume(0.7f);
+
 			soundNormalized = true;
 			soundPitched = false;
 			soundHighPassed = false;
@@ -1211,6 +1220,8 @@ void Game::update()
 
 			mumbleChannel = mumble.Play(defaultPos, defaultPos, true);
 			
+			themeChannel->setVolume(0.7f);
+
 			soundNormalized = true;
 			soundPitched = false;
 			soundHighPassed = false;
@@ -3443,6 +3454,11 @@ void Game::drawScene()
 	drawHUD();
 
 	/// Compute High Pass ///
+
+	BloomHighPass.Bind();
+	BloomHighPass.SendUniform("bloomOn", true);
+	BloomHighPass.UnBind();
+
 	if (FULLSCREEN)
 		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
 	else
@@ -3452,11 +3468,20 @@ void Game::drawScene()
 	BloomHighPass.Bind();
 	BloomHighPass.SendUniform("uTex", 0);
 	if (stageVal == 1)
+	{
 		BloomHighPass.SendUniform("uThreshold", BLOOM_THRESHOLD1);
+		BloomHighPass.SendUniform("uThreshold2", BLOOM_THRESHOLDBRIGHT);
+	}
 	if (stageVal == 2)
+	{
 		BloomHighPass.SendUniform("uThreshold", BLOOM_THRESHOLD2);
+		BloomHighPass.SendUniform("uThreshold2", BLOOM_THRESHOLDBRIGHT);
+	}
 	if (stageVal == 3)
+	{
 		BloomHighPass.SendUniform("uThreshold", BLOOM_THRESHOLD3);
+		BloomHighPass.SendUniform("uThreshold2", BLOOM_THRESHOLDBRIGHT);
+	}
 
 	WorkBuffer1.Bind();
 
@@ -3654,6 +3679,10 @@ void Game::drawCSS()
 	glDisable(GL_BLEND);
 	//===============================================================
 
+	BloomHighPass.Bind();
+	BloomHighPass.SendUniform("bloomOn", false);
+	BloomHighPass.UnBind();
+
 		/// Compute High Pass ///
 	if (FULLSCREEN)
 		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
@@ -3841,6 +3870,10 @@ void Game::drawSSS()
 	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
 	//===============================================================
+
+	BloomHighPass.Bind();
+	BloomHighPass.SendUniform("bloomOn", false);
+	BloomHighPass.UnBind();
 
 		/// Compute High Pass ///
 	if (FULLSCREEN)
@@ -4266,6 +4299,10 @@ void Game::drawMenu()
 
 //===============================================================
 
+	BloomHighPass.Bind();
+	BloomHighPass.SendUniform("bloomOn", false);
+	BloomHighPass.UnBind();
+
 	/// Compute High Pass ///
 	if (FULLSCREEN)
 		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
@@ -4669,8 +4706,8 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		//AdShader.ReloadShader();
 		//BloomHighPass.ReloadShader();
 		//PointLight.ReloadShader();
-		NetShader.ReloadShader();
-		//DeferredLighting.ReloadShader();
+		//NetShader.ReloadShader();
+		DeferredLighting.ReloadShader();
 		std::cout << "Reloaded Shaders\n";
 		//inputs2[4] = false;
 		break;
