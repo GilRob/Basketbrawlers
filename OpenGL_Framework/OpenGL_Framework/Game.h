@@ -43,8 +43,8 @@
 #define FRAMES_PER_SECOND		60
 #define BLOOM_THRESHOLDBRIGHT	0.4f
 #define BLOOM_THRESHOLD1		0.05f //Threshold value for basic court
-#define BLOOM_THRESHOLD2		0.24f //Threshold value for knight court
-#define BLOOM_THRESHOLD3		0.33f //Threshold value for ninja court
+#define BLOOM_THRESHOLD2		0.05f //Threshold value for knight court
+#define BLOOM_THRESHOLD3		0.05f //Threshold value for ninja court
 #define BLOOM_DOWNSCALE			3.0f //The number of times you down sample the pixels (how many times we divide the resolution)
 #define BLOOM_BLUR_PASSES		30	//How many times to repeat the blur process?
 #define SHADOW_RESOLUTION		4096
@@ -103,6 +103,8 @@ public:
 	ShaderProgram ParticleProgram;
 	ShaderProgram AdShader;
 	ShaderProgram GrayScale;
+	ShaderProgram Sepia;
+	ShaderProgram Negative;
 	ShaderProgram NetShader;
 
 	Mesh boxMesh;
@@ -257,6 +259,8 @@ public:
 	bool p2Score = false;
 
 	bool grayscale = false;
+	bool sepiaActive = false;
+	bool negativeActive = false;
 	bool toonActive = false;
 
 	bool isNinja1 = false;
@@ -264,13 +268,41 @@ public:
 	
 	///Sound Stuff
 	bool soundPlaying = false;
-	bool p1Jump1 = false;
-	bool p1Jump2 = false;
-	bool p2Jump = false;
 	bool hornPlaying = false;
 	bool thirtyPlaying = false;
 	bool onePlaying = false;
 	//bool knightJump;
+
+	//Sound Effect Action Bools
+	bool p1Walk = false;
+	bool p1Run = false;
+	bool p1Jump1 = false;
+	bool p1Jump2 = false;
+	bool p1Hit = false;
+	bool isHitSoundPlaying1 = false;
+	bool p1Dash = false;
+	bool p1Attack = false;
+
+	bool p2Walk = false;
+	bool p2Run = false;
+	bool p2Jump1 = false;
+	bool p2Jump2 = false;
+	bool p2Hit = false;
+	bool isHitSoundPlaying2 = false;
+	bool p2Dash = false;
+	bool p2Attack = false;
+
+	bool playHit1 = false;
+	bool playHit2 = false;
+
+	//Player Action Sounds
+	Sound knightWalk;
+	Sound ninjaWalk;
+	Sound knightJump;
+	Sound ninjaJump;
+	Sound hit;
+	Sound dash;
+	Sound attack;
 
 	bool soundPitched = false;
 	bool soundNormalized = true;
@@ -280,8 +312,6 @@ public:
 
 	//Sound gameSound;
 	Sound gameTheme;
-	Sound knightJump;
-	Sound ninjaJump;
 	Sound cheer;
 	Sound horn;
 	Sound mumble;

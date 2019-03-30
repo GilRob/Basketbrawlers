@@ -213,5 +213,11 @@
     <None Include="Assets\Shaders\NetShader.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Assets\Shaders\Negative.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\Sepia.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

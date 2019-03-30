@@ -126,9 +126,9 @@ void Game::initializeGame()
 	default_court_objs.push_back("default_bricks");
 
 	//load objects for knight scene
-	gameObjects.push_back(new Object("./Assets/Models/knightCourtHigh", "./Assets/Textures/knightCourt.png", "knight_court"));
-	gameObjects.push_back(new Object("./Assets/Models/knightFloor", "./Assets/Textures/knightFloor.png", "knight_floor"));
-	knight_court_objs.push_back("knight_floor");
+	gameObjects.push_back(new Object("./Assets/Models/knightCourt1", "./Assets/Textures/knightCourt.png", "knight_court"));
+	//gameObjects.push_back(new Object("./Assets/Models/knightFloor", "./Assets/Textures/knightFloor.png", "knight_floor"));
+	//knight_court_objs.push_back("knight_floor");
 
 	gameObjects.push_back(new Object("./Assets/Models/knightBleachers", "./Assets/Textures/knightBleachers.png", "knight_bleachers"));
 	knight_court_objs.push_back("knight_bleachers");
@@ -570,7 +570,21 @@ void Game::initializeGame()
 
 	if (!GrayScale.Load("./Assets/Shaders/Passthrough.vert", "./Assets/Shaders/GreyScalePost.frag"))
 	{
-		std::cout << "ADS Shaders failed to initialize. \n";
+		std::cout << "GS Shaders failed to initialize. \n";
+		system("pause");
+		exit(0);
+	}
+
+	if (!Sepia.Load("./Assets/Shaders/Passthrough.vert", "./Assets/Shaders/Sepia.frag"))
+	{
+		std::cout << "S Shaders failed to initialize. \n";
+		system("pause");
+		exit(0);
+	}
+
+	if (!Negative.Load("./Assets/Shaders/Passthrough.vert", "./Assets/Shaders/Negative.frag"))
+	{
+		std::cout << "N Shaders failed to initialize. \n";
 		system("pause");
 		exit(0);
 	}
@@ -1047,18 +1061,32 @@ void Game::initializeGame()
 //=================================================================//
 	//Sound Stuff
 
+	//Background sounds
 	gameTheme.Load("./Assets/Media/GameMusic.wav", false, true);
-	knightJump.Load("./Assets/Media/KnightJump.wav", true, false);
-	ninjaJump.Load("./Assets/Media/NinjaJump.wav", true, false);
+	mumble.Load("./Assets/Media/Mumble.wav", true, true);
+
+	//Game state sounds
 	cheer.Load("./Assets/Media/CheerTemp.wav", true, false);
 	horn.Load("./Assets/Media/Horn.wav", true, false);
-	mumble.Load("./Assets/Media/Mumble.wav", true, true);
+	
+	//Menu Sounds
 	select.Load("./Assets/Media/SelectSound.wav", true, false);
 	menuMove.Load("./Assets/Media/MenuMove.wav", true, false);
+
+	//Announcing Sounds
 	assassin.Load("./Assets/Media/Assassin.wav", true, false);
 	gaurdian.Load("./Assets/Media/Gaurdian.wav", true, false);
 	oneMin.Load("./Assets/Media/1Minute.wav", true, false);
 	thirtySec.Load("./Assets/Media/30Seconds.wav", true, false);
+
+	//Player Action Sounds
+	knightWalk.Load("./Assets/Media/KnightWalk.wav", true, false);
+	ninjaWalk.Load("./Assets/Media/NinjaWalk.wav", true, false);
+	knightJump.Load("./Assets/Media/KnightJump.wav", true, false);
+	ninjaJump.Load("./Assets/Media/NinjaJump.wav", true, false);
+	hit.Load("./Assets/Media/Hit.wav", true, false);
+	dash.Load("./Assets/Media/Dash.wav", true, false);
+	attack.Load("./Assets/Media/Attack.wav", true, false);
 
 	defaultPos = { 0.0f, 0.0f, 0.0f };
 	p1Pos = { 0.0f, 0.0f, 0.0f };
@@ -1160,7 +1188,7 @@ void Game::update()
 
 			themeChannel->setFrequency(60000.0f);
 			
-			themeChannel->setVolume(0.7f);
+			themeChannel->setVolume(0.5f);
 
 			//mumbleChannel = mumble.Play(deaultPos, deaultPos, true);
 
@@ -1213,7 +1241,7 @@ void Game::update()
 		
 		if (!soundNormalized)
 		{
-			//mumble.Stop(mumbleChannel);
+			mumble.Stop(mumbleChannel);
 			//themeChannel->removeDSP(pitchShift);
 			gameTheme.Stop(themeChannel);
 			themeChannel = gameTheme.Play(defaultPos, defaultPos, true);
@@ -1533,11 +1561,13 @@ void Game::updateCSS()
 				p1Done = true;
 				//Announce gaurdian
 				selectionChannel = gaurdian.Play(defaultPos, defaultPos, false);
+				selectionChannel->setVolume(3.0f);
 			}
 			else if (p1Char == 2) {
 				p1Done = true;
 				//Announce assassin
 				selectionChannel = assassin.Play(defaultPos, defaultPos, false);
+				selectionChannel->setVolume(1.0f);
 			}
 		}
 	}
@@ -1550,11 +1580,13 @@ void Game::updateCSS()
 				p2Done = true;
 				//Announce gaurdian
 				selectionChannel = gaurdian.Play(defaultPos, defaultPos, false);
+				selectionChannel->setVolume(3.0f);
 			}
 			else if (p2Char == 2) {
 				p2Done = true;
 				//Announce assassin
 				selectionChannel = assassin.Play(defaultPos, defaultPos, false);
+				selectionChannel->setVolume(1.0f);
 			}
 		}
 	}
@@ -1579,7 +1611,7 @@ void Game::updateCSS()
 			players[1] = new Ninja(ninjaTemp);
 			players[1]->texture.Load("./Assets/Textures/player2ninja.png");
 		}*/
-
+		selectionChannel->setVolume(1.0f);
 		scene = 2;
 		lastInputTime = 0.0f;
 		TotalGameTime = 0.0f;
@@ -1875,12 +1907,14 @@ void Game::updateScene()
 					if (players[0]->ultMode == false)
 					{
 						players[0]->comboAdd();
+						playHit1 = true;
 					}
 					players[0]->getHitboxes()[i]->setDone();
 
 					if (players[0]->type == 1 && players[0]->ultMode == true)
 					{
 						players[1]->hitForce *= 2.5;
+						playHit1 = true;
 					}
 
 					i = 100;
@@ -1913,6 +1947,7 @@ void Game::updateScene()
 					if (players[1]->type == 1 && players[1]->ultMode == true)
 					{
 						players[0]->hitForce *= 2.5;
+						playHit2 = true;
 					}
 					players[1]->getHitboxes()[i]->setDone();
 
@@ -1920,6 +1955,7 @@ void Game::updateScene()
 					if (players[1]->ultMode == false)
 					{
 						players[1]->comboAdd();
+						playHit2 = true;
 					}
 
 					i = 100;
@@ -2362,51 +2398,351 @@ void Game::updateScene()
 	p1Pos = { players[0]->getPosition().x, players[0]->getPosition().y, players[0]->getPosition().z };
 	p2Pos = { players[1]->getPosition().x, players[1]->getPosition().y, players[1]->getPosition().z };
 
+#pragma region P1SoundEffects
+	//Walk
+	if (players[0]->action == 1)
+	{
+		static float walkTime;
+		walkTime += updateTimer->getElapsedTimeSeconds();
+
+		if (!p1Walk)
+		{
+			if (isNinja1)
+			{
+				if (walkTime >= 0.35f)
+				{
+					ninjaChannel = ninjaWalk.Play(defaultPos, defaultPos, false);
+					walkTime = 0.0f;
+				}
+			}
+			else
+			{
+				if (walkTime >= 0.35f)
+				{
+					knightChannel = knightWalk.Play(defaultPos, defaultPos, false);
+					walkTime = 0.0f;
+				}
+			}
+		}
+	}
+	else p1Walk = true;
+	//Run
+	if (players[0]->action == 2)
+	{
+		static float runTime;
+		runTime += updateTimer->getElapsedTimeSeconds();
+
+		if (!p1Run)
+		{
+			if (isNinja1)
+				ninjaChannel = ninjaWalk.Play(defaultPos, defaultPos, false);
+			else
+				knightChannel = knightWalk.Play(defaultPos, defaultPos, false);
+			p1Run = true;
+		}
+
+		if (runTime >= 0.2f)
+		{
+			p1Run = false;
+			runTime = 0.0f;
+		}
+	}
+	//Jump1
 	if (players[0]->action == 5)
 	{
-		//if (knightChannel->isPlaying(p1Jump) == false)
 		if (!p1Jump1)
 		{
-			if (!isNinja1)
-				knightChannel = knightJump.Play(defaultPos, defaultPos, false);
-			else
+			if (isNinja1)
 				ninjaChannel = ninjaJump.Play(defaultPos, defaultPos, false);
+			else
+				knightChannel = knightJump.Play(defaultPos, defaultPos, false);
 			p1Jump1 = true;
 		}
 	}
+	//Jump2
 	if (players[0]->action == 6)
 	{
 		if (!p1Jump2)
-		//if (knightChannel->isPlaying(p1Jump) == false)
 		{
-			if (!isNinja1)
-				knightChannel = knightJump.Play(defaultPos, defaultPos, false);
-			else
+			if (isNinja1)
 				ninjaChannel = ninjaJump.Play(defaultPos, defaultPos, false);
+			else
+				knightChannel = knightJump.Play(defaultPos, defaultPos, false);
 			p1Jump2 = true;
 		}
 	}
+	//Attack with hit -- check the opposing player to see if they are hit
+	if (players[1]->action == 8 && playHit1 == true)
+	{
+		static float hitTime;
+		hitTime += updateTimer->getElapsedTimeSeconds();
 
+		if (!p1Hit)
+		{
+			if (isNinja1)
+				ninjaChannel = hit.Play(defaultPos, defaultPos, false);
+			else
+				knightChannel = hit.Play(defaultPos, defaultPos, false);
+			
+			p1Hit = true;
+			//isHitSoundPlaying1 = true;
+			playHit1 = false;
+		}
+
+		if (hitTime >= 0.23f)
+		{
+			p1Hit = false;
+			//isHitSoundPlaying1 = false;
+			hitTime = 0.0f;
+		}
+	}
+	//Dash
+	if (players[0]->action == 22)
+	{
+		if (!p1Dash)
+		{
+			if (isNinja1)
+				ninjaChannel = dash.Play(defaultPos, defaultPos, false);
+			else
+				knightChannel = dash.Play(defaultPos, defaultPos, false);
+			p1Dash = true;
+		}
+	}
+	//Attack without hit
+	if (players[0]->action == 10 || players[0]->action == 11 || players[0]->action == 12 || players[0]->action == 13 ||
+		players[0]->action == 18 || players[0]->action == 19 || players[0]->action == 20 || players[0]->action == 21 &&
+		players[1]->action != 8)
+	{
+		//static float attackTime;
+		//attackTime += updateTimer->getElapsedTimeSeconds();
+
+		if (!p1Attack)
+		{
+			if (isNinja1)
+			{
+				ninjaChannel = attack.Play(defaultPos, defaultPos, false);
+			}
+			else
+			{
+				knightChannel = attack.Play(defaultPos, defaultPos, false);
+			}
+			p1Attack = true;
+		}
+
+		/*if (attackTime >= 0.31f)
+		{
+			p1Attack = false;
+			attackTime = 0.0f;
+		}*/
+	}
+	else p1Attack = false;
+
+	//Make sure sounds dont repeat and sound terrible
+	//Walk
+	if (players[0]->action != 1)
+	{
+		p1Walk = false;
+	}
+	//Run
+	if (players[0]->action != 2)
+	{
+		p1Run = false;
+	}
+	//Jump1
 	if (players[0]->action != 5)
 	{
-		//std::cout << "knight jump sound";
-		//if (knightChannel->isPlaying(p1Jump))
-		//if (p1Jump)
-		//{
-			//knightChannel = knightJump.Play(themePos, { 0.0f, 0.0f, 0.0f }, false);
-			//p1Jump = true;
-		//}
 		p1Jump1 = false;
 	}
+	//Jump2
 	if (players[0]->action != 6)
 	{
 		p1Jump2 = false;
 	}
+	//Hit
+	if (players[1]->action != 8)
+	{
+		p1Hit = false;
+	}
+	//Dash
+	if (players[0]->action != 22)
+	{
+		p1Dash = false;
+	}
+#pragma endregion
+
+#pragma region P2SoundEffects
+	//Walk
+	if (players[1]->action == 1)
+	{
+		static float walkTime;
+		walkTime += updateTimer->getElapsedTimeSeconds();
+
+		if (!p2Walk)
+		{
+			if (isNinja2)
+			{
+				if (walkTime >= 0.35f)
+				{
+					ninjaChannel = ninjaWalk.Play(defaultPos, defaultPos, false);
+					walkTime = 0.0f;
+				}
+			}
+			else
+			{
+				if (walkTime >= 0.35f)
+				{
+					knightChannel = knightWalk.Play(defaultPos, defaultPos, false);
+					walkTime = 0.0f;
+				}
+			}
+		}
+	}
+	else p2Walk = true;
+	//Run
+	if (players[1]->action == 2)
+	{
+		static float runTime;
+		runTime += updateTimer->getElapsedTimeSeconds();
+
+		if (!p2Run)
+		{
+			if (isNinja2)
+				ninjaChannel = ninjaWalk.Play(defaultPos, defaultPos, false);
+			else
+				knightChannel = knightWalk.Play(defaultPos, defaultPos, false);
+			p2Run = true;
+		}
+
+		if (runTime >= 0.2f)
+		{
+			p2Run = false;
+			runTime = 0.0f;
+		}
+	}
+	//Jump1
+	if (players[1]->action == 5)
+	{
+		if (!p2Jump1)
+		{
+			if (isNinja2)
+				ninjaChannel = ninjaJump.Play(defaultPos, defaultPos, false);
+			else
+				knightChannel = knightJump.Play(defaultPos, defaultPos, false);
+			p2Jump1 = true;
+		}
+	}
+	//Jump2
+	if (players[1]->action == 6)
+	{
+		if (!p2Jump2)
+		{
+			if (isNinja2)
+				ninjaChannel = ninjaJump.Play(defaultPos, defaultPos, false);
+			else
+				knightChannel = knightJump.Play(defaultPos, defaultPos, false);
+			p2Jump2 = true;
+		}
+	}
+	//Attack with hit -- check the opposing player to see if they are hit
+	if (players[0]->action == 8 && playHit2 == true)
+	{
+		static float hitTime;
+		hitTime += updateTimer->getElapsedTimeSeconds();
+
+		if (!p2Hit)
+		{
+			if (isNinja2)
+				ninjaChannel = hit.Play(defaultPos, defaultPos, false);
+			else
+				knightChannel = hit.Play(defaultPos, defaultPos, false);
+			p2Hit = true;
+			//isHitSoundPlaying2 = true;
+			playHit2 = false;
+		}
+
+		if (hitTime >= 0.23f)
+		{
+			p1Hit = false;
+			//isHitSoundPlaying2 = false;
+			hitTime = 0.0f;
+		}
+	}
+	//Dash
+	if (players[1]->action == 22)
+	{
+		if (!p2Dash)
+		{
+			if (isNinja2)
+				ninjaChannel = dash.Play(defaultPos, defaultPos, false);
+			else
+				knightChannel = dash.Play(defaultPos, defaultPos, false);
+			p2Dash = true;
+		}
+	}
+	//Attack without hit
+	if (players[1]->action == 10 || players[1]->action == 11 || players[1]->action == 12 || players[1]->action == 13 ||
+		players[1]->action == 18 || players[1]->action == 19 || players[1]->action == 20 || players[1]->action == 21 &&
+		players[0]->action != 8)
+	{
+		//static float attackTime;
+		//attackTime += updateTimer->getElapsedTimeSeconds();
+
+		if (!p2Attack)
+		{
+			if (isNinja2)
+			{
+				ninjaChannel = attack.Play(defaultPos, defaultPos, false);
+			}
+			else
+			{
+				knightChannel = attack.Play(defaultPos, defaultPos, false);
+			}
+			p2Attack = true;
+		}
+
+		/*if (attackTime >= 0.31f)
+		{
+			p2Attack = false;
+			attackTime = 0.0f;
+		}*/
+	}
+	else p2Attack = false;
+
+	//Make sure sounds dont repeat and sound terrible
+	//Walk
+	if (players[1]->action != 1)
+	{
+		p2Walk = false;
+	}
+	//Run
+	if (players[1]->action != 2)
+	{
+		p2Run = false;
+	}
+	//Jump1
+	if (players[1]->action != 5)
+	{
+		p2Jump1 = false;
+	}
+	//Jump2
+	if (players[1]->action != 6)
+	{
+		p2Jump2 = false;
+	}
+	//Hit -- check the opposing player to see if they are hit
+	if (players[1]->action != 8)
+	{
+		p2Hit = false;
+	}
+	//Dash
+	if (players[1]->action != 22)
+	{
+		p2Dash = false;
+	}
+#pragma endregion
 
 	if (p1Score == true || p2Score == true)
 	{
-		//otherChannel->setVolume(1.0f);
-		//std::cout << "PLAY CHEER";
 		if (!soundPlaying)
 		{
 			otherChannel = cheer.Play(defaultPos, defaultPos, false);
@@ -2784,6 +3120,10 @@ void Game::drawTutScreen()
 	BloomHighPass.UnBind();
 
 	/// Compute Blur ///
+	BloomHighPass.Bind();
+	BloomHighPass.SendUniform("bloomOn", false);
+	BloomHighPass.UnBind();
+
 	if (FULLSCREEN)
 		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
 	else
@@ -2964,6 +3304,10 @@ void Game::drawEndScreen()
 	//===============================================================
 
 		/// Compute High Pass ///
+	BloomHighPass.Bind();
+	BloomHighPass.SendUniform("bloomOn", false);
+	BloomHighPass.UnBind();
+
 	if (FULLSCREEN)
 		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
 	else
@@ -3051,8 +3395,6 @@ void Game::drawScene()
 	HudMap.Clear();
 	WorkBuffer1.Clear();
 	WorkBuffer2.Clear();
-	//godRaysBuffer1.Clear();
-	//godRaysBuffer2.Clear();
 
 	/// Generate The Shadow Map ///
 	glViewport(0, 0, SHADOW_RESOLUTION, SHADOW_RESOLUTION);
@@ -3296,6 +3638,30 @@ void Game::drawScene()
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
 		GrayScale.UnBind();
+	}
+	//Sepia
+	if (sepiaActive == true)
+	{
+		Sepia.Bind();
+		Sepia.SendUniform("uTex", 0);
+
+		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+		Sepia.UnBind();
+	}
+	//negativ
+	if (negativeActive == true)
+	{
+		Negative.Bind();
+		Negative.SendUniform("uTex", 0);
+
+		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+		Negative.UnBind();
 	}
 	AniShader.UnBind();
 	GBuffer.UnBind();
@@ -4717,6 +5083,18 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 	case 'm':
 		for (int i = 0; i < 2; i++)
 			players[i]->setMeter(100);
+		break;
+	case 'g':
+		if (sepiaActive == false)
+			sepiaActive = true;
+		else if (sepiaActive == true)
+			sepiaActive = false;
+		break;
+	case 'n':
+		if (negativeActive == false)
+			negativeActive = true;
+		else if (negativeActive == true)
+			negativeActive = false;
 		break;
 	}
 }
