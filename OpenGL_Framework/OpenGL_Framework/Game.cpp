@@ -2354,7 +2354,7 @@ void Game::updateScene()
 
 	///PARTICLE EFFECTS
 	ParticleEffect::cameraOffset = GameCamera.pos.x;
-	cout << ParticleEffect::cameraOffset << ",";
+	//cout << ParticleEffect::cameraOffset << ",";
 	//Update Patricle Effects
 	ConfettiEffectBlueRight.Update(deltaTime);
 	ConfettiEffectBlueLeft.Update(deltaTime);
