@@ -2771,46 +2771,52 @@ void Game::updateScene()
 	//additional lights
 	if (p1Score == true)
 	{
-		static float timer;
-		timer += updateTimer->getElapsedTimeSeconds();
-		bool temp = false;
-
-		float check = (timer - (int)timer);
-		temp = (bool)(check >= 0.5f && check < 1.0f);
-
-		if (timer >= 4.0f)
-			temp = false;
-
-		findLight("p1Score")->active = temp;
-
-		if (timer >= 4.5f)
+		if (stageVal != 3)
 		{
-			p1Score = false;
-			p2Score = false;
-			soundPlaying = false;
-			timer = 0.0f;
+			static float timer;
+			timer += updateTimer->getElapsedTimeSeconds();
+			bool temp = false;
+
+			float check = (timer - (int)timer);
+			temp = (bool)(check >= 0.5f && check < 1.0f);
+
+			if (timer >= 4.0f)
+				temp = false;
+
+			findLight("p1Score")->active = temp;
+
+			if (timer >= 4.5f)
+			{
+				p1Score = false;
+				p2Score = false;
+				soundPlaying = false;
+				timer = 0.0f;
+			}
 		}
 	}
 	if (p2Score == true)
 	{
-		static float timer;
-		timer += updateTimer->getElapsedTimeSeconds();
-		bool temp = false;
-
-		float check = (timer - (int)timer);
-		temp = (bool)(check >= 0.5f && check < 1.0f);
-
-		if (timer >= 4.0f)
-			temp = false;
-
-		findLight("p2Score")->active = temp;
-
-		if (timer >= 4.5f)
+		if (stageVal != 3)
 		{
-			p1Score = false;
-			p2Score = false;
-			soundPlaying = false;
-			timer = 0.0f;
+			static float timer;
+			timer += updateTimer->getElapsedTimeSeconds();
+			bool temp = false;
+
+			float check = (timer - (int)timer);
+			temp = (bool)(check >= 0.5f && check < 1.0f);
+
+			if (timer >= 4.0f)
+				temp = false;
+
+			findLight("p2Score")->active = temp;
+
+			if (timer >= 4.5f)
+			{
+				p1Score = false;
+				p2Score = false;
+				soundPlaying = false;
+				timer = 0.0f;
+			}
 		}
 	}
 

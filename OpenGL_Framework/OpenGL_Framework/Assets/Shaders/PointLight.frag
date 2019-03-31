@@ -6,7 +6,7 @@ uniform sampler2D uNormalMap;
 uniform sampler2D uPositionMap;
 
 //uniform vec3 uSceneDiffuse = vec3(0.0, 1.0, 0.0);
-uniform vec3 uLightPosition = vec3(3.0, 0.0, 0.0);
+uniform vec3 uLightPosition = vec3(0.0, 5.0, 0.0);
 uniform vec3 uLightColor = vec3(0.0, 1.0, 0.0);
 uniform float uLightSpecularExponent = 16.0;
 
@@ -43,7 +43,7 @@ void main()
 		
 		// Calculate attenuation (falloff)
 		// Add a small number to avoid divide by zero.
-		float attenuation = 1.0 / (0.5f + dist * dist * 0.01);
+		float attenuation = 1.0 / (0.5f + dist * dist * 0.1);
 
 		// Calculate the diffuse contribution
 		outColor.rgb += uLightColor * NdotL * attenuation;
