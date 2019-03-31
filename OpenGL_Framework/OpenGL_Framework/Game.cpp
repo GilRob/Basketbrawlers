@@ -2494,14 +2494,12 @@ void Game::updateScene()
 				knightChannel = hit.Play(defaultPos, defaultPos, false);
 			
 			p1Hit = true;
-			//isHitSoundPlaying1 = true;
 			playHit1 = false;
 		}
 
 		if (hitTime >= 0.23f)
 		{
 			p1Hit = false;
-			//isHitSoundPlaying1 = false;
 			hitTime = 0.0f;
 		}
 	}
@@ -2522,9 +2520,6 @@ void Game::updateScene()
 		players[0]->action == 18 || players[0]->action == 19 || players[0]->action == 20 || players[0]->action == 21 &&
 		players[1]->action != 8)
 	{
-		//static float attackTime;
-		//attackTime += updateTimer->getElapsedTimeSeconds();
-
 		if (!p1Attack)
 		{
 			if (isNinja1)
@@ -2537,12 +2532,6 @@ void Game::updateScene()
 			}
 			p1Attack = true;
 		}
-
-		/*if (attackTime >= 0.31f)
-		{
-			p1Attack = false;
-			attackTime = 0.0f;
-		}*/
 	}
 	else p1Attack = false;
 
@@ -2669,14 +2658,12 @@ void Game::updateScene()
 			else
 				knightChannel = hit.Play(defaultPos, defaultPos, false);
 			p2Hit = true;
-			//isHitSoundPlaying2 = true;
 			playHit2 = false;
 		}
 
 		if (hitTime >= 0.23f)
 		{
 			p1Hit = false;
-			//isHitSoundPlaying2 = false;
 			hitTime = 0.0f;
 		}
 	}
@@ -2697,9 +2684,6 @@ void Game::updateScene()
 		players[1]->action == 18 || players[1]->action == 19 || players[1]->action == 20 || players[1]->action == 21 &&
 		players[0]->action != 8)
 	{
-		//static float attackTime;
-		//attackTime += updateTimer->getElapsedTimeSeconds();
-
 		if (!p2Attack)
 		{
 			if (isNinja2)
@@ -2712,12 +2696,6 @@ void Game::updateScene()
 			}
 			p2Attack = true;
 		}
-
-		/*if (attackTime >= 0.31f)
-		{
-			p2Attack = false;
-			attackTime = 0.0f;
-		}*/
 	}
 	else p2Attack = false;
 
@@ -2768,7 +2746,9 @@ void Game::updateScene()
 	{
 		if (!onePlaying)
 		{
+			otherChannel->setVolume(3.0f);
 			otherChannel = oneMin.Play(defaultPos, defaultPos, false);
+			otherChannel->setVolume(1.0f);
 			onePlaying = true;
 		}
 	}
@@ -2776,7 +2756,9 @@ void Game::updateScene()
 	{
 		if (!thirtyPlaying)
 		{
+			otherChannel->setVolume(3.0f);
 			otherChannel = thirtySec.Play(defaultPos, defaultPos, false);
+			otherChannel->setVolume(1.0f);
 			thirtyPlaying = true;
 		}
 	}
