@@ -5465,7 +5465,7 @@ void Game::loadTime() {
 }
 
 //clears all particles
-void Game::clearParticles()
+/*void Game::clearParticles()
 {
 	ConfettiEffectBlueLeft.Clear();
 	ConfettiEffectBlueRight.Clear();
@@ -5478,7 +5478,7 @@ void Game::clearParticles()
 	NinjaPetals.Clear();
 	NinjaPetals.Clear();
 
-}
+}*/
 
 void Game::sortObjects(unsigned int scene) {
 	if (scene == 3) {
