@@ -78,6 +78,7 @@ public:
 	void drawScore();
 	void drawMenu();
 	void loadTime();
+	void clearParticles();
 	/* input callback functions */
 	void keyboardDown(unsigned char key, int mouseX, int mouseY);
 	void keyboardUp(unsigned char key, int mouseX, int mouseY);

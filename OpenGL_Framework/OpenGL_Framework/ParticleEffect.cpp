@@ -319,20 +319,22 @@ void ParticleEffect::Render()
 	{
 		return;
 	}
+	
+	if (Playing) {
+		_Texture.Bind();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//Depth mask disables/enables the ability for a render to write to the depth buffer
+		glDepthMask(GL_FALSE);
 
-	_Texture.Bind();
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//Depth mask disables/enables the ability for a render to write to the depth buffer
-	glDepthMask(GL_FALSE);
+		glBindVertexArray(_VAO);
+		glDrawArrays(GL_POINTS, 0, _NumCurrentParticles); //Thousands of particles can be drawn in one call! 
+		glBindVertexArray(GL_NONE);
 
-	glBindVertexArray(_VAO);
-	glDrawArrays(GL_POINTS, 0, _NumCurrentParticles); //Thousands of particles can be drawn in one call! 
-	glBindVertexArray(GL_NONE);
-
-	glDepthMask(GL_TRUE);
-	glDisable(GL_BLEND);
-	_Texture.UnBind();
+		glDepthMask(GL_TRUE);
+		glDisable(GL_BLEND);
+		_Texture.UnBind();
+	}
 }
 
 void ParticleEffect::Reset()
@@ -357,4 +359,26 @@ void ParticleEffect::Spawn()
 {
 	Playing = true;
 	spawnerTime = savedSpawnerTime;
+}
+
+void ParticleEffect::Clear()
+{
+	Playing = false;
+	delete[] _Particles.Positions;
+	delete[] _Particles.Velocities;
+	delete[] _Particles.Alpha;
+	delete[] _Particles.Ages;
+	delete[] _Particles.Lifetimes;
+	delete[] _Particles.Size;
+	delete[] _Particles.frequency;
+
+	_Particles.Positions = new glm::vec3[_MaxParticles];
+	_Particles.Velocities = new glm::vec3[_MaxParticles];
+	_Particles.Alpha = new float[_MaxParticles];
+	_Particles.Ages = new float[_MaxParticles];
+	_Particles.Lifetimes = new float[_MaxParticles];
+	_Particles.Size = new float[_MaxParticles];
+	_Particles.frequency = new int[_MaxParticles];
+
+	_NumCurrentParticles = 0;
 }

@@ -1312,6 +1312,8 @@ void Game::updateEndScreen()
 	ConfettiEffectPurpleRight.Reset();
 	ConfettiEffectRedLeft.Reset();
 	ConfettiEffectRedRight.Reset();
+	NinjaPetals.Reset();
+	NinjaPetals.Reset();
 
 	//press
 	if (inputs[6] || inputs2[6] || inputs[5] || inputs2[5]) {
@@ -2372,8 +2374,6 @@ void Game::updateScene()
 	knightRightNet.Update(deltaTime);
 	knightLeftNet1.Update(deltaTime);
 	knightRightNet1.Update(deltaTime);
-	NinjaPetals.Update(deltaTime);
-	NinjaPetals2.Update(deltaTime);
 	DustDashL.Update(deltaTime);
 	DustDashR.Update(deltaTime);
 	DustLand.Update(deltaTime);
@@ -2386,12 +2386,17 @@ void Game::updateScene()
 	NinjaUltFX1.Update(deltaTime);
 	NinjaUltFX2.Update(deltaTime);
 
-	//Vect Fields//
-	glm::vec2 playerTransform1 = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().y);
-	glm::vec2 playerTransform2 = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().y);
+	if (NinjaPetals.Playing) {
+		NinjaPetals.Update(deltaTime);
+		NinjaPetals2.Update(deltaTime);
 
-	NinjaPetals.mainField.update(playerTransform1, players[0]->movementDir, playerTransform2, players[1]->movementDir);
-	NinjaPetals2.mainField.update(playerTransform1, players[0]->movementDir, playerTransform1, players[1]->movementDir);
+		//Vect Fields//
+		glm::vec2 playerTransform1 = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().y);
+		glm::vec2 playerTransform2 = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().y);
+
+		NinjaPetals.mainField.update(playerTransform1, players[0]->movementDir, playerTransform2, players[1]->movementDir);
+		NinjaPetals2.mainField.update(playerTransform1, players[0]->movementDir, playerTransform1, players[1]->movementDir);
+	}
 	//cout << playerTransform1.x << "," << playerTransform1.y << endl;
 
 	//Sound Effects//
@@ -3194,7 +3199,7 @@ void Game::drawEndScreen()
 	HudMap.Clear();
 	WorkBuffer1.Clear();
 	WorkBuffer2.Clear();
-
+	
 	/// Create Scene From GBuffer ///
 	if (FULLSCREEN)
 		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
@@ -3797,8 +3802,10 @@ void Game::drawScene()
 	knightRightNet.Render();
 	knightLeftNet1.Render();
 	knightRightNet1.Render();
-	NinjaPetals.Render();
-	NinjaPetals2.Render();
+	if (stageVal == 3) {
+		NinjaPetals.Render();
+		NinjaPetals2.Render();
+	}
 	DustDashL.Render();
 	DustDashR.Render();
 	DustLand.Render();
@@ -5445,6 +5452,22 @@ void Game::loadTime() {
 		}
 		time.push_back(temp);
 	}
+}
+
+//clears all particles
+void Game::clearParticles()
+{
+	ConfettiEffectBlueLeft.Clear();
+	ConfettiEffectBlueRight.Clear();
+	ConfettiEffectOrangeLeft.Clear();
+	ConfettiEffectOrangeRight.Clear();
+	ConfettiEffectPurpleLeft.Clear();
+	ConfettiEffectPurpleRight.Clear();
+	ConfettiEffectRedLeft.Clear();
+	ConfettiEffectRedRight.Clear();
+	NinjaPetals.Clear();
+	NinjaPetals.Clear();
+
 }
 
 void Game::sortObjects(unsigned int scene) {
