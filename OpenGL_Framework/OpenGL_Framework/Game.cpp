@@ -2606,11 +2606,11 @@ void Game::updateScene()
 	//Run
 	if (players[1]->action == 2)
 	{
+		static float runTime;
+		runTime += updateTimer->getElapsedTimeSeconds();
+
 		if (!p2Run)
 		{
-			//Get a random pitch value
-			float pitch = ninjaWalk.Random(0.7f, 1.2f);
-
 			if (isNinja2)
 			{
 				ninjaChannel = ninjaWalk.Play(defaultPos, defaultPos, false);
