@@ -2353,6 +2353,8 @@ void Game::updateScene()
 
 
 	///PARTICLE EFFECTS
+	ParticleEffect::cameraOffset = GameCamera.pos.x;
+	//cout << ParticleEffect::cameraOffset << ",";
 	//Update Patricle Effects
 	ConfettiEffectBlueRight.Update(deltaTime);
 	ConfettiEffectBlueLeft.Update(deltaTime);
@@ -2398,6 +2400,8 @@ void Game::updateScene()
 		NinjaPetals2.mainField.update(playerTransform1, players[0]->movementDir, playerTransform1, players[1]->movementDir);
 	}
 	//cout << playerTransform1.x << "," << playerTransform1.y << endl;
+
+
 
 	//Sound Effects//
 	p1Pos = { players[0]->getPosition().x, players[0]->getPosition().y, players[0]->getPosition().z };

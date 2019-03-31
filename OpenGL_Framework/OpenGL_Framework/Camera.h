@@ -97,12 +97,13 @@ public:
 	float targetZoom;
 	bool rumble = false;
 
+	glm::vec2 pos = glm::vec2(0, 0);
+
 
 private:
 
 	float zoom = 10;
 	float zoomGain = 0;
-	glm::vec2 pos = glm::vec2(0, 0);
 	glm::vec2 vel = glm::vec2(0, 0);
 	glm::vec2 acc = glm::vec2(0, 0);
 
