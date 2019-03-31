@@ -64,7 +64,8 @@ public:
 	float ringRadius = 0.0f;
 	bool circleSpawner = false;
 	float ringWidth = 1.0f;
-
+	static float cameraOffset;
+	
 	//noise
 	float noiseStrength = 0.0f;
 	int noiseFrequency = 0;

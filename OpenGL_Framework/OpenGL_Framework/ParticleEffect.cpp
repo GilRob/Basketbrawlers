@@ -9,6 +9,8 @@ ParticleEffect::ParticleEffect()
 	Mass = 2.0f;
 }
 
+float ParticleEffect::cameraOffset = 0.0f;
+
 ParticleEffect::~ParticleEffect()
 {
 	if (_VAO != GL_NONE)
@@ -194,6 +196,9 @@ void ParticleEffect::Update(float elapsed)
 	}
 	spawnerTime -= elapsed;
 
+	//at -10 and 10, 6.0
+	ringWidth = 0.6f + (0.08f*(10.0f - glm::abs(cameraOffset)));
+
 		/// Create new particles ///
 	while (
 		//We have not reached the particle cap and...
@@ -320,7 +325,6 @@ void ParticleEffect::Render()
 		return;
 	}
 	
-	if (Playing) {
 		_Texture.Bind();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -334,7 +338,6 @@ void ParticleEffect::Render()
 		glDepthMask(GL_TRUE);
 		glDisable(GL_BLEND);
 		_Texture.UnBind();
-	}
 }
 
 void ParticleEffect::Reset()
