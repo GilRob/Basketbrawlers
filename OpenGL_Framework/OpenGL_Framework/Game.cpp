@@ -2584,18 +2584,11 @@ void Game::updateScene()
 
 		if (!p2Walk)
 		{
-			//Get a random pitch value
-			float pitch = ninjaWalk.Random(0.7f, 1.2f);
-
 			if (isNinja2)
 			{
 				if (walkTime >= 0.35f)
 				{
-					pitchShift->setParameterFloat(FMOD_DSP_PITCHSHIFT_PITCH, pitch);
-					ninjaChannel->addDSP(0, pitchShift);
-
 					ninjaChannel = ninjaWalk.Play(defaultPos, defaultPos, false);
-					ninjaChannel->removeDSP(pitchShift);
 					walkTime = 0.0f;
 				}
 			}
@@ -2603,11 +2596,7 @@ void Game::updateScene()
 			{
 				if (walkTime >= 0.35f)
 				{
-					pitchShift->setParameterFloat(FMOD_DSP_PITCHSHIFT_PITCH, pitch);
-					knightChannel->addDSP(0, pitchShift);
-
 					knightChannel = knightWalk.Play(defaultPos, defaultPos, false);
-					knightChannel->removeDSP(pitchShift);
 					walkTime = 0.0f;
 				}
 			}
@@ -2617,9 +2606,6 @@ void Game::updateScene()
 	//Run
 	if (players[1]->action == 2)
 	{
-		static float runTime;
-		runTime += updateTimer->getElapsedTimeSeconds();
-
 		if (!p2Run)
 		{
 			//Get a random pitch value
@@ -2627,19 +2613,11 @@ void Game::updateScene()
 
 			if (isNinja2)
 			{
-				pitchShift->setParameterFloat(FMOD_DSP_PITCHSHIFT_PITCH, pitch);
-				ninjaChannel->addDSP(0, pitchShift);
-
 				ninjaChannel = ninjaWalk.Play(defaultPos, defaultPos, false);
-				ninjaChannel->removeDSP(pitchShift);
 			}
 			else
 			{
-				pitchShift->setParameterFloat(FMOD_DSP_PITCHSHIFT_PITCH, pitch);
-				knightChannel->addDSP(0, pitchShift);
-
 				knightChannel = knightWalk.Play(defaultPos, defaultPos, false);
-				knightChannel->removeDSP(pitchShift);
 			}
 			p2Run = true;
 		}

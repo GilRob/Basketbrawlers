@@ -446,7 +446,7 @@ Transform Knight::jab()
 	if (interuptable == true && action != ACTION_JAB) {
 		interuptable = false;
 		action = ACTION_JAB;
-		activeFrames = 35;
+		activeFrames = 22;
 		currentFrame = 1;
 		aniTimer = 0;
 		index = 0;
@@ -480,7 +480,7 @@ Transform Knight::sAttack()
 	if (interuptable == true && action != ACTION_SIDE_ATTACK) {
 		interuptable = false;
 		action = ACTION_SIDE_ATTACK;
-		activeFrames = 33;
+		activeFrames = 24;
 		currentFrame = 1;
 		aniTimer = 0;
 		index = 0;
@@ -566,7 +566,7 @@ Transform Knight::uAttack()
 	if (interuptable == true && action != ACTION_UP_ATTACK) {
 		interuptable = false;
 		action = ACTION_UP_ATTACK;
-		activeFrames = 55;
+		activeFrames = 30;
 		currentFrame = 1;
 		aniTimer = 0;
 		index = 0;
@@ -610,7 +610,7 @@ Transform Knight::nAir()
 	if (action != ACTION_NEUTRAL_AERIAL || interuptable == true) {
 		interuptable = false;
 		action = ACTION_NEUTRAL_AERIAL;
-		activeFrames = 27;
+		activeFrames = 18;
 		currentFrame = 1;
 	}
 	if (action == ACTION_NEUTRAL_AERIAL && currentFrame <= activeFrames) {
@@ -703,7 +703,7 @@ Transform Knight::dAir()
 	if (action != ACTION_DOWN_AERIAL || interuptable == true) {
 		interuptable = false;
 		action = ACTION_DOWN_AERIAL;
-		activeFrames = 45;
+		activeFrames = 25;
 		currentFrame = 1;
 	}
 	if (action == ACTION_DOWN_AERIAL && currentFrame <= activeFrames) {

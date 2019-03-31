@@ -98,7 +98,7 @@ public:
 	//Attributes
 	float ultMass = 10;
 	float ultGravity = 0.7f;
-	float ultRunSpeed = 1.0f;
+	float ultRunSpeed = 0.66f;
 	float ultRunAccel = 0.5f;
 	float ultAirAccel = 0.1f;
 	float ultJumpForce = 0.8f;
