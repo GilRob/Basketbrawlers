@@ -44,6 +44,7 @@ public:
 	*/
 	void Spawn(float time, bool reset = false);
 	void Spawn();
+	void Clear();
 
 	Transform transform;
 
