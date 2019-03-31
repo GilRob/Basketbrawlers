@@ -99,8 +99,8 @@ void Game::initializeGame()
 	gameObjects.push_back(new Object("./Assets/Models/basicCourtHigh", "./Assets/Textures/basicCourt.png", "default_court"));
 	gameObjects.push_back(new Object("./Assets/Models/basicFloor", "./Assets/Textures/basicFloor.png", "default_floor"));
 	default_court_objs.push_back("default_floor");
-	//gameObjects.push_back(new Object("./Assets/Models/nets", "./Assets/Textures/net.png", "default_net", true));
-	//default_court_objs.push_back("default_net");
+	gameObjects.push_back(new Object("./Assets/Models/BasicNets", "./Assets/Textures/net.png", "default_net", true));
+	default_court_objs.push_back("default_net");
 	gameObjects.push_back(new Object("./Assets/Models/chairs", "./Assets/Textures/chair.png", "default_chairs"));
 	default_court_objs.push_back("default_chairs");
 	gameObjects.push_back(new Object("./Assets/Models/lightsJumbo", "./Assets/Textures/lightJumboTex.png", "default_jumbotron", true));
@@ -118,8 +118,8 @@ void Game::initializeGame()
 	gameObjects.push_back(new Object("./Assets/Models/basicCrowd3", "./Assets/Textures/crowd.png", "default_crowd3"));
 	default_court_objs.push_back("default_crowd3");
 
-	gameObjects.push_back(new Object("./Assets/Models/nets", "./Assets/Textures/smokeNet.png", "smoke_net"));
-	default_court_objs.push_back("smoke_net");
+	//gameObjects.push_back(new Object("./Assets/Models/nets", "./Assets/Textures/smokeNet.png", "smoke_net"));
+	//default_court_objs.push_back("smoke_net");
 
 
 	gameObjects.push_back(new Object("./Assets/Models/basicBricks", "./Assets/Textures/basicBricks.png", "default_bricks"));
@@ -2776,46 +2776,52 @@ void Game::updateScene()
 	//additional lights
 	if (p1Score == true)
 	{
-		static float timer;
-		timer += updateTimer->getElapsedTimeSeconds();
-		bool temp = false;
-
-		float check = (timer - (int)timer);
-		temp = (bool)(check >= 0.5f && check < 1.0f);
-
-		if (timer >= 4.0f)
-			temp = false;
-
-		findLight("p1Score")->active = temp;
-
-		if (timer >= 4.5f)
+		if (stageVal != 3)
 		{
-			p1Score = false;
-			p2Score = false;
-			soundPlaying = false;
-			timer = 0.0f;
+			static float timer;
+			timer += updateTimer->getElapsedTimeSeconds();
+			bool temp = false;
+
+			float check = (timer - (int)timer);
+			temp = (bool)(check >= 0.5f && check < 1.0f);
+
+			if (timer >= 4.0f)
+				temp = false;
+
+			findLight("p1Score")->active = temp;
+
+			if (timer >= 4.5f)
+			{
+				p1Score = false;
+				p2Score = false;
+				soundPlaying = false;
+				timer = 0.0f;
+			}
 		}
 	}
 	if (p2Score == true)
 	{
-		static float timer;
-		timer += updateTimer->getElapsedTimeSeconds();
-		bool temp = false;
-
-		float check = (timer - (int)timer);
-		temp = (bool)(check >= 0.5f && check < 1.0f);
-
-		if (timer >= 4.0f)
-			temp = false;
-
-		findLight("p2Score")->active = temp;
-
-		if (timer >= 4.5f)
+		if (stageVal != 3)
 		{
-			p1Score = false;
-			p2Score = false;
-			soundPlaying = false;
-			timer = 0.0f;
+			static float timer;
+			timer += updateTimer->getElapsedTimeSeconds();
+			bool temp = false;
+
+			float check = (timer - (int)timer);
+			temp = (bool)(check >= 0.5f && check < 1.0f);
+
+			if (timer >= 4.0f)
+				temp = false;
+
+			findLight("p2Score")->active = temp;
+
+			if (timer >= 4.5f)
+			{
+				p1Score = false;
+				p2Score = false;
+				soundPlaying = false;
+				timer = 0.0f;
+			}
 		}
 	}
 
@@ -4519,7 +4525,7 @@ void Game::drawScore() {
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 	///score
-	hudLoc = Transform::Identity();
+	/*hudLoc = Transform::Identity();
 	hudLoc.Scale(2.0f);
 	hudLoc.RotateX(-8.0f);
 	hudLoc.RotateY(90.0f);
@@ -4528,7 +4534,7 @@ void Game::drawScore() {
 	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
 	time[10]->Bind();
 	glBindVertexArray(HudObj.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
+	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());*/
 	///score
 	hudLoc = Transform::Identity();
 	hudLoc.Scale(2.0f);
@@ -5078,9 +5084,9 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		//GBufferPass.ReloadShader();
 		//AdShader.ReloadShader();
 		//BloomHighPass.ReloadShader();
-		//PointLight.ReloadShader();
+		PointLight.ReloadShader();
 		//NetShader.ReloadShader();
-		DeferredLighting.ReloadShader();
+		//DeferredLighting.ReloadShader();
 		std::cout << "Reloaded Shaders\n";
 		//inputs2[4] = false;
 		break;
