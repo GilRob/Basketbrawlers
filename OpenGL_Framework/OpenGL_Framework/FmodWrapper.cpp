@@ -9,8 +9,9 @@ Zachary Allen February 18, 2019
 - Added the basic FMOD implementation
 John Wang March 1, 2019
 - Added the StopPlaying function
-Gil Robern - March 11, 2019
+Gil Robern - March 31, 2019
 - Combined the functionality from the different tutorials into one wrapper
+- Commented the code
 
 ==============================================================================*/
 
@@ -201,7 +202,7 @@ ReverbManager::~ReverbManager()
 {
 	Clear();
 }
-
+//Add a reverb node
 void ReverbManager::AddNode(FMOD_VECTOR pos, float min, float max, FMOD_REVERB_PROPERTIES props)
 {
 	ReverbData tempData;
