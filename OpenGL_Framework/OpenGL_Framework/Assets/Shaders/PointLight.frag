@@ -43,7 +43,7 @@ void main()
 		
 		// Calculate attenuation (falloff)
 		// Add a small number to avoid divide by zero.
-		float attenuation = 1.0 / (0.5f + dist * dist * 0.1);
+		float attenuation = 1.0 / (0.5f + dist * dist * 0.01);
 
 		// Calculate the diffuse contribution
 		outColor.rgb += uLightColor * NdotL * attenuation;
