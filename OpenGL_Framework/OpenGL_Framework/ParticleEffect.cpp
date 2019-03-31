@@ -198,7 +198,6 @@ void ParticleEffect::Update(float elapsed)
 
 	//at -10 and 10, 6.0
 	ringWidth = 0.6f + (0.08f*(10.0f - glm::abs(cameraOffset)));
-	if (ringWidth < 0.6f) { ringWidth = 0.6f; }
 
 		/// Create new particles ///
 	while (
