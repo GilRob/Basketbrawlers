@@ -1,6 +1,8 @@
 #pragma once
 #include <GL\glew.h>
 #include <string>
+#include <vector>
+#include <glm/glm.hpp>
 
 class Texture
 {
@@ -9,6 +11,8 @@ public:
 	~Texture();
 
 	bool Load(const std::string &file);
+	bool Load(std::vector<glm::vec3> &texture);
+
 	bool Unload();
 
 	void SetNearestFilter();

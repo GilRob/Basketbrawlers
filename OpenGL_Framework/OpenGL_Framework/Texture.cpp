@@ -10,26 +10,6 @@ Texture::~Texture()
 
 bool Texture::Load(const std::string &file)
 {
-	/*TextObj = SOIL_load_OGL_texture(file.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
-
-	if (TextObj == 0)
-	{
-		std::cout << "Texture failed to load.\n" << SOIL_last_result() << "\n";
-		return false;
-	}
-
-	//Send the data to OpenGL
-	glBindTexture(GL_TEXTURE_2D, TextObj); //BInd the new texture
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	//S and T are some sort of axes?
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	return true;*/
-	
-	//this->filename = "./Assets/Textures/" + file; //We should use this later
 	this->filename = file;
 
 	unsigned char* textureData;
@@ -63,6 +43,27 @@ bool Texture::Load(const std::string &file)
 
 	this->UnBind();
 	SOIL_free_image_data(textureData);
+	return true;
+}
+
+//ONLY USE THIS FOR SSAO, LOTS OF HARDCODE
+bool Texture::Load(std::vector<glm::vec3> &texture)
+{
+
+	_Target = GL_TEXTURE_2D;
+	_InternalFormat = GL_RGB32F;
+
+	glGenTextures(1, &this->_TexHandle);
+	this->Bind();
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, 4, 4, 0, GL_RGB, GL_FLOAT, &texture[0]);
+
+	glTextureParameteri(this->_TexHandle, GL_TEXTURE_MIN_FILTER, this->_FilterMag);
+	glTextureParameteri(this->_TexHandle, GL_TEXTURE_MAG_FILTER, this->_FilterMin);
+	glTextureParameteri(this->_TexHandle, GL_TEXTURE_WRAP_S, this->_WrapU);
+	glTextureParameteri(this->_TexHandle, GL_TEXTURE_WRAP_T, this->_WrapV);
+
+	this->UnBind();
 	return true;
 }
 
