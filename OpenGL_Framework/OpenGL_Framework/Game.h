@@ -27,6 +27,7 @@
 //debugging
 #include <chrono>
 #include <iostream>
+#include <random>
 
 
 
@@ -222,6 +223,8 @@ public:
 	FrameBuffer WorkBuffer1;
 	FrameBuffer WorkBuffer2;
 	FrameBuffer HudMap;
+	FrameBuffer SSAOFBO;
+	FrameBuffer SSAOBlurFBO;
 
 	//Transform CameraTransform;
 	//Transform CameraProjection;
@@ -344,5 +347,11 @@ public:
 	FMOD::DSP *highPass;
 
 private:
+	//personal lerp
+	float lerp(float a, float b, float f)
+	{
+		return a + f * (b - a);
+	}
+
 
 };

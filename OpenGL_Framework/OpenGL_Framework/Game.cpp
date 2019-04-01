@@ -11,7 +11,7 @@ $$$ - Particle Signal
 #define VSYNC true
 
 Game::Game()
-	: GBuffer(3), DeferredComposite(1), ShadowMap(0), EdgeMap(1), WorkBuffer1(1), WorkBuffer2(1), HudMap(1)//, godRaysBuffer1(1), godRaysBuffer2(1)
+	: GBuffer(3), DeferredComposite(1), ShadowMap(0), EdgeMap(1), WorkBuffer1(1), WorkBuffer2(1), HudMap(1), SSAOBlurFBO(1), SSAOFBO(1) //, godRaysBuffer1(1), godRaysBuffer2(1)
 	//This constructor in the initializer list is to solve the issue of creating a frame buffer object without no default constructor
 	//This will occur before the brackets of the constructor starts (Reference at Week #6 video Time: 47:00)
 	//The number is the number of color textures
@@ -43,6 +43,8 @@ Game::~Game()
 	P2Hud.Unload();
 	P2Bar.Unload();
 	StepTexture.Unload();
+	SSAO.UnLoad();
+	SSAOBlur.UnLoad();
 }
 
 bool WGLExtensionSupported(const char *extension_name)
@@ -519,6 +521,19 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}
+	if (!SSAO.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Bloom/SSAO.frag"))
+	{
+		std::cout << "BHP Shaders failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}	
+	if (!SSAOBlur.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Bloom/SSAOBlur.frag"))
+	{
+		std::cout << "BHP Shaders failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
+
 
 	if (!BlurHorizontal.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Bloom/BlurHorizontal.frag"))
 	{
@@ -1026,6 +1041,45 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}
+	//================================================================//
+	//ssao
+	if (FULLSCREEN)
+		SSAOFBO.InitColorTexture(0, FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RED, GL_NEAREST, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	else
+		SSAOFBO.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RED, GL_NEAREST, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	if (!SSAOFBO.CheckFBO())
+	{
+		std::cout << "WB2 FBO failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	if (FULLSCREEN)
+		SSAOBlurFBO.InitColorTexture(0, FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RED, GL_NEAREST, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	else
+		SSAOBlurFBO.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RED, GL_NEAREST, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	if (!SSAOBlurFBO.CheckFBO())
+	{
+		std::cout << "WB2 FBO failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	// generate sample kernel
+	std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0); // generates random floats between 0.0 and 1.0
+	std::default_random_engine generator;
+	std::vector<glm::vec3> ssaoKernel;
+	for (unsigned int i = 0; i < 64; ++i)
+	{
+		glm::vec3 sample(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator));
+		sample = glm::normalize(sample);
+		sample *= randomFloats(generator);
+		float scale = float(i) / 64.0;
+
+		// scale samples s.t. they're more aligned to center of kernel
+		scale = lerp(0.1f, 1.0f, scale * scale);
+		sample *= scale;
+		ssaoKernel.push_back(sample);
+	}
+
 
 //================================================================//
 	//Camera Init
@@ -1628,7 +1682,6 @@ void Game::updateCSS()
 		updateTimer = new Timer();
 	}
 }
-
 
 void Game::updateSSS()
 {
@@ -4109,7 +4162,7 @@ void Game::drawCSS()
 	BloomHighPass.SendUniform("bloomOn", false);
 	BloomHighPass.UnBind();
 
-		/// Compute High Pass ///
+	/// Compute High Pass ///
 	if (FULLSCREEN)
 		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
 	else
@@ -4229,8 +4282,6 @@ void Game::drawSSS()
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
 
-
-
 	DrawFullScreenQuad();
 
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
@@ -4295,6 +4346,8 @@ void Game::drawSSS()
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
+
+
 	//===============================================================
 
 	BloomHighPass.Bind();
@@ -4370,6 +4423,15 @@ void Game::drawSSS()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	BloomComposite.UnBind();
+
+	//===============================================================
+	//ssao starts here:
+
+
+
+
+
+
 
 	glutSwapBuffers();
 }
