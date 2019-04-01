@@ -20,6 +20,7 @@ uniform sampler2D uNormalMap;
 uniform sampler2D uPositionMap;
 uniform sampler2D uEdgeMap;
 uniform sampler2D uStepTexture;
+uniform sampler2D ssao;
 
 //Spotlight Uniforms
 uniform vec3 uSceneAmbient = vec3(0.0, 1.0, 0.0);
@@ -28,6 +29,7 @@ uniform vec3 uLightColor = vec3(0.0, 1.0, 0.0);
 uniform float uLightSpecularExponent = 16.0;
 
 uniform bool uToonActive;
+uniform bool uAmbient = false;
 
 in vec2 texcoord;
 in vec3 norm;
@@ -79,19 +81,24 @@ out vec4 outColor;
 
 void DirectionalLight()
 {
-	/// Get Data ///
 	vec3 textureColor = texture(uScene, texcoord).rgb;
 	vec3 normal = texture(uNormalMap, texcoord).xyz * 2.0 - 1.0; //Unpack
 	vec3 pos = texture(uPositionMap, texcoord).xyz;
 	float edgeFactor = texture(uEdgeMap, texcoord).r; //Will be zero if there is an edge
-	
+
+	outColor.rgb = LightAmbient;
+
+	if(uAmbient){
+		float AmbientOcclusion = texture(ssao, texcoord).r;
+		//Alpha component is determined by the alpha in the texture
+		outColor.rgb = LightAmbient * AmbientOcclusion;
+	}
+
 	if (length(pos) == 0.0)
 	{
 		discard;
 	}
 	
-	//Alpha component is determined by the alpha in the texture
-	outColor.rgb = LightAmbient;
 
 	float NdotL = dot(normal, LightDirection);
 	float blocky = texture(uStepTexture, vec2(NdotL, 0.5)).r;

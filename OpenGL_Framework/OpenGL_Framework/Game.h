@@ -102,7 +102,6 @@ public:
 	ShaderProgram DeferredLighting;
 	ShaderProgram AniShader;
 	ShaderProgram PointLight;
-	ShaderProgram HundredLight;
 	ShaderProgram ParticleProgram;
 	ShaderProgram AdShader;
 	ShaderProgram GrayScale;
@@ -110,7 +109,8 @@ public:
 	ShaderProgram Negative;
 	ShaderProgram NetShader;
 	ShaderProgram SSAO;
-	ShaderProgram SSAOBlur;
+	ShaderProgram SSAOBlurX;
+	ShaderProgram SSAOBlurY;
 
 	Mesh boxMesh;
 	Texture boxTexture;
@@ -223,8 +223,6 @@ public:
 	FrameBuffer WorkBuffer1;
 	FrameBuffer WorkBuffer2;
 	FrameBuffer HudMap;
-	FrameBuffer SSAOFBO;
-	FrameBuffer SSAOBlurFBO;
 
 	//Transform CameraTransform;
 	//Transform CameraProjection;
@@ -242,6 +240,9 @@ public:
 	std::vector<glm::vec3> ssaoKernel;
 	std::vector<glm::vec3> ssaoNoise;
 	Texture noiseTexture;
+	GLuint ssaoColorBuffer, ssaoColorBufferBlur;	//color buffers
+	GLuint ssaoFBO, ssaoBlurFBO;					//framebuffers
+
 
 	///God Rays Stuff
 	/*FrameBuffer godRaysBuffer1;
@@ -308,6 +309,7 @@ public:
 	bool playHit2 = false;
 
 	bool hundredParticleLight = false;
+	bool useSSAO = true;
 
 	//Player Action Sounds
 	Sound knightWalk;
