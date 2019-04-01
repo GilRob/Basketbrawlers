@@ -3687,43 +3687,6 @@ void Game::drawScene()
 	drawScore();
 	drawTime();
 
-	//Black and white
-	if (grayscale == true)
-	{
-		GrayScale.Bind();
-		GrayScale.SendUniform("uTex", 0);
-
-		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
-		DrawFullScreenQuad();
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-
-		GrayScale.UnBind();
-	}
-	//Sepia
-	if (sepiaActive == true)
-	{
-		Sepia.Bind();
-		Sepia.SendUniform("uTex", 0);
-
-		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
-		DrawFullScreenQuad();
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-
-		Sepia.UnBind();
-	}
-	//negative
-	if (negativeActive == true)
-	{
-		Negative.Bind();
-		Negative.SendUniform("uTex", 0);
-
-		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
-		DrawFullScreenQuad();
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-
-		Negative.UnBind();
-	}
-
 	AniShader.UnBind();
 	GBuffer.UnBind();
 	GBufferPass.UnBind();
