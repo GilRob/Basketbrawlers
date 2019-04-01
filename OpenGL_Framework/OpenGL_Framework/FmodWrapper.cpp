@@ -9,7 +9,7 @@ Zachary Allen February 18, 2019
 - Added the basic FMOD implementation
 John Wang March 1, 2019
 - Added the StopPlaying function
-Gil Robern - March 31, 2019
+Gil Robern - April 1, 2019
 - Combined the functionality from the different tutorials into one wrapper
 - Commented the code
 
