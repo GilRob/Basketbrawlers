@@ -272,6 +272,7 @@ public:
 	bool hornPlaying = false;
 	bool thirtyPlaying = false;
 	bool onePlaying = false;
+	bool fightPlaying = false;
 	//bool knightJump;
 
 	//Sound Effect Action Bools
@@ -280,7 +281,6 @@ public:
 	bool p1Jump1 = false;
 	bool p1Jump2 = false;
 	bool p1Hit = false;
-	//bool isHitSoundPlaying1 = false;
 	bool p1Dash = false;
 	bool p1Attack = false;
 
@@ -289,7 +289,6 @@ public:
 	bool p2Jump1 = false;
 	bool p2Jump2 = false;
 	bool p2Hit = false;
-	//bool isHitSoundPlaying2 = false;
 	bool p2Dash = false;
 	bool p2Attack = false;
 
@@ -310,6 +309,7 @@ public:
 	Sound attack;
 
 	Sound knightUlt;
+	Sound knightUltEnd;
 	Sound ninjaUlt;
 
 	bool soundPitched = false;
@@ -329,6 +329,7 @@ public:
 	Sound gaurdian;
 	Sound oneMin;
 	Sound thirtySec;
+	Sound fight;
 
 	FMOD_VECTOR defaultPos;
 	FMOD_VECTOR p1Pos;

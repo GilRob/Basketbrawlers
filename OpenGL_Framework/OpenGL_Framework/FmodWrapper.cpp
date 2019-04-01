@@ -99,7 +99,7 @@ bool Sound::Load(const char * fileName, bool is3D, bool loop)
 		engine.Init();
 
 		this->is3D = is3D;
-		FMOD_MODE mode = FMOD_DEFAULT;
+		FMOD_MODE mode = FMOD_DEFAULT | FMOD_3D_LINEARROLLOFF;
 		if (is3D) mode = mode | FMOD_3D;
 		else mode = mode | FMOD_2D;
 

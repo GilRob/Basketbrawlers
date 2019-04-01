@@ -1078,6 +1078,7 @@ void Game::initializeGame()
 	gaurdian.Load("./Assets/Media/Gaurdian.wav", true, false);
 	oneMin.Load("./Assets/Media/1Minute.wav", true, false);
 	thirtySec.Load("./Assets/Media/30Seconds.wav", true, false);
+	fight.Load("./Assets/Media/Fight.wav", true, false);
 
 	//Player Action Sounds
 	knightWalk.Load("./Assets/Media/KnightWalk.wav", true, false);
@@ -1089,6 +1090,7 @@ void Game::initializeGame()
 	attack.Load("./Assets/Media/Attack.wav", true, false);
 
 	knightUlt.Load("./Assets/Media/KnightUlt.wav", true, false);
+	knightUltEnd.Load("./Assets/Media/KnightUltEnd.wav", true, false);
 	ninjaUlt.Load("./Assets/Media/NinjaUlt.wav", true, false);
 
 	defaultPos = { 0.0f, 0.0f, 0.0f };
@@ -1107,6 +1109,8 @@ void Game::initializeGame()
 	otherChannel->setPriority(10);
 	knightChannel->setPriority(0);
 	ninjaChannel->setPriority(0);
+
+	Sound::engine.listener.pos = { GameCamera.pos.x, GameCamera.pos.y, 50.0f };
 
 	//Create a pitch shift effect
 	Sound::engine.system->createDSPByType(FMOD_DSP_TYPE_PITCHSHIFT, &pitchShift);
@@ -1709,6 +1713,7 @@ void Game::updateSSS()
 	if ((inputs[6] || inputs2[6]) && !stageDone) {
 		//Play Select Sound
 		selectionChannel = select.Play(defaultPos, defaultPos, false);
+		selectionChannel = fight.Play(defaultPos, defaultPos, false);
 		
 		lastInputTime = 0.0f;
 		inputs[6] = 0;
@@ -2024,24 +2029,36 @@ void Game::updateScene()
 		//Play sound effect
 		if (!knightUltPlaying1)
 		{
-			knightChannel = knightUlt.Play(defaultPos, defaultPos, false);
+			knightChannel = knightUlt.Play(p1Pos, defaultPos, false);
 			knightUltPlaying1 = true;
 		}
 	}
 	else if (players[0]->type == 1 && players[0]->ultMode == false)
-		knightUltPlaying1 = false;
+	{
+		if (knightUltPlaying1)
+		{
+			knightChannel = knightUltEnd.Play(p1Pos, defaultPos, false);
+			knightUltPlaying1 = false;
+		}
+	}
 	///Make the sound effect happen for player 1
 	if (players[1]->type == 1 && players[1]->ultMode)
 	{
 		//Play sound effect
 		if (!knightUltPlaying2)
 		{
-			knightChannel = knightUlt.Play(defaultPos, defaultPos, false);
+			knightChannel = knightUlt.Play(p2Pos, defaultPos, false);
 			knightUltPlaying2 = true;
 		}
 	}
 	else if (players[1]->type == 1 && players[1]->ultMode == false)
-		knightUltPlaying2 = false;
+	{
+		if (knightUltPlaying2)
+		{
+			knightChannel = knightUltEnd.Play(p2Pos, defaultPos, false);
+			knightUltPlaying2 = false;
+		}
+	}
 
 	//nijnaUlt
 	///before, check if u can even ult rn
@@ -2461,7 +2478,7 @@ void Game::updateScene()
 			{
 				if (walkTime >= 0.35f)
 				{
-					ninjaChannel = ninjaWalk.Play(defaultPos, defaultPos, false);
+					ninjaChannel = ninjaWalk.Play(p1Pos, defaultPos, false);
 					walkTime = 0.0f;
 				}
 			}
@@ -2469,7 +2486,7 @@ void Game::updateScene()
 			{
 				if (walkTime >= 0.35f)
 				{
-					knightChannel = knightWalk.Play(defaultPos, defaultPos, false);
+					knightChannel = knightWalk.Play(p1Pos, defaultPos, false);
 					walkTime = 0.0f;
 				}
 			}
@@ -2485,9 +2502,9 @@ void Game::updateScene()
 		if (!p1Run)
 		{
 			if (isNinja1)
-				ninjaChannel = ninjaWalk.Play(defaultPos, defaultPos, false);
+				ninjaChannel = ninjaWalk.Play(p1Pos, defaultPos, false);
 			else
-				knightChannel = knightWalk.Play(defaultPos, defaultPos, false);
+				knightChannel = knightWalk.Play(p1Pos, defaultPos, false);
 			p1Run = true;
 		}
 
@@ -2503,9 +2520,9 @@ void Game::updateScene()
 		if (!p1Jump1)
 		{
 			if (isNinja1)
-				ninjaChannel = ninjaJump.Play(defaultPos, defaultPos, false);
+				ninjaChannel = ninjaJump.Play(p1Pos, defaultPos, false);
 			else
-				knightChannel = knightJump.Play(defaultPos, defaultPos, false);
+				knightChannel = knightJump.Play(p1Pos, defaultPos, false);
 			p1Jump1 = true;
 		}
 	}
@@ -2515,9 +2532,9 @@ void Game::updateScene()
 		if (!p1Jump2)
 		{
 			if (isNinja1)
-				ninjaChannel = ninjaJump.Play(defaultPos, defaultPos, false);
+				ninjaChannel = ninjaJump.Play(p1Pos, defaultPos, false);
 			else
-				knightChannel = knightJump.Play(defaultPos, defaultPos, false);
+				knightChannel = knightJump.Play(p1Pos, defaultPos, false);
 			p1Jump2 = true;
 		}
 	}
@@ -2530,9 +2547,9 @@ void Game::updateScene()
 		if (!p1Hit)
 		{
 			if (isNinja1)
-				ninjaChannel = hit.Play(defaultPos, defaultPos, false);
+				ninjaChannel = hit.Play(p1Pos, defaultPos, false);
 			else
-				knightChannel = hit.Play(defaultPos, defaultPos, false);
+				knightChannel = hit.Play(p1Pos, defaultPos, false);
 			
 			p1Hit = true;
 			playHit1 = false;
@@ -2550,9 +2567,9 @@ void Game::updateScene()
 		if (!p1Dash)
 		{
 			if (isNinja1)
-				ninjaChannel = dash.Play(defaultPos, defaultPos, false);
+				ninjaChannel = dash.Play(p1Pos, defaultPos, false);
 			else
-				knightChannel = dash.Play(defaultPos, defaultPos, false);
+				knightChannel = dash.Play(p1Pos, defaultPos, false);
 			p1Dash = true;
 		}
 	}
@@ -2565,11 +2582,11 @@ void Game::updateScene()
 		{
 			if (isNinja1)
 			{
-				ninjaChannel = attack.Play(defaultPos, defaultPos, false);
+				ninjaChannel = attack.Play(p1Pos, defaultPos, false);
 			}
 			else
 			{
-				knightChannel = attack.Play(defaultPos, defaultPos, false);
+				knightChannel = attack.Play(p1Pos, defaultPos, false);
 			}
 			p1Attack = true;
 		}
@@ -2622,7 +2639,7 @@ void Game::updateScene()
 			{
 				if (walkTime >= 0.35f)
 				{
-					ninjaChannel = ninjaWalk.Play(defaultPos, defaultPos, false);
+					ninjaChannel = ninjaWalk.Play(p2Pos, defaultPos, false);
 					walkTime = 0.0f;
 				}
 			}
@@ -2630,7 +2647,7 @@ void Game::updateScene()
 			{
 				if (walkTime >= 0.35f)
 				{
-					knightChannel = knightWalk.Play(defaultPos, defaultPos, false);
+					knightChannel = knightWalk.Play(p2Pos, defaultPos, false);
 					walkTime = 0.0f;
 				}
 			}
@@ -2647,11 +2664,11 @@ void Game::updateScene()
 		{
 			if (isNinja2)
 			{
-				ninjaChannel = ninjaWalk.Play(defaultPos, defaultPos, false);
+				ninjaChannel = ninjaWalk.Play(p2Pos, defaultPos, false);
 			}
 			else
 			{
-				knightChannel = knightWalk.Play(defaultPos, defaultPos, false);
+				knightChannel = knightWalk.Play(p2Pos, defaultPos, false);
 			}
 			p2Run = true;
 		}
@@ -2668,9 +2685,9 @@ void Game::updateScene()
 		if (!p2Jump1)
 		{
 			if (isNinja2)
-				ninjaChannel = ninjaJump.Play(defaultPos, defaultPos, false);
+				ninjaChannel = ninjaJump.Play(p2Pos, defaultPos, false);
 			else
-				knightChannel = knightJump.Play(defaultPos, defaultPos, false);
+				knightChannel = knightJump.Play(p2Pos, defaultPos, false);
 			p2Jump1 = true;
 		}
 	}
@@ -2680,9 +2697,9 @@ void Game::updateScene()
 		if (!p2Jump2)
 		{
 			if (isNinja2)
-				ninjaChannel = ninjaJump.Play(defaultPos, defaultPos, false);
+				ninjaChannel = ninjaJump.Play(p2Pos, defaultPos, false);
 			else
-				knightChannel = knightJump.Play(defaultPos, defaultPos, false);
+				knightChannel = knightJump.Play(p2Pos, defaultPos, false);
 			p2Jump2 = true;
 		}
 	}
@@ -2695,9 +2712,9 @@ void Game::updateScene()
 		if (!p2Hit)
 		{
 			if (isNinja2)
-				ninjaChannel = hit.Play(defaultPos, defaultPos, false);
+				ninjaChannel = hit.Play(p2Pos, defaultPos, false);
 			else
-				knightChannel = hit.Play(defaultPos, defaultPos, false);
+				knightChannel = hit.Play(p2Pos, defaultPos, false);
 			p2Hit = true;
 			playHit2 = false;
 		}
@@ -2714,9 +2731,9 @@ void Game::updateScene()
 		if (!p2Dash)
 		{
 			if (isNinja2)
-				ninjaChannel = dash.Play(defaultPos, defaultPos, false);
+				ninjaChannel = dash.Play(p2Pos, defaultPos, false);
 			else
-				knightChannel = dash.Play(defaultPos, defaultPos, false);
+				knightChannel = dash.Play(p2Pos, defaultPos, false);
 			p2Dash = true;
 		}
 	}
@@ -2729,11 +2746,11 @@ void Game::updateScene()
 		{
 			if (isNinja2)
 			{
-				ninjaChannel = attack.Play(defaultPos, defaultPos, false);
+				ninjaChannel = attack.Play(p2Pos, defaultPos, false);
 			}
 			else
 			{
-				knightChannel = attack.Play(defaultPos, defaultPos, false);
+				knightChannel = attack.Play(p2Pos, defaultPos, false);
 			}
 			p2Attack = true;
 		}
@@ -2783,7 +2800,7 @@ void Game::updateScene()
 	}
 
 	//Announcer voice effects for times
-	if (TotalGameTime >= 60.0f)
+	if (TotalGameTime >= 240.0f)
 	{
 		if (!onePlaying)
 		{
@@ -2793,7 +2810,7 @@ void Game::updateScene()
 			onePlaying = true;
 		}
 	}
-	if (TotalGameTime >= 30.0f)
+	if (TotalGameTime >= 270.0f)
 	{
 		if (!thirtyPlaying)
 		{
@@ -3670,6 +3687,43 @@ void Game::drawScene()
 	drawScore();
 	drawTime();
 
+	//Black and white
+	if (grayscale == true)
+	{
+		GrayScale.Bind();
+		GrayScale.SendUniform("uTex", 0);
+
+		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+		GrayScale.UnBind();
+	}
+	//Sepia
+	if (sepiaActive == true)
+	{
+		Sepia.Bind();
+		Sepia.SendUniform("uTex", 0);
+
+		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+		Sepia.UnBind();
+	}
+	//negative
+	if (negativeActive == true)
+	{
+		Negative.Bind();
+		Negative.SendUniform("uTex", 0);
+
+		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+		Negative.UnBind();
+	}
+
 	AniShader.UnBind();
 	GBuffer.UnBind();
 	GBufferPass.UnBind();
@@ -3827,43 +3881,6 @@ void Game::drawScene()
 	DeferredLighting.UnBind();
 
 	drawHUD();
-
-	//Black and white
-	if (grayscale == true)
-	{
-		GrayScale.Bind();
-		GrayScale.SendUniform("uTex", 0);
-
-		glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
-		DrawFullScreenQuad();
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-
-		GrayScale.UnBind();
-	}
-	//Sepia
-	if (sepiaActive == true)
-	{
-		Sepia.Bind();
-		Sepia.SendUniform("uTex", 0);
-
-		glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
-		DrawFullScreenQuad();
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-
-		Sepia.UnBind();
-	}
-	//negative
-	if (negativeActive == true)
-	{
-		Negative.Bind();
-		Negative.SendUniform("uTex", 0);
-
-		glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
-		DrawFullScreenQuad();
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-
-		Negative.UnBind();
-	}
 
 	/// Compute High Pass ///
 
