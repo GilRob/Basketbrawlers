@@ -1043,26 +1043,26 @@ void Game::initializeGame()
 	}
 	//================================================================//
 	//ssao
-	if (FULLSCREEN)
-		SSAOFBO.InitColorTexture(0, FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RED, GL_NEAREST, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
-	else
-		SSAOFBO.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RED, GL_NEAREST, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
-	if (!SSAOFBO.CheckFBO())
-	{
-		std::cout << "WB2 FBO failed to initialize.\n";
-		system("pause");
-		exit(0);
-	}
-	if (FULLSCREEN)
-		SSAOBlurFBO.InitColorTexture(0, FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RED, GL_NEAREST, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
-	else
-		SSAOBlurFBO.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RED, GL_NEAREST, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
-	if (!SSAOBlurFBO.CheckFBO())
-	{
-		std::cout << "WB2 FBO failed to initialize.\n";
-		system("pause");
-		exit(0);
-	}
+	//if (FULLSCREEN)
+	//	SSAOFBO.InitColorTexture(0, FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RED, GL_NEAREST, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	//else
+	//	SSAOFBO.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RED, GL_NEAREST, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	//if (!SSAOFBO.CheckFBO())
+	//{
+	//	std::cout << "SSAOFBO FBO failed to initialize.\n";
+	//	system("pause");
+	//	exit(0);
+	//}
+	//if (FULLSCREEN)
+	//	SSAOBlurFBO.InitColorTexture(0, FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RED, GL_NEAREST, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	//else
+	//	SSAOBlurFBO.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RED, GL_NEAREST, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
+	//if (!SSAOBlurFBO.CheckFBO())
+	//{
+	//	std::cout << "SSAOBlurFBO FBO failed to initialize.\n";
+	//	system("pause");
+	//	exit(0);
+	//}
 
 	// generate sample kernel
 	std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0); // generates random floats between 0.0 and 1.0
@@ -1072,7 +1072,7 @@ void Game::initializeGame()
 		glm::vec3 sample(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator));
 		sample = glm::normalize(sample);
 		sample *= randomFloats(generator);
-		float scale = float(i) / 64.0;
+		float scale = float(i) / 64.0f;
 
 		// scale samples s.t. they're more aligned to center of kernel
 		scale = lerp(0.1f, 1.0f, scale * scale);
@@ -3566,17 +3566,6 @@ void Game::drawScene()
 
 	//MAKE SURE TO KNOW WHAT VIEWSPACE YOU ARE WORKING IN
 	GBufferPass.SendUniform("uTex", 0);
-	//GBufferPass.SendUniform("uShadowMap", 1);
-	//StaticGeometry.SendUniform("LightPosition", CameraTransform.GetInverse() * vec4(4.0f, 0.0f, 0.0f, 1.0f));
-	//Is .GetUp() the replacement for .GetRotationMat()?***
-	/*GBufferPass.SendUniform("LightDirection", CameraTransform.GetInverse().GetUp() * ShadowTransform.GetForward());//vec4(ShadowTransform.GetForward(), 0.0f));
-	GBufferPass.SendUniform("LightAmbient", vec3(0.333f, 0.333f, 0.333f)); //You can LERP through colours to make night to day cycles
-	GBufferPass.SendUniform("LightDiffuse", vec3(0.8f, 0.8f, 0.8f));
-	GBufferPass.SendUniform("LightSpecular", vec3(0.1f, 0.1f, 0.1f));
-	GBufferPass.SendUniform("LightSpecularExponent", 200.0f);
-	StaticGeometry.SendUniform("Attenuation_Constant", 1.0f);
-	StaticGeometry.SendUniform("Attenuation_Linear", 0.1f);
-	StaticGeometry.SendUniform("Attenuation_Quadratic", 0.01f);*/
 
 	GBuffer.Bind();
 
@@ -3649,8 +3638,6 @@ void Game::drawScene()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
-
-
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
@@ -3720,42 +3707,7 @@ void Game::drawScene()
 
 	drawScore();
 	drawTime();
-	//Black and white
-	if (grayscale == true)
-	{
-		GrayScale.Bind();
-		GrayScale.SendUniform("uTex", 0);
 
-		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
-		DrawFullScreenQuad();
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-
-		GrayScale.UnBind();
-	}
-	//Sepia
-	if (sepiaActive == true)
-	{
-		Sepia.Bind();
-		Sepia.SendUniform("uTex", 0);
-
-		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
-		DrawFullScreenQuad();
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-
-		Sepia.UnBind();
-	}
-	//negativ
-	if (negativeActive == true)
-	{
-		Negative.Bind();
-		Negative.SendUniform("uTex", 0);
-
-		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
-		DrawFullScreenQuad();
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-
-		Negative.UnBind();
-	}
 	AniShader.UnBind();
 	GBuffer.UnBind();
 	GBufferPass.UnBind();
@@ -3833,50 +3785,18 @@ void Game::drawScene()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 
+	PointLight.Bind();
+	PointLight.SendUniform("uSceneAlbedo", 0);
+	PointLight.SendUniform("uNormalMap", 2);
+	PointLight.SendUniform("uPositionMap", 3);
 
-	if (hundredParticleLight) {
-
-		HundredLight.Bind();
-		HundredLight.SendUniform("uSceneAlbedo", 0);
-		HundredLight.SendUniform("uNormalMap", 2);
-		HundredLight.SendUniform("uPositionMap", 3);
-
-
-		for (int i = 0; i < (int)pointLights.size(); i++) {
-			if (pointLights[i]->active == true) {
-				pointLights[i]->drawHundred(HundredLight, GameCamera.CameraTransform, i);
-
-				// update attenuation parameters and calculate radius
-				float constant = 1.0f;
-				float linear = 0.7f;
-				float quadratic = 1.8f;
-
-				// then calculate radius of light volume/sphere
-				const float maxBrightness = std::fmaxf(std::fmaxf(pointLights[i]->color.r, pointLights[i]->color.g), pointLights[i]->color.b);
-				float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
-				HundredLight.SendUniform("lights[" + std::to_string(i) + "].Radius", radius);
-			}
+	for (int i = 0; i < (int)pointLights.size(); i++) {
+		if (pointLights[i]->active == true) {
+			pointLights[i]->draw(PointLight, GameCamera.CameraTransform);
+			DrawFullScreenQuad();
 		}
-		DrawFullScreenQuad();								//only once
-		HundredLight.UnBind();
-
 	}
-	else {
-
-		PointLight.Bind();
-		PointLight.SendUniform("uSceneAlbedo", 0);
-		PointLight.SendUniform("uNormalMap", 2);
-		PointLight.SendUniform("uPositionMap", 3);
-
-		for (int i = 0; i < (int)pointLights.size(); i++) {
-			if (pointLights[i]->active == true) {
-				pointLights[i]->draw(PointLight, GameCamera.CameraTransform);
-				DrawFullScreenQuad();
-			}
-		}
-		PointLight.UnBind();
-
-	}
+	PointLight.UnBind();
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_BLEND);
@@ -3946,6 +3866,50 @@ void Game::drawScene()
 
 	drawHUD();
 
+
+	//===============================================================
+	//ssao starts here:
+
+
+
+	//===============================================================
+
+		//Black and white
+	if (grayscale == true)
+	{
+		GrayScale.Bind();
+		GrayScale.SendUniform("uTex", 0);
+
+		glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+		GrayScale.UnBind();
+	}
+	//Sepia
+	if (sepiaActive == true)
+	{
+		Sepia.Bind();
+		Sepia.SendUniform("uTex", 0);
+
+		glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+		Sepia.UnBind();
+	}
+	//negativ
+	if (negativeActive == true)
+	{
+		Negative.Bind();
+		Negative.SendUniform("uTex", 0);
+
+		glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
+		DrawFullScreenQuad();
+		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+		Negative.UnBind();
+	}
 	/// Compute High Pass ///
 
 	BloomHighPass.Bind();
@@ -4053,6 +4017,7 @@ void Game::drawScene()
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
 	BloomComposite.UnBind();
+
 
 
 	glutSwapBuffers();
@@ -4249,7 +4214,6 @@ void Game::drawCSS()
 	glutSwapBuffers();
 }
 
-
 void Game::drawSSS()
 {
 	/// Clear Buffers ///
@@ -4287,7 +4251,7 @@ void Game::drawSSS()
 	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
 
 	DeferredComposite.Bind();
-
+		
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
@@ -4308,6 +4272,7 @@ void Game::drawSSS()
 
 	DeferredComposite.UnBind();
 	DeferredLighting.UnBind();
+
 
 	//===============================================================
 		//DeferredComposite.Bind();
@@ -4360,15 +4325,13 @@ void Game::drawSSS()
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
-
-
-	//===============================================================
+	
 
 	BloomHighPass.Bind();
 	BloomHighPass.SendUniform("bloomOn", false);
 	BloomHighPass.UnBind();
 
-		/// Compute High Pass ///
+	/// Compute High Pass ///
 	if (FULLSCREEN)
 		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
 	else
@@ -4437,14 +4400,6 @@ void Game::drawSSS()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	BloomComposite.UnBind();
-
-	//===============================================================
-	//ssao starts here:
-
-
-
-
-
 
 
 	glutSwapBuffers();
@@ -4986,8 +4941,6 @@ void Game::drawTime()
 	GBufferPass.UnBind();
 	GBuffer.UnBind();
 }
-
-
 
 void Game::keyboardDown(unsigned char key, int mouseX, int mouseY)
 {

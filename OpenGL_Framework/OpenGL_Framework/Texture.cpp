@@ -49,7 +49,6 @@ bool Texture::Load(const std::string &file)
 //ONLY USE THIS FOR SSAO, LOTS OF HARDCODE
 bool Texture::Load(std::vector<glm::vec3> &texture)
 {
-
 	_Target = GL_TEXTURE_2D;
 	_InternalFormat = GL_RGB32F;
 

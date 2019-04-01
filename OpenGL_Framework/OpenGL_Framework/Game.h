@@ -238,6 +238,11 @@ public:
 
 	Transform ViewToShadowMap;
 
+	//ssao stuff
+	std::vector<glm::vec3> ssaoKernel;
+	std::vector<glm::vec3> ssaoNoise;
+	Texture noiseTexture;
+
 	///God Rays Stuff
 	/*FrameBuffer godRaysBuffer1;
 	FrameBuffer godRaysBuffer2;
