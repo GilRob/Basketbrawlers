@@ -101,6 +101,7 @@ public:
 	ShaderProgram DeferredLighting;
 	ShaderProgram AniShader;
 	ShaderProgram PointLight;
+	ShaderProgram HundredLight;
 	ShaderProgram ParticleProgram;
 	ShaderProgram AdShader;
 	ShaderProgram GrayScale;
@@ -295,6 +296,8 @@ public:
 
 	bool playHit1 = false;
 	bool playHit2 = false;
+
+	bool hundredParticleLight = false;
 
 	//Player Action Sounds
 	Sound knightWalk;

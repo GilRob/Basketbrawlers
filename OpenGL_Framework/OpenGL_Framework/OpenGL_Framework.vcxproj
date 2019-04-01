@@ -138,6 +138,7 @@
     <None Include="Assets\Shaders\Sepia.frag" />
     <None Include="Assets\Shaders\StaticGeometry.vert" />
     <None Include="Assets\Shaders\Toon\Sobel.frag" />
+    <None Include="HundredPoints.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

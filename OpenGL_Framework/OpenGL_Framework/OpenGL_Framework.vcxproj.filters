@@ -219,5 +219,8 @@
     <None Include="Assets\Shaders\Sepia.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="HundredPoints.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

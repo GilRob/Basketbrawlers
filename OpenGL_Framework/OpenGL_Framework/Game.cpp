@@ -33,6 +33,7 @@ Game::~Game()
 	AniShader.UnLoad();
 	HudShader.UnLoad();
 	PointLight.UnLoad();
+	HundredLight.UnLoad();
 	ParticleProgram.UnLoad();
 	boxMesh.Unload();
 	boxTexture.Unload();
@@ -557,6 +558,12 @@ void Game::initializeGame()
 	if (!PointLight.Load("./Assets/Shaders/PassThroughLight.vert", "./Assets/Shaders/PointLight.frag"))
 	{
 		std::cout << "SL Shaders failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
+	if (!HundredLight.Load("./Assets/Shaders/PassThroughLight.vert", "./Assets/Shaders/HundredPoints.frag"))
+	{
+		std::cout << "SL100 Shaders failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
@@ -3759,18 +3766,47 @@ void Game::drawScene()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 
-	PointLight.Bind();
-	PointLight.SendUniform("uSceneAlbedo", 0);
-	PointLight.SendUniform("uNormalMap", 2);
-	PointLight.SendUniform("uPositionMap", 3);
+	if (hundredParticleLight) {
+		HundredLight.Bind();
+		HundredLight.SendUniform("uSceneAlbedo", 0);
+		HundredLight.SendUniform("uNormalMap", 2);
+		HundredLight.SendUniform("uPositionMap", 3);
 
-	for (int i = 0; i < (int)pointLights.size(); i++) {
-		if (pointLights[i]->active == true) {
-			pointLights[i]->draw(PointLight, GameCamera.CameraTransform);
-			DrawFullScreenQuad();
+
+		for (int i = 0; i < (int)pointLights.size(); i++) {
+			if (pointLights[i]->active == true) {
+				pointLights[i]->drawHundred(PointLight, GameCamera.CameraTransform, i);
+
+				// update attenuation parameters and calculate radius
+				float constant = 1.0f;
+				float linear = 0.7f;
+				float quadratic = 1.8f;
+
+				// then calculate radius of light volume/sphere
+				const float maxBrightness = std::fmaxf(std::fmaxf(pointLights[i]->color.r, pointLights[i]->color.g), pointLights[i]->color.b);
+				float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
+				HundredLight.SendUniform("lights[" + std::to_string(i) + "].Radius", radius);
+			}
 		}
+		DrawFullScreenQuad();								//only once =D
+		HundredLight.UnBind();
+
 	}
-	PointLight.UnBind();
+	else {
+		PointLight.Bind();
+		PointLight.SendUniform("uSceneAlbedo", 0);
+		PointLight.SendUniform("uNormalMap", 2);
+		PointLight.SendUniform("uPositionMap", 3);
+
+		for (int i = 0; i < (int)pointLights.size(); i++) {
+			if (pointLights[i]->active == true) {
+				pointLights[i]->draw(PointLight, GameCamera.CameraTransform);
+				DrawFullScreenQuad();
+			}
+		}
+		PointLight.UnBind();
+
+	}
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_BLEND);
@@ -4921,6 +4957,16 @@ void Game::keyboardDown(unsigned char key, int mouseX, int mouseY)
 	case '/': //b
 		//inputs2[5] = true;
 		break;
+	case 'h': //h
+		if (hundredParticleLight) {
+			hundredParticleLight = false;
+		}
+		else {
+			hundredParticleLight = true;
+		}
+		PointLight.ReloadShader();
+		HundredLight.ReloadShader();
+
 	}
 }
 
@@ -5093,6 +5139,7 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		//AdShader.ReloadShader();
 		//BloomHighPass.ReloadShader();
 		PointLight.ReloadShader();
+		HundredLight.ReloadShader();
 		//NetShader.ReloadShader();
 		//DeferredLighting.ReloadShader();
 		std::cout << "Reloaded Shaders\n";

@@ -12,8 +12,6 @@ uniform float uLightSpecularExponent = 16.0;
 
 
 in vec2 texcoord;
-//in vec3 norm;
-//in vec3 pos;
 
 out vec4 outColor;
 

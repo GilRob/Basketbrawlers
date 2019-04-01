@@ -19,6 +19,7 @@ public:
 
 
 	virtual void draw(ShaderProgram shader, Transform CameraTransform);
+	virtual void drawHundred(ShaderProgram shader, Transform CameraTransform, int number);
 
 	glm::vec3 getPosition();
 	void setPosition(glm::vec3 pos);
@@ -27,10 +28,10 @@ public:
 
 	bool active;
 	std::string name;
-
-protected:
 	glm::vec3 position;
 	glm::vec3 color;
+
+protected:
 	Object* parent;
 private:
 };
