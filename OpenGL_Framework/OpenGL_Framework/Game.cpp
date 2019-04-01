@@ -1088,6 +1088,9 @@ void Game::initializeGame()
 	dash.Load("./Assets/Media/Dash.wav", true, false);
 	attack.Load("./Assets/Media/Attack.wav", true, false);
 
+	knightUlt.Load("./Assets/Media/KnightUlt.wav", true, false);
+	ninjaUlt.Load("./Assets/Media/NinjaUlt.wav", true, false);
+
 	defaultPos = { 0.0f, 0.0f, 0.0f };
 	p1Pos = { 0.0f, 0.0f, 0.0f };
 	p2Pos = { 0.0f, 0.0f, 0.0f };
@@ -2014,6 +2017,32 @@ void Game::updateScene()
 	players[0]->update((int)deltaTime, inputs);
 	players[1]->update((int)deltaTime, inputs2);
 	
+	//knightUlt
+	///Make the sound effect happen for player 1
+	if (players[0]->type == 1 && players[0]->ultMode)
+	{
+		//Play sound effect
+		if (!knightUltPlaying1)
+		{
+			knightChannel = knightUlt.Play(defaultPos, defaultPos, false);
+			knightUltPlaying1 = true;
+		}
+	}
+	else if (players[0]->type == 1 && players[0]->ultMode == false)
+		knightUltPlaying1 = false;
+	///Make the sound effect happen for player 1
+	if (players[1]->type == 1 && players[1]->ultMode)
+	{
+		//Play sound effect
+		if (!knightUltPlaying2)
+		{
+			knightChannel = knightUlt.Play(defaultPos, defaultPos, false);
+			knightUltPlaying2 = true;
+		}
+	}
+	else if (players[1]->type == 1 && players[1]->ultMode == false)
+		knightUltPlaying2 = false;
+
 	//nijnaUlt
 	///before, check if u can even ult rn
 	bool okToUlt = true;
@@ -2031,6 +2060,16 @@ void Game::updateScene()
 		}
 		//actual ult here
 		else if (players[i]->type == 2 && players[i]->ultMode) {
+
+			//Play sound effect
+			if (!ninjaUltPlaying)
+			{
+				ninjaChannel->setVolume(2.0f);
+				ninjaChannel = ninjaUlt.Play(defaultPos, defaultPos, false);
+				ninjaChannel->setVolume(1.0f);
+				ninjaUltPlaying = true;
+			}
+
 			//swap positions
 			glm::vec3 temp = players[i]->getPosition();
 			players[i]->setPosition(players[(i + 1) % 2]->getPosition());
@@ -2066,7 +2105,9 @@ void Game::updateScene()
 				players[i]->action = players[i]->ACTION_FALL;
 			if (players[(i + 1) % 2]->action == players[(i + 1) % 2]->ACTION_HIT)
 				players[(i + 1) % 2]->action = players[(i + 1) % 2]->ACTION_FALL;
-			
+
+			//Set bool to false so the sound effect can play again later
+			ninjaUltPlaying = false;
 		}
 	}
 	
@@ -2742,23 +2783,23 @@ void Game::updateScene()
 	}
 
 	//Announcer voice effects for times
-	if (TotalGameTime >= 240.0f)
+	if (TotalGameTime >= 60.0f)
 	{
 		if (!onePlaying)
 		{
 			otherChannel->setVolume(3.0f);
 			otherChannel = oneMin.Play(defaultPos, defaultPos, false);
-			otherChannel->setVolume(1.0f);
+			//otherChannel->setVolume(1.0f);
 			onePlaying = true;
 		}
 	}
-	if (TotalGameTime >= 270.0f)
+	if (TotalGameTime >= 30.0f)
 	{
 		if (!thirtyPlaying)
 		{
 			otherChannel->setVolume(3.0f);
 			otherChannel = thirtySec.Play(defaultPos, defaultPos, false);
-			otherChannel->setVolume(1.0f);
+			//otherChannel->setVolume(1.0f);
 			thirtyPlaying = true;
 		}
 	}
@@ -5451,7 +5492,7 @@ void Game::loadTime() {
 }
 
 //clears all particles
-/*void Game::clearParticles()
+void Game::clearParticles()
 {
 	ConfettiEffectBlueLeft.Clear();
 	ConfettiEffectBlueRight.Clear();
@@ -5464,7 +5505,7 @@ void Game::loadTime() {
 	NinjaPetals.Clear();
 	NinjaPetals.Clear();
 
-}*/
+}
 
 void Game::sortObjects(unsigned int scene) {
 	if (scene == 3) {

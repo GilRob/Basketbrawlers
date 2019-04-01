@@ -280,7 +280,7 @@ public:
 	bool p1Jump1 = false;
 	bool p1Jump2 = false;
 	bool p1Hit = false;
-	bool isHitSoundPlaying1 = false;
+	//bool isHitSoundPlaying1 = false;
 	bool p1Dash = false;
 	bool p1Attack = false;
 
@@ -289,12 +289,16 @@ public:
 	bool p2Jump1 = false;
 	bool p2Jump2 = false;
 	bool p2Hit = false;
-	bool isHitSoundPlaying2 = false;
+	//bool isHitSoundPlaying2 = false;
 	bool p2Dash = false;
 	bool p2Attack = false;
 
 	bool playHit1 = false;
 	bool playHit2 = false;
+
+	bool knightUltPlaying1 = false;
+	bool knightUltPlaying2 = false;
+	bool ninjaUltPlaying = false;
 
 	//Player Action Sounds
 	Sound knightWalk;
@@ -304,6 +308,9 @@ public:
 	Sound hit;
 	Sound dash;
 	Sound attack;
+
+	Sound knightUlt;
+	Sound ninjaUlt;
 
 	bool soundPitched = false;
 	bool soundNormalized = true;
