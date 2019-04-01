@@ -9,7 +9,7 @@ Zachary Allen February 18, 2019
 - Added the basic FMOD implementation
 John Wang March 1, 2019
 - Added the StopPlaying function
-Gil Robern - March 31, 2019
+Gil Robern - April 1, 2019
 - Combined the functionality from the different tutorials into one wrapper
 - Commented the code
 
@@ -29,7 +29,7 @@ void FmodErrorCheck(FMOD_RESULT result)
 		system("pause");
 	}
 }
-
+//Deconstructor
 SoundEngine::~SoundEngine()
 {
 	if (init)
@@ -41,7 +41,7 @@ SoundEngine::~SoundEngine()
 		init = false;
 	}
 }
-
+//Update the sound engine
 void SoundEngine::update()
 {
 	//update the listener
@@ -91,7 +91,7 @@ Sound::~Sound()
 		FmodErrorCheck(result);
 	}
 }
-
+//Load the sound file
 bool Sound::Load(const char * fileName, bool is3D, bool loop)
 {
 	if (!init)
@@ -99,13 +99,14 @@ bool Sound::Load(const char * fileName, bool is3D, bool loop)
 		engine.Init();
 
 		this->is3D = is3D;
-		FMOD_MODE mode = FMOD_DEFAULT;
+		FMOD_MODE mode = FMOD_DEFAULT | FMOD_3D_LINEARROLLOFF;
 		if (is3D) mode = mode | FMOD_3D;
 		else mode = mode | FMOD_2D;
 
 		if (loop) mode = mode | FMOD_LOOP_NORMAL;
 		else mode = mode | FMOD_LOOP_OFF;
 
+		//Create the sound using the file given
 		result = engine.system->createSound(fileName, mode, 0, &soundData);
 		FmodErrorCheck(result);
 		if (result != FMOD_OK) return false;
@@ -125,11 +126,13 @@ bool Sound::Load(const char * fileName, bool is3D, bool loop)
 
 FMOD::Channel* Sound::Play(FMOD_VECTOR startPos, FMOD_VECTOR startVel, bool loop)
 {
+	//Check if the sound has been initialized
 	if (init)
 	{
 		result = engine.system->playSound(soundData, 0, true, &channel); //changing channel example
 		FmodErrorCheck(result);
 
+		//Check if the sound is 3D
 		if (is3D)
 		{
 			result = channel->set3DAttributes(&startPos, &startVel);
@@ -219,7 +222,7 @@ void ReverbManager::AddNode(FMOD_VECTOR pos, float min, float max, FMOD_REVERB_P
 
 	nodes.push_back(tempData);
 }
-
+//Clear all the reverb nodes
 void ReverbManager::Clear()
 {
 	for (unsigned int i = 0; i < nodes.size(); i++)

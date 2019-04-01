@@ -480,7 +480,7 @@ Transform Ninja::sAttack()
 	if (interuptable == true && action != ACTION_SIDE_ATTACK) {
 		interuptable = false;
 		action = ACTION_SIDE_ATTACK;
-		activeFrames = 22;
+		activeFrames = 33;
 		currentFrame = 1;
 		aniTimer = 0;
 		index = 0;
@@ -729,7 +729,7 @@ Transform Ninja::dAir()
 			float _kb = 5.5f + (6.55f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			//create hitbox
 			Hitbox *newAtk = new Hitbox(
-				glm::vec3((-0.5f + (int)facingRight)*0.1f, 1.1f, 0.1f), // starting position offset from player
+				glm::vec3((-0.5f + (int)facingRight)*1.1f, 1.1f, 0.1f), // starting position offset from player
 				2.7f, _kb, 55, 45, 0,									// size, knockback, angle(degrees), hitbox life in frames, 0
 				glm::vec3(0, 0, 0)// velocity ((-0.5f + (int)facingRight) gives you 0.5 if your facing right, and -0.5 if your facing left)
 																		// allowing you to make it move the way your facing

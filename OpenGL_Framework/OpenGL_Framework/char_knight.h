@@ -128,7 +128,7 @@ public:
 
 		if (ultMode) {
 			//drain and stop mode
-				comboMeter -= 0.5f;
+				comboMeter -= 0.3f;
 			if (comboMeter <= 0)
 				ultMode = false;
 
