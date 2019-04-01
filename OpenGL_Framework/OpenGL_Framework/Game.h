@@ -108,6 +108,8 @@ public:
 	ShaderProgram Sepia;
 	ShaderProgram Negative;
 	ShaderProgram NetShader;
+	ShaderProgram SSAO;
+	ShaderProgram SSAOBlur;
 
 	Mesh boxMesh;
 	Texture boxTexture;
