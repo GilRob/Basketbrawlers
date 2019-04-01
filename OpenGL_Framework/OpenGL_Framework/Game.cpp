@@ -3766,7 +3766,9 @@ void Game::drawScene()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 
+
 	if (hundredParticleLight) {
+
 		HundredLight.Bind();
 		HundredLight.SendUniform("uSceneAlbedo", 0);
 		HundredLight.SendUniform("uNormalMap", 2);
@@ -3775,7 +3777,7 @@ void Game::drawScene()
 
 		for (int i = 0; i < (int)pointLights.size(); i++) {
 			if (pointLights[i]->active == true) {
-				pointLights[i]->drawHundred(PointLight, GameCamera.CameraTransform, i);
+				pointLights[i]->drawHundred(HundredLight, GameCamera.CameraTransform, i);
 
 				// update attenuation parameters and calculate radius
 				float constant = 1.0f;
@@ -3788,11 +3790,12 @@ void Game::drawScene()
 				HundredLight.SendUniform("lights[" + std::to_string(i) + "].Radius", radius);
 			}
 		}
-		DrawFullScreenQuad();								//only once =D
+		DrawFullScreenQuad();								//only once
 		HundredLight.UnBind();
 
 	}
 	else {
+
 		PointLight.Bind();
 		PointLight.SendUniform("uSceneAlbedo", 0);
 		PointLight.SendUniform("uNormalMap", 2);

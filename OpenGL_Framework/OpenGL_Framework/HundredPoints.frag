@@ -1,7 +1,6 @@
-#version 330
+#version 420
 
 uniform sampler2D uSceneAlbedo;
-//uniform sampler2D uShadowMap;
 uniform sampler2D uNormalMap;
 uniform sampler2D uPositionMap;
 
@@ -10,11 +9,10 @@ struct Light{
 	vec3 Color;
 	float Radius;
 };
+
 const int NUM_LIGHTS = 100;
 uniform Light lights[NUM_LIGHTS];
-
-uniform float uLightSpecularExponent = 16.0;
-
+uniform vec3 viewPos;
 
 in vec2 texcoord;
 
@@ -22,50 +20,36 @@ out vec4 outColor;
 
 void main()
 {
-	vec3 textureColor = texture(uSceneAlbedo, texcoord).rgb;
-	vec3 normal = texture(uNormalMap, texcoord).xyz * 2.0 - 1.0; //Unpack
-	vec3 pos = texture(uPositionMap, texcoord).xyz;
-	
-	outColor.rgb = vec3(0.0);
-	outColor.a = 0.5;
+	vec3 Diffuse = texture(uSceneAlbedo, texcoord).rgb;
+	vec3 Normal = texture(uNormalMap, texcoord).xyz * 2.0 - 1.0; //Unpack
+	vec3 FragPos = texture(uPositionMap, texcoord).xyz;
+	float Specular = texture(uSceneAlbedo, texcoord).a;
+
+	vec3 lighting = Diffuse*0.1;//ambient calculation
+	vec3 viewDir = normalize(viewPos - FragPos);
+
+	float linear = 0.7f;
+	float quadratic = 1.8f;
+
 	for(int i = 0; i < NUM_LIGHTS; i++){
-							
-		// Fix length after rasterizer interpolates
-		//vec3 normal = normalize(norm);
-		vec3 lightVec = lights[i].Position - pos;
-		float dist = length(lightVec);
+        // calculate distance between light source and current fragment
+        float distance = length(lights[i].Position - FragPos);
 
-		if(dist < lights[i].Radius)
-		{
-			float dist = length(lightVec);
-			vec3 lightDir = lightVec / dist;
-
-			float NdotL = dot(normal, lightDir);
-
-			// If the normal is facing the light
-			if (NdotL > 0.0)
-			{
-				// Normalized vector pointing towards the camera
-				vec3 eye = normalize(-pos);
-				
-				// Calculate attenuation (falloff)
-				// Add a small number to avoid divide by zero.
-				float attenuation = 1.0 / (0.5f + dist * dist * 0.1);
-
-				// Calculate the diffuse contribution
-				outColor.rgb += lights[i].Color * NdotL * attenuation;
-				
-				vec3 reflection = reflect(-lightDir, normal);
-				
-				float specularStrength = dot(reflection, eye);
-				specularStrength = max(specularStrength, 0.0f); // don't let it fall before zero
-
-				// Calculate the specular contribution
-				outColor.rgb += lights[i].Color * pow(specularStrength, uLightSpecularExponent) * attenuation;
-			}
-		}
-		//outColor.rgb *= 0.001;
-		//outColor.rgb += vec3(1,0,0);
-		//outColor = max(attenuation * diffuse + specular, uSceneAmbient);
-	}
+        if(distance < lights[i].Radius)
+        {
+            // diffuse
+            vec3 lightDir = normalize(lights[i].Position - FragPos);
+            vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * lights[i].Color;
+            // specular
+            vec3 halfwayDir = normalize(lightDir + viewDir);  
+            float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+            vec3 specular = lights[i].Color * spec * Specular;
+            // attenuation
+            float attenuation = 1.0 / (1.0 + linear * distance + quadratic * distance * distance);
+            diffuse *= attenuation;
+            specular *= attenuation;
+            lighting += diffuse + specular;
+        }
+    }    
+    outColor = vec4(lighting,1.0);
 }
