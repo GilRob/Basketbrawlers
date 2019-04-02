@@ -5117,6 +5117,7 @@ void Game::keyboardDown(unsigned char key, int mouseX, int mouseY)
 			hundredParticleLight = true;
 		}
 		PointLight.ReloadShader();
+		break;
 	case 'o': //h
 		if (useSSAO) {
 			useSSAO = false;
@@ -5127,6 +5128,8 @@ void Game::keyboardDown(unsigned char key, int mouseX, int mouseY)
 		SSAO.ReloadShader();
 		SSAOBlur.ReloadShader();
 		DeferredLighting.ReloadShader();
+		break;
+
 	}
 }
 

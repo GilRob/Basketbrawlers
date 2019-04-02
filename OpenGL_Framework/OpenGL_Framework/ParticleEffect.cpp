@@ -197,7 +197,7 @@ void ParticleEffect::Update(float elapsed)
 	spawnerTime -= elapsed;
 
 	//at -10 and 10, 6.0
-	ringWidth = 0.6f + (0.08f*(10.0f - glm::abs(cameraOffset)));
+	ringWidth = (0.04f*(25.0f - glm::abs(cameraOffset)));
 
 		/// Create new particles ///
 	while (
