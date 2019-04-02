@@ -3080,12 +3080,21 @@ void Game::updateScene()
 	}
 #pragma endregion
 
-	if (p1Score == true || p2Score == true)
+	if (p1Score == true)
 	{
-		if (!soundPlaying)
+		if (!cheerPlaying1)
 		{
 			otherChannel = cheer.Play(defaultPos, defaultPos, false);
-			soundPlaying = true;
+			cheerPlaying1 = true;
+		}
+	}
+
+	if (p2Score == true)
+	{
+		if (!cheerPlaying2)
+		{
+			otherChannel = cheer.Play(defaultPos, defaultPos, false);
+			cheerPlaying2 = true;
 		}
 	}
 
@@ -3112,10 +3121,11 @@ void Game::updateScene()
 	//additional lights
 	if (p1Score == true)
 	{
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+
 		if (stageVal != 3)
 		{
-			static float timer;
-			timer += updateTimer->getElapsedTimeSeconds();
 			bool temp = false;
 
 			float check = (timer - (int)timer);
@@ -3126,21 +3136,23 @@ void Game::updateScene()
 
 			findLight("p1Score")->active = temp;
 
-			if (timer >= 3.0f)
-			{
-				p1Score = false;
-				p2Score = false;
-				soundPlaying = false;
-				timer = 0.0f;
-			}
+		}
+
+		if (timer >= 3.0f)
+		{
+			p1Score = false;
+			p2Score = false;
+			cheerPlaying1 = false;
+			timer = 0.0f;
 		}
 	}
 	if (p2Score == true)
 	{
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+
 		if (stageVal != 3)
 		{
-			static float timer;
-			timer += updateTimer->getElapsedTimeSeconds();
 			bool temp = false;
 
 			float check = (timer - (int)timer);
@@ -3150,14 +3162,14 @@ void Game::updateScene()
 				temp = false;
 
 			findLight("p2Score")->active = temp;
+		}
 
-			if (timer >= 3.0f)
-			{
-				p1Score = false;
-				p2Score = false;
-				soundPlaying = false;
-				timer = 0.0f;
-			}
+		if (timer >= 3.0f)
+		{
+			p1Score = false;
+			p2Score = false;
+			cheerPlaying2 = false;
+			timer = 0.0f;
 		}
 	}
 

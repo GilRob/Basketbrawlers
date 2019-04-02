@@ -283,7 +283,8 @@ public:
 	int RandomNum(int max);
 
 
-	bool soundPlaying = false;
+	bool cheerPlaying1 = false;
+	bool cheerPlaying2 = false;
 	bool hornPlaying = false;
 	bool thirtyPlaying = false;
 	bool onePlaying = false;
