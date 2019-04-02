@@ -309,7 +309,7 @@ public:
 	bool playHit2 = false;
 
 	bool hundredParticleLight = false;
-	bool useSSAO = true;
+	bool useSSAO = false;
 
 	bool knightUltPlaying1 = false;
 	bool knightUltPlaying2 = false;
