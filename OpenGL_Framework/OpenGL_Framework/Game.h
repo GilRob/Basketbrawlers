@@ -314,6 +314,7 @@ public:
 
 	bool hundredParticleLight = false;
 	bool useSSAO = false;
+	bool darkMode = false;
 
 	bool knightUltPlaying1 = false;
 	bool knightUltPlaying2 = false;

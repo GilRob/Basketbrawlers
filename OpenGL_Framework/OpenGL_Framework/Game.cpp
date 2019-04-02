@@ -3353,7 +3353,12 @@ void Game::drawTutScreen()
 	//DeferredLighting.SendUniform("uStepTexture", 4);
 
 	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
-	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
+	if (darkMode) {
+		DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.0f, 0.0f, 0.0f)); 
+	}
+	else {
+		DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); 
+	}
 	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
 	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
 	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
@@ -4067,7 +4072,10 @@ void Game::drawScene()
 	DeferredLighting.SendUniform("ssao", 10);
 
 	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
-	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
+	if (darkMode) {
+		DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.0f, 0.0f, 0.0f));
+	}
+	else { DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); } //You can LERP through colours to make night to day cycles
 	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
 	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
 	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
@@ -5291,7 +5299,13 @@ void Game::keyboardDown(unsigned char key, int mouseX, int mouseY)
 		//inputs[3] = true;
 		break;
 	case 'v': //n
-		//inputs[4] = true;
+		if (darkMode) {
+			darkMode = false;
+		}
+		else {
+			darkMode = true;
+		}
+		DeferredLighting.ReloadShader();
 		break;
 	case 'b': //m
 		//inputs[5] = true;
