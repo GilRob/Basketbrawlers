@@ -199,6 +199,7 @@ public:
 		comboTimer = 50;
 		comboMeter = 50;
 		position.y = 20;
+		ultMode = false;
 		velocity = glm::vec3(0, 0, 0);
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;

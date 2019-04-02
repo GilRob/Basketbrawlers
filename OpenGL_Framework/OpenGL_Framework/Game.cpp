@@ -1139,7 +1139,7 @@ void Game::initializeGame()
 	mumble.Load("./Assets/Media/Mumble.wav", true, true);
 
 	//Game state sounds
-	cheer.Load("./Assets/Media/CheerTemp.wav", true, false);
+	cheer.Load("./Assets/Media/Cheer.wav", true, false);
 	horn.Load("./Assets/Media/Horn.wav", true, false);
 	
 	//Menu Sounds
@@ -1155,12 +1155,32 @@ void Game::initializeGame()
 
 	//Player Action Sounds
 	knightWalk.Load("./Assets/Media/KnightWalk.wav", true, false);
+	knightWalk1.Load("./Assets/Media/KnightWalk1.wav", true, false);
+	knightWalk2.Load("./Assets/Media/KnightWalk2.wav", true, false);
+
 	ninjaWalk.Load("./Assets/Media/NinjaWalk.wav", true, false);
+	ninjaWalk1.Load("./Assets/Media/NinjaWalk1.wav", true, false);
+	ninjaWalk2.Load("./Assets/Media/NinjaWalk2.wav", true, false);
+
 	knightJump.Load("./Assets/Media/KnightJump.wav", true, false);
+	knightJump1.Load("./Assets/Media/KnightJump1.wav", true, false);
+	knightJump2.Load("./Assets/Media/KnightJump2.wav", true, false);
+
 	ninjaJump.Load("./Assets/Media/NinjaJump.wav", true, false);
+	ninjaJump1.Load("./Assets/Media/NinjaJump1.wav", true, false);
+	ninjaJump2.Load("./Assets/Media/NinjaJump2.wav", true, false);
+
 	hit.Load("./Assets/Media/Hit.wav", true, false);
+	hit1.Load("./Assets/Media/Hit1.wav", true, false);
+	hit2.Load("./Assets/Media/Hit2.wav", true, false);
+
 	dash.Load("./Assets/Media/Dash.wav", true, false);
+	dash1.Load("./Assets/Media/Dash1.wav", true, false);
+	dash2.Load("./Assets/Media/Dash2.wav", true, false);
+
 	attack.Load("./Assets/Media/Attack.wav", true, false);
+	attack1.Load("./Assets/Media/Attack1.wav", true, false);
+	attack2.Load("./Assets/Media/Attack2.wav", true, false);
 
 	knightUlt.Load("./Assets/Media/KnightUlt.wav", true, false);
 	knightUltEnd.Load("./Assets/Media/KnightUltEnd.wav", true, false);
@@ -2164,9 +2184,9 @@ void Game::updateScene()
 			players[i]->setPosition(players[(i + 1) % 2]->getPosition());
 			players[(i + 1) % 2]->setPosition(temp);
 			//swap velocity
-			temp = players[i]->getVelocity();
-			players[i]->setVelocity(players[(i + 1) % 2]->getVelocity());
-			players[(i + 1) % 2]->setVelocity(temp);
+			//temp = players[i]->getVelocity();
+			//players[i]->setVelocity(players[(i + 1) % 2]->getVelocity());
+			//players[(i + 1) % 2]->setVelocity(temp);
 			//swap acceleration
 			temp = players[i]->getAccel();
 			players[i]->setAccel(players[(i + 1) % 2]->getAccel());
@@ -2372,19 +2392,6 @@ void Game::updateScene()
 		}
 	}
 
-	/*if (p1Score || p2Score)
-	{
-		static float timePassed;
-		timePassed += updateTimer->getElapsedTimeSeconds();
-
-		if (timePassed >= 5.0f)
-		{
-			p1Score = false;
-			p2Score = false;
-			timePassed = 0.0f;
-		}
-	}*/
-
 	//rumble while in net
 	for (int i = 0; i < 2; i++) {
 		if (players[i]->action == players[i]->ACTION_IN_NET) {
@@ -2531,11 +2538,12 @@ void Game::updateScene()
 	}
 	//cout << playerTransform1.x << "," << playerTransform1.y << endl;
 
-
-
 	//Sound Effects//
 	p1Pos = { players[0]->getPosition().x, players[0]->getPosition().y, players[0]->getPosition().z };
 	p2Pos = { players[1]->getPosition().x, players[1]->getPosition().y, players[1]->getPosition().z };
+
+	//Generate random number for sounds
+	randSound1 = RandomNum(maxRand);
 
 #pragma region P1SoundEffects
 	//Walk
@@ -2548,9 +2556,15 @@ void Game::updateScene()
 		{
 			if (isNinja1)
 			{
-				if (walkTime >= 0.35f)
+				if (walkTime >= 0.23f)
 				{
-					ninjaChannel = ninjaWalk.Play(p1Pos, defaultPos, false);
+					if (randSound1 == 0)
+						ninjaChannel = ninjaWalk.Play(p1Pos, defaultPos, false);
+					else if (randSound1 == 1)
+						ninjaChannel = ninjaWalk1.Play(p1Pos, defaultPos, false);
+					else if (randSound1 == 2)
+						ninjaChannel = ninjaWalk2.Play(p1Pos, defaultPos, false);
+
 					walkTime = 0.0f;
 				}
 			}
@@ -2558,7 +2572,13 @@ void Game::updateScene()
 			{
 				if (walkTime >= 0.35f)
 				{
-					knightChannel = knightWalk.Play(p1Pos, defaultPos, false);
+					if (randSound1 == 0)
+						knightChannel = knightWalk.Play(p1Pos, defaultPos, false);
+					else if (randSound1 == 1)
+						knightChannel = knightWalk1.Play(p1Pos, defaultPos, false);
+					else if (randSound1 == 2)
+						knightChannel = knightWalk2.Play(p1Pos, defaultPos, false);
+
 					walkTime = 0.0f;
 				}
 			}
@@ -2574,9 +2594,23 @@ void Game::updateScene()
 		if (!p1Run)
 		{
 			if (isNinja1)
-				ninjaChannel = ninjaWalk.Play(p1Pos, defaultPos, false);
+			{
+				if (randSound1 == 0)
+					ninjaChannel = ninjaWalk.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 1)
+					ninjaChannel = ninjaWalk1.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 2)
+					ninjaChannel = ninjaWalk2.Play(p1Pos, defaultPos, false);
+			}
 			else
-				knightChannel = knightWalk.Play(p1Pos, defaultPos, false);
+			{
+				if (randSound1 == 0)
+					knightChannel = knightWalk.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 1)
+					knightChannel = knightWalk1.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 2)
+					knightChannel = knightWalk2.Play(p1Pos, defaultPos, false);
+			}
 			p1Run = true;
 		}
 
@@ -2592,9 +2626,23 @@ void Game::updateScene()
 		if (!p1Jump1)
 		{
 			if (isNinja1)
-				ninjaChannel = ninjaJump.Play(p1Pos, defaultPos, false);
+			{
+				if (randSound1 == 0)
+					ninjaChannel = ninjaJump.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 1)
+					ninjaChannel = ninjaJump1.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 2)
+					ninjaChannel = ninjaJump2.Play(p1Pos, defaultPos, false);
+			}
 			else
-				knightChannel = knightJump.Play(p1Pos, defaultPos, false);
+			{
+				if (randSound1 == 0)
+					knightChannel = knightJump.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 1)
+					knightChannel = knightJump1.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 2)
+					knightChannel = knightJump2.Play(p1Pos, defaultPos, false);
+			}
 			p1Jump1 = true;
 		}
 	}
@@ -2604,9 +2652,23 @@ void Game::updateScene()
 		if (!p1Jump2)
 		{
 			if (isNinja1)
-				ninjaChannel = ninjaJump.Play(p1Pos, defaultPos, false);
+			{
+				if (randSound1 == 0)
+					ninjaChannel = ninjaJump.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 1)
+					ninjaChannel = ninjaJump1.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 2)
+					ninjaChannel = ninjaJump2.Play(p1Pos, defaultPos, false);
+			}
 			else
-				knightChannel = knightJump.Play(p1Pos, defaultPos, false);
+			{
+				if (randSound1 == 0)
+					knightChannel = knightJump.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 1)
+					knightChannel = knightJump1.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 2)
+					knightChannel = knightJump2.Play(p1Pos, defaultPos, false);
+			}
 			p1Jump2 = true;
 		}
 	}
@@ -2619,9 +2681,23 @@ void Game::updateScene()
 		if (!p1Hit)
 		{
 			if (isNinja1)
-				ninjaChannel = hit.Play(p1Pos, defaultPos, false);
+			{
+				if (randSound1 == 0)
+					ninjaChannel = hit.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 1)
+					ninjaChannel = hit1.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 2)
+					ninjaChannel = hit2.Play(p1Pos, defaultPos, false);
+			}
 			else
-				knightChannel = hit.Play(p1Pos, defaultPos, false);
+			{
+				if (randSound1 == 0)
+					knightChannel = hit.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 1)
+					knightChannel = hit1.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 2)
+					knightChannel = hit2.Play(p1Pos, defaultPos, false);
+			}
 			
 			p1Hit = true;
 			playHit1 = false;
@@ -2639,9 +2715,23 @@ void Game::updateScene()
 		if (!p1Dash)
 		{
 			if (isNinja1)
-				ninjaChannel = dash.Play(p1Pos, defaultPos, false);
+			{
+				if (randSound1 == 0)
+					ninjaChannel = dash.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 1)
+					ninjaChannel = dash1.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 2)
+					ninjaChannel = dash2.Play(p1Pos, defaultPos, false);
+			}
 			else
-				knightChannel = dash.Play(p1Pos, defaultPos, false);
+			{
+				if (randSound1 == 0)
+					knightChannel = dash.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 1)
+					knightChannel = dash1.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 2)
+					knightChannel = dash2.Play(p1Pos, defaultPos, false);
+			}
 			p1Dash = true;
 		}
 	}
@@ -2654,11 +2744,21 @@ void Game::updateScene()
 		{
 			if (isNinja1)
 			{
-				ninjaChannel = attack.Play(p1Pos, defaultPos, false);
+				if (randSound1 == 0)
+					ninjaChannel = attack.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 1)
+					ninjaChannel = attack1.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 2)
+					ninjaChannel = attack2.Play(p1Pos, defaultPos, false);
 			}
 			else
 			{
-				knightChannel = attack.Play(p1Pos, defaultPos, false);
+				if (randSound1 == 0)
+					knightChannel = attack.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 1)
+					knightChannel = attack1.Play(p1Pos, defaultPos, false);
+				else if (randSound1 == 2)
+					knightChannel = attack2.Play(p1Pos, defaultPos, false);
 			}
 			p1Attack = true;
 		}
@@ -2697,6 +2797,9 @@ void Game::updateScene()
 		p1Dash = false;
 	}
 #pragma endregion
+	
+	//Generate random number for sounds
+	randSound2 = RandomNum(maxRand);
 
 #pragma region P2SoundEffects
 	//Walk
@@ -2705,13 +2808,19 @@ void Game::updateScene()
 		static float walkTime;
 		walkTime += updateTimer->getElapsedTimeSeconds();
 
-		if (!p2Walk)
+		if (isNinja2)
 		{
 			if (isNinja2)
 			{
-				if (walkTime >= 0.35f)
+				if (walkTime >= 0.23f)
 				{
-					ninjaChannel = ninjaWalk.Play(p2Pos, defaultPos, false);
+					if (randSound2 == 0)
+						ninjaChannel = ninjaWalk.Play(p2Pos, defaultPos, false);
+					else if (randSound2 == 1)
+						ninjaChannel = ninjaWalk1.Play(p2Pos, defaultPos, false);
+					else if (randSound2 == 2)
+						ninjaChannel = ninjaWalk2.Play(p2Pos, defaultPos, false);
+
 					walkTime = 0.0f;
 				}
 			}
@@ -2719,7 +2828,13 @@ void Game::updateScene()
 			{
 				if (walkTime >= 0.35f)
 				{
-					knightChannel = knightWalk.Play(p2Pos, defaultPos, false);
+					if (randSound2 == 0)
+						knightChannel = knightWalk.Play(p2Pos, defaultPos, false);
+					else if (randSound2 == 1)
+						knightChannel = knightWalk1.Play(p2Pos, defaultPos, false);
+					else if (randSound2 == 2)
+						knightChannel = knightWalk2.Play(p2Pos, defaultPos, false);
+
 					walkTime = 0.0f;
 				}
 			}
@@ -2736,11 +2851,21 @@ void Game::updateScene()
 		{
 			if (isNinja2)
 			{
-				ninjaChannel = ninjaWalk.Play(p2Pos, defaultPos, false);
+				if (randSound2 == 0)
+					ninjaChannel = ninjaWalk.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 1)
+					ninjaChannel = ninjaWalk1.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 2)
+					ninjaChannel = ninjaWalk2.Play(p2Pos, defaultPos, false);
 			}
 			else
 			{
-				knightChannel = knightWalk.Play(p2Pos, defaultPos, false);
+				if (randSound2 == 0)
+					knightChannel = knightWalk.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 1)
+					knightChannel = knightWalk1.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 2)
+					knightChannel = knightWalk2.Play(p2Pos, defaultPos, false);
 			}
 			p2Run = true;
 		}
@@ -2757,9 +2882,23 @@ void Game::updateScene()
 		if (!p2Jump1)
 		{
 			if (isNinja2)
-				ninjaChannel = ninjaJump.Play(p2Pos, defaultPos, false);
+			{
+				if (randSound2 == 0)
+					ninjaChannel = ninjaJump.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 1)
+					ninjaChannel = ninjaJump1.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 2)
+					ninjaChannel = ninjaJump2.Play(p2Pos, defaultPos, false);
+			}
 			else
-				knightChannel = knightJump.Play(p2Pos, defaultPos, false);
+			{
+				if (randSound2 == 0)
+					knightChannel = knightJump.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 1)
+					knightChannel = knightJump1.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 2)
+					knightChannel = knightJump2.Play(p2Pos, defaultPos, false);
+			}
 			p2Jump1 = true;
 		}
 	}
@@ -2769,9 +2908,23 @@ void Game::updateScene()
 		if (!p2Jump2)
 		{
 			if (isNinja2)
-				ninjaChannel = ninjaJump.Play(p2Pos, defaultPos, false);
+			{
+				if (randSound2 == 0)
+					ninjaChannel = ninjaJump.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 1)
+					ninjaChannel = ninjaJump1.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 2)
+					ninjaChannel = ninjaJump2.Play(p2Pos, defaultPos, false);
+			}
 			else
-				knightChannel = knightJump.Play(p2Pos, defaultPos, false);
+			{
+				if (randSound2 == 0)
+					knightChannel = knightJump.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 1)
+					knightChannel = knightJump1.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 2)
+					knightChannel = knightJump2.Play(p2Pos, defaultPos, false);
+			}
 			p2Jump2 = true;
 		}
 	}
@@ -2784,9 +2937,24 @@ void Game::updateScene()
 		if (!p2Hit)
 		{
 			if (isNinja2)
-				ninjaChannel = hit.Play(p2Pos, defaultPos, false);
+			{
+				if (randSound2 == 0)
+					ninjaChannel = hit.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 1)
+					ninjaChannel = hit1.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 2)
+					ninjaChannel = hit2.Play(p2Pos, defaultPos, false);
+			}
 			else
-				knightChannel = hit.Play(p2Pos, defaultPos, false);
+			{
+				if (randSound2 == 0)
+					knightChannel = hit.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 1)
+					knightChannel = hit1.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 2)
+					knightChannel = hit2.Play(p2Pos, defaultPos, false);
+
+			}
 			p2Hit = true;
 			playHit2 = false;
 		}
@@ -2803,9 +2971,23 @@ void Game::updateScene()
 		if (!p2Dash)
 		{
 			if (isNinja2)
-				ninjaChannel = dash.Play(p2Pos, defaultPos, false);
+			{
+				if (randSound2 == 0)
+					ninjaChannel = dash.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 1)
+					ninjaChannel = dash1.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 2)
+					ninjaChannel = dash2.Play(p2Pos, defaultPos, false);
+			}
 			else
-				knightChannel = dash.Play(p2Pos, defaultPos, false);
+			{
+				if (randSound2 == 0)
+					knightChannel = dash.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 1)
+					knightChannel = dash1.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 2)
+					knightChannel = dash2.Play(p2Pos, defaultPos, false);
+			}
 			p2Dash = true;
 		}
 	}
@@ -2818,11 +3000,21 @@ void Game::updateScene()
 		{
 			if (isNinja2)
 			{
-				ninjaChannel = attack.Play(p2Pos, defaultPos, false);
+				if (randSound2 == 0)
+					ninjaChannel = attack.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 1)
+					ninjaChannel = attack1.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 2)
+					ninjaChannel = attack2.Play(p2Pos, defaultPos, false);
 			}
 			else
 			{
-				knightChannel = attack.Play(p2Pos, defaultPos, false);
+				if (randSound2 == 0)
+					knightChannel = attack.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 1)
+					knightChannel = attack1.Play(p2Pos, defaultPos, false);
+				else if (randSound2 == 2)
+					knightChannel = attack2.Play(p2Pos, defaultPos, false);
 			}
 			p2Attack = true;
 		}
@@ -2862,12 +3054,21 @@ void Game::updateScene()
 	}
 #pragma endregion
 
-	if (p1Score == true || p2Score == true)
+	if (p1Score == true)
 	{
-		if (!soundPlaying)
+		if (!cheerPlaying1)
 		{
 			otherChannel = cheer.Play(defaultPos, defaultPos, false);
-			soundPlaying = true;
+			cheerPlaying1 = true;
+		}
+	}
+
+	if (p2Score == true)
+	{
+		if (!cheerPlaying2)
+		{
+			otherChannel = cheer.Play(defaultPos, defaultPos, false);
+			cheerPlaying2 = true;
 		}
 	}
 
@@ -2878,7 +3079,6 @@ void Game::updateScene()
 		{
 			otherChannel->setVolume(3.0f);
 			otherChannel = oneMin.Play(defaultPos, defaultPos, false);
-			//otherChannel->setVolume(1.0f);
 			onePlaying = true;
 		}
 	}
@@ -2888,7 +3088,6 @@ void Game::updateScene()
 		{
 			otherChannel->setVolume(3.0f);
 			otherChannel = thirtySec.Play(defaultPos, defaultPos, false);
-			//otherChannel->setVolume(1.0f);
 			thirtyPlaying = true;
 		}
 	}
@@ -2896,52 +3095,55 @@ void Game::updateScene()
 	//additional lights
 	if (p1Score == true)
 	{
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+
 		if (stageVal != 3)
 		{
-			static float timer;
-			timer += updateTimer->getElapsedTimeSeconds();
 			bool temp = false;
 
 			float check = (timer - (int)timer);
 			temp = (bool)(check >= 0.5f && check < 1.0f);
 
-			if (timer >= 4.0f)
+			if (timer >= 2.5f)
 				temp = false;
 
 			findLight("p1Score")->active = temp;
 
-			if (timer >= 4.5f)
-			{
-				p1Score = false;
-				p2Score = false;
-				soundPlaying = false;
-				timer = 0.0f;
-			}
+		}
+
+		if (timer >= 3.0f)
+		{
+			p1Score = false;
+			p2Score = false;
+			cheerPlaying1 = false;
+			timer = 0.0f;
 		}
 	}
 	if (p2Score == true)
 	{
+		static float timer;
+		timer += updateTimer->getElapsedTimeSeconds();
+
 		if (stageVal != 3)
 		{
-			static float timer;
-			timer += updateTimer->getElapsedTimeSeconds();
 			bool temp = false;
 
 			float check = (timer - (int)timer);
 			temp = (bool)(check >= 0.5f && check < 1.0f);
 
-			if (timer >= 4.0f)
+			if (timer >= 2.5f)
 				temp = false;
 
 			findLight("p2Score")->active = temp;
+		}
 
-			if (timer >= 4.5f)
-			{
-				p1Score = false;
-				p2Score = false;
-				soundPlaying = false;
-				timer = 0.0f;
-			}
+		if (timer >= 3.0f)
+		{
+			p1Score = false;
+			p2Score = false;
+			cheerPlaying2 = false;
+			timer = 0.0f;
 		}
 	}
 
@@ -5365,6 +5567,13 @@ void Game::mouseMoved(int x, int y)
 {
 }
 
+//Random number generator to determine sound to be played
+int Game::RandomNum(int max)
+{
+	//Max number is actually max-1
+	int temp = rand() % max;
+	return temp;
+}
 
 void Game::updateInputs()
 {

@@ -244,7 +244,6 @@ public:
 	FrameBuffer ssaoWorkBuffer1;
 	FrameBuffer	ssaoWorkBuffer2;					//framebuffers
 
-
 	///God Rays Stuff
 	/*FrameBuffer godRaysBuffer1;
 	FrameBuffer godRaysBuffer2;
@@ -281,7 +280,12 @@ public:
 	bool isNinja2 = false;
 	
 	///Sound Stuff
-	bool soundPlaying = false;
+	//Random function
+	int RandomNum(int max);
+
+
+	bool cheerPlaying1 = false;
+	bool cheerPlaying2 = false;
 	bool hornPlaying = false;
 	bool thirtyPlaying = false;
 	bool onePlaying = false;
@@ -317,12 +321,32 @@ public:
 
 	//Player Action Sounds
 	Sound knightWalk;
+	Sound knightWalk1;
+	Sound knightWalk2;
+
 	Sound ninjaWalk;
+	Sound ninjaWalk1;
+	Sound ninjaWalk2;
+
 	Sound knightJump;
+	Sound knightJump1;
+	Sound knightJump2;
+
 	Sound ninjaJump;
+	Sound ninjaJump1;
+	Sound ninjaJump2;
+	
 	Sound hit;
+	Sound hit1;
+	Sound hit2;
+
 	Sound dash;
+	Sound dash1;
+	Sound dash2;
+
 	Sound attack;
+	Sound attack1;
+	Sound attack2;
 
 	Sound knightUlt;
 	Sound knightUltEnd;
@@ -333,6 +357,10 @@ public:
 	bool soundHighPassed = false;
 
 	float decreaseVal = 1.0f;
+	//float minRand = 0.0f;
+	int maxRand = 3;
+	int randSound1 = 0;
+	int randSound2 = 0;
 
 	//Sound gameSound;
 	Sound gameTheme;
