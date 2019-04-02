@@ -1165,7 +1165,7 @@ void Game::initializeGame()
 	mumble.Load("./Assets/Media/Mumble.wav", true, true);
 
 	//Game state sounds
-	cheer.Load("./Assets/Media/CheerTemp.wav", true, false);
+	cheer.Load("./Assets/Media/Cheer.wav", true, false);
 	horn.Load("./Assets/Media/Horn.wav", true, false);
 	
 	//Menu Sounds
@@ -2574,7 +2574,7 @@ void Game::updateScene()
 		{
 			if (isNinja1)
 			{
-				if (walkTime >= 0.35f)
+				if (walkTime >= 0.23f)
 				{
 					ninjaChannel = ninjaWalk.Play(p1Pos, defaultPos, false);
 					walkTime = 0.0f;
@@ -2735,7 +2735,7 @@ void Game::updateScene()
 		{
 			if (isNinja2)
 			{
-				if (walkTime >= 0.35f)
+				if (walkTime >= 0.23f)
 				{
 					ninjaChannel = ninjaWalk.Play(p2Pos, defaultPos, false);
 					walkTime = 0.0f;
@@ -2904,7 +2904,6 @@ void Game::updateScene()
 		{
 			otherChannel->setVolume(3.0f);
 			otherChannel = oneMin.Play(defaultPos, defaultPos, false);
-			//otherChannel->setVolume(1.0f);
 			onePlaying = true;
 		}
 	}
@@ -2914,7 +2913,6 @@ void Game::updateScene()
 		{
 			otherChannel->setVolume(3.0f);
 			otherChannel = thirtySec.Play(defaultPos, defaultPos, false);
-			//otherChannel->setVolume(1.0f);
 			thirtyPlaying = true;
 		}
 	}
@@ -2931,12 +2929,12 @@ void Game::updateScene()
 			float check = (timer - (int)timer);
 			temp = (bool)(check >= 0.5f && check < 1.0f);
 
-			if (timer >= 4.0f)
+			if (timer >= 2.5f)
 				temp = false;
 
 			findLight("p1Score")->active = temp;
 
-			if (timer >= 4.5f)
+			if (timer >= 3.0f)
 			{
 				p1Score = false;
 				p2Score = false;
@@ -2956,12 +2954,12 @@ void Game::updateScene()
 			float check = (timer - (int)timer);
 			temp = (bool)(check >= 0.5f && check < 1.0f);
 
-			if (timer >= 4.0f)
+			if (timer >= 2.5f)
 				temp = false;
 
 			findLight("p2Score")->active = temp;
 
-			if (timer >= 4.5f)
+			if (timer >= 3.0f)
 			{
 				p1Score = false;
 				p2Score = false;
