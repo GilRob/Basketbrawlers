@@ -29,7 +29,7 @@ uniform vec3 uLightColor = vec3(0.0, 1.0, 0.0);
 uniform float uLightSpecularExponent = 16.0;
 
 uniform bool uToonActive;
-uniform bool uAmbient = false;
+uniform bool uAmbientOcc = false;
 
 in vec2 texcoord;
 in vec3 norm;
@@ -88,7 +88,7 @@ void DirectionalLight()
 
 	outColor.rgb = LightAmbient;
 
-	if(uAmbient){
+	if(uAmbientOcc){
 		float AmbientOcclusion = texture(ssao, texcoord).r;
 		//Alpha component is determined by the alpha in the texture
 		outColor.rgb = LightAmbient * AmbientOcclusion;

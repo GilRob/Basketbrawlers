@@ -1,51 +1,66 @@
-#version 330 core
-out float FragColor;
+#version 420 core
+out float outColor;
+in vec2 texcoord;
 
-in vec2 TexCoords;
-
-uniform sampler2D gPosition;
-uniform sampler2D gNormal;
-uniform sampler2D texNoise;
+uniform sampler2D uNormalTex;
+uniform sampler2D uTexNoise;
+uniform sampler2D uDepthMap;
 
 uniform vec2 noiseScale;
-
 uniform vec3 samples[16];
+uniform mat4 projection;
+uniform mat4 uProjBiasMatrixInverse;
 
 // parameters (you'd probably want to use them as uniforms to more easily tweak the effect)
 int kernelSize = 16;
 float radius = 0.5;
 float bias = 0.025;
 
-uniform mat4 projection;
+
 
 void main()
 {
     // get input for SSAO algorithm
-    vec3 fragPos = texture(gPosition, TexCoords).xyz;
-    vec3 normal = normalize(texture(gNormal, TexCoords).rgb);
-    vec3 randomVec = normalize(texture(texNoise, TexCoords * noiseScale).xyz);
-    // create TBN change-of-basis matrix: from tangent-space to view-space
-    vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
-    vec3 bitangent = cross(normal, tangent);
-    mat3 TBN = mat3(tangent, bitangent, normal);
-    // iterate over the sample kernel and calculate occlusion factor
-    float occlusion = 0.0;
+	float depth =  texture(uDepthMap, texcoord).r;
+	if(depth == 1.0)
+	{
+		discard;
+	}
+	vec4 fragPos = uProjBiasMatrixInverse * vec4(texcoord, depth, 1.0);
+	fragPos /= fragPos.w;
+
+	vec3 normal = texture(uNormalTex, texcoord).rgb;
+	normal = normal + normal - 1.0;
+	vec3 randomVec = texture(uTexNoise, texcoord * noiseScale).xyz;
+
+	vec3 tangent = normalize(randomVec - (normal * dot(randomVec, normal)));
+		vec3 bitangent = cross(normal, tangent);
+	mat3 TBN = mat3(tangent, bitangent, normal);
+	// Iterate over the sample kernel and calculate occlusion factor
+	float occlusion = 0.0;
+
     for(int i = 0; i < kernelSize; ++i)
     {
         // get sample position
-        vec3 sample = TBN * samples[i]; // from tangent to view-space
-        sample = fragPos + sample * radius;
-        vec4 offset = vec4(sample, 1.0);
+        vec3 samplePos = TBN * samples[i]; // from tangent to view-space
+		samplePos = fragPos.xyz + samplePos * (radius*depth); 
+
+        vec4 offset = vec4(samplePos, 1.0);
         offset = projection * offset; // from view to clip-space
-        offset.xyz /= offset.w; // perspective divide
-        offset.xyz = offset.xyz * 0.5 + 0.5;
+		offset.xy /= offset.w; // perspective divide
+		offset.xy = offset.xy * 0.5 + 0.5; // transform to range 0.0 - 1.0
+
         
-        float sampleDepth = texture(gPosition, offset.xy).z; 
-        
-        float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));
-        occlusion += (sampleDepth >= sample.z + bias ? 1.0 : 0.0) * rangeCheck;           
-    }
-    occlusion = 1.0 - (occlusion / kernelSize);
+		float sampleDepth = texture(uDepthMap, offset.xy).r;
+		vec4 sampleDepthToPos = uProjBiasMatrixInverse * vec4(texcoord, sampleDepth, 1.0);
+		sampleDepthToPos /= sampleDepthToPos.w;
+
+		float rangeCheck = 1.0;
+		// range check & accumulate		
+		rangeCheck = abs(samplePos.z - sampleDepthToPos.z) < radius ? 1.0 : 0.0;
+		occlusion += (sampleDepthToPos.z > samplePos.z ? 1.0 : 0.0) * rangeCheck;		
+	}
+	occlusion = 1.0 - ((occlusion * 1.25 * (1.5-depth)) / kernelSize);
     
-    FragColor = occlusion;
+	outColor.r = occlusion;
 }

@@ -109,8 +109,7 @@ public:
 	ShaderProgram Negative;
 	ShaderProgram NetShader;
 	ShaderProgram SSAO;
-	ShaderProgram SSAOBlurX;
-	ShaderProgram SSAOBlurY;
+	ShaderProgram SSAOBlur;
 
 	Mesh boxMesh;
 	Texture boxTexture;
@@ -240,8 +239,9 @@ public:
 	std::vector<glm::vec3> ssaoKernel;
 	std::vector<glm::vec3> ssaoNoise;
 	Texture noiseTexture;
-	GLuint ssaoColorBuffer, ssaoColorBufferBlur;	//color buffers
-	GLuint ssaoFBO, ssaoBlurFBO;					//framebuffers
+	//GLuint ssaoColorBuffer, ssaoColorBufferBlur;	//color buffers
+	FrameBuffer ssaoWorkBuffer1;
+	FrameBuffer	ssaoWorkBuffer2;					//framebuffers
 
 
 	///God Rays Stuff

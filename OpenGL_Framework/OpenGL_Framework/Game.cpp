@@ -11,7 +11,7 @@ $$$ - Particle Signal
 #define VSYNC true
 
 Game::Game()
-	: GBuffer(3), DeferredComposite(1), ShadowMap(0), EdgeMap(1), WorkBuffer1(1), WorkBuffer2(1), HudMap(1) //, godRaysBuffer1(1), godRaysBuffer2(1)
+	: GBuffer(3), DeferredComposite(1), ShadowMap(0), EdgeMap(1), WorkBuffer1(1), WorkBuffer2(1), HudMap(1), ssaoWorkBuffer1(1), ssaoWorkBuffer2(1) //, godRaysBuffer1(1), godRaysBuffer2(1)
 	//This constructor in the initializer list is to solve the issue of creating a frame buffer object without no default constructor
 	//This will occur before the brackets of the constructor starts (Reference at Week #6 video Time: 47:00)
 	//The number is the number of color textures
@@ -43,8 +43,7 @@ Game::~Game()
 	P2Bar.Unload();
 	StepTexture.Unload();
 	SSAO.UnLoad();
-	SSAOBlurX.UnLoad();
-	SSAOBlurY.UnLoad();
+	SSAOBlur.UnLoad();
 }
 
 bool WGLExtensionSupported(const char *extension_name)
@@ -527,13 +526,7 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}	
-	if (!SSAOBlurX.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/SSAOBlurx.frag"))
-	{
-		std::cout << "BHP Shaders failed to initialize.\n";
-		system("pause");
-		exit(0);
-	}
-	if (!SSAOBlurY.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/SSAOBlury.frag"))
+	if (!SSAOBlur.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/SSAOBlur.frag"))
 	{
 		std::cout << "BHP Shaders failed to initialize.\n";
 		system("pause");
@@ -1041,41 +1034,27 @@ void Game::initializeGame()
 		exit(0);
 	}
 
-	glGenFramebuffers(1, &ssaoFBO);
-	glGenFramebuffers(1, &ssaoBlurFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
+	if (FULLSCREEN)
+		ssaoWorkBuffer1.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+	else
+		ssaoWorkBuffer1.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+	if (!ssaoWorkBuffer1.CheckFBO())
+	{
+		std::cout << "ssaoFBO FBO failed to initialize.\n";
+		system("pause");
+		exit(0);
+	}
 
-	//================================================================//
-	//ssao
-	glGenTextures(1, &ssaoColorBuffer);
-	glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
-	if (FULLSCREEN) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	if (FULLSCREEN)
+		ssaoWorkBuffer2.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+	else
+		ssaoWorkBuffer2.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+	if (!ssaoWorkBuffer2.CheckFBO())
+	{
+		std::cout << "ssaoBlurFBO FBO failed to initialize.\n";
+		system("pause");
+		exit(0);
 	}
-	else {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
-	}
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "SSAO Framebuffer not complete!" << std::endl;
-
-	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
-	glGenTextures(1, &ssaoColorBufferBlur);
-	glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
-	if (FULLSCREEN) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
-	}
-	else {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, WINDOW_WIDTH, WINDOW_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
-	}
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBufferBlur, 0);
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "SSAO Blur Framebuffer not complete!" << std::endl;
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// generate sample kernel
 	std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0); // generates random floats between 0.0 and 1.0
@@ -1106,17 +1085,6 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}
-	SSAO.Bind();
-	SSAO.SendUniform("gPosition", 0);
-	SSAO.SendUniform("gNormal", 1);
-	SSAO.SendUniform("texNoise", 2);
-	SSAO.UnBind();
-	SSAOBlurX.Bind();
-	SSAOBlurX.SendUniform("ssaoInput", 0);
-	SSAOBlurX.UnBind();
-	SSAOBlurY.Bind();
-	SSAOBlurY.SendUniform("ssaoInput", 0);
-	SSAOBlurY.UnBind();
 
 
 //================================================================//
@@ -3780,55 +3748,41 @@ void Game::drawScene()
 	//===============================================================
 //ssao starts here:
 	if (useSSAO) {
-		glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
-		glClear(GL_COLOR_BUFFER_BIT);
+		ssaoWorkBuffer1.Clear();
+		ssaoWorkBuffer2.Clear();
 		SSAO.Bind();
-
-		// Send kernel + rotation 
-		for (unsigned int i = 0; i < 16; ++i) {
-			SSAO.SendUniform("samples[" + std::to_string(i) + "]", ssaoKernel[i]);
-		}
-		SSAO.SendUniformMat4("projection", GameCamera.CameraProjection.data, true);
+		SSAO.SendUniform("uNormalTex", 0);
+		SSAO.SendUniform("uTexNoise", 1);
+		SSAO.SendUniform("uDepthMap", 2);
 		if (FULLSCREEN) {
 			SSAO.SendUniform("noiseScale", glm::vec2(FULLSCREEN_WIDTH / 4.0, FULLSCREEN_HEIGHT / 4.0));
 		}
 		else {
 			SSAO.SendUniform("noiseScale", glm::vec2(WINDOW_WIDTH / 4.0, WINDOW_HEIGHT / 4.0));
 		}
+		for (unsigned int i = 0; i < 16; ++i) {
+			SSAO.SendUniform(("samples[" + std::to_string(i) + "]").c_str(), ssaoKernel[i]);
+		}
+		glm::mat4 ProjBiasMatrix = glm::mat4(
+			2.0f, 0.0f, 0.0f, -1.0f,
+			0.0f, 2.0f, 0.0f, -1.0f,
+			0.0f, 0.0f, 2.0f, -1.0f,
+			0.0f, 0.0f, 0.0f, 1.0f);
+
+		ProjBiasMatrix = ProjBiasMatrix * GameCamera.CameraProjection.GetInverse().matData;
+
+		SSAO.SendUniformMat4("uProjBiasMatrixInverse", glm::value_ptr(ProjBiasMatrix), true);
+		SSAO.SendUniformMat4("projection", GameCamera.CameraProjection.data, true);
+
+		ssaoWorkBuffer1.Bind();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
-		noiseTexture.Bind(2);
+		noiseTexture.Bind();
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, GBuffer.GetDepthHandle());
 		DrawFullScreenQuad();
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		SSAO.UnBind();
 
-
-		// 3. blur SSAO texture to remove noise
-		glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		SSAOBlurX.Bind();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
-		DrawFullScreenQuad();
-		SSAOBlurX.UnBind();
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
-		SSAOBlurY.Bind();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
-		DrawFullScreenQuad();
-		SSAOBlurY.UnBind();
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		//reset tectures
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-		glActiveTexture(GL_TEXTURE4);
-		glBindTexture(GL_TEXTURE_2D, GL_NONE);
-		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
@@ -3836,6 +3790,20 @@ void Game::drawScene()
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
+
+		ssaoWorkBuffer1.UnBind();
+		SSAO.UnBind();
+
+		//// 3. blur SSAO texture to remove noise
+		//ssaoBlurFBO.Bind();
+		//glClear(GL_COLOR_BUFFER_BIT);
+
+		//SSAOBlur.Bind();
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, ssaoFBO.GetColorHandle(0));
+		//DrawFullScreenQuad();
+		//SSAOBlur.UnBind();
+		//ssaoBlurFBO.UnBind();
 
 	}
 	//===============================================================
@@ -3877,6 +3845,8 @@ void Game::drawScene()
 	else
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	DeferredLighting.Bind();
 	DeferredLighting.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
 	DeferredLighting.SendUniform("uScene", 0);
@@ -3885,7 +3855,7 @@ void Game::drawScene()
 	DeferredLighting.SendUniform("uPositionMap", 3);
 	DeferredLighting.SendUniform("uEdgeMap", 4);
 	DeferredLighting.SendUniform("uStepTexture", 5);
-	DeferredLighting.SendUniform("uSSAO", 6);
+	DeferredLighting.SendUniform("ssao", 10);
 
 	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
 	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
@@ -3893,7 +3863,7 @@ void Game::drawScene()
 	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
 	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
 	DeferredLighting.SendUniform("uToonActive", toonActive);
-	DeferredLighting.SendUniform("uAmbient", useSSAO);
+	DeferredLighting.SendUniform("uAmbientOcc", useSSAO);
 
 	DeferredComposite.Bind();
 
@@ -3906,12 +3876,13 @@ void Game::drawScene()
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, EdgeMap.GetColorHandle(0));
+	glActiveTexture(GL_TEXTURE5);
+	StepTexture.Bind();
 	//ssao
 	if (useSSAO) {
-		glActiveTexture(GL_TEXTURE6);
-		glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+		glActiveTexture(GL_TEXTURE10);
+		glBindTexture(GL_TEXTURE_2D, ssaoWorkBuffer1.GetColorHandle(0));
 	}
-	StepTexture.Bind();
 
 	DrawFullScreenQuad();
 
@@ -5121,7 +5092,7 @@ void Game::keyboardDown(unsigned char key, int mouseX, int mouseY)
 			hundredParticleLight = true;
 		}
 		PointLight.ReloadShader();
-	case 'l': //h
+	case 'o': //h
 		if (useSSAO) {
 			useSSAO = false;
 		}
@@ -5129,8 +5100,8 @@ void Game::keyboardDown(unsigned char key, int mouseX, int mouseY)
 			useSSAO = true;
 		}
 		SSAO.ReloadShader();
-		SSAOBlurX.ReloadShader();
-		SSAOBlurY.ReloadShader();
+		SSAOBlur.ReloadShader();
+		DeferredLighting.ReloadShader();
 	}
 }
 
