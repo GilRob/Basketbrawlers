@@ -1035,7 +1035,7 @@ void Game::initializeGame()
 	}
 
 	if (FULLSCREEN)
-		ssaoWorkBuffer1.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+		ssaoWorkBuffer1.InitColorTexture(0, FULLSCREEN_WIDTH/2, FULLSCREEN_HEIGHT/2, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
 	else
 		ssaoWorkBuffer1.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
 	if (!ssaoWorkBuffer1.CheckFBO())
@@ -1046,7 +1046,7 @@ void Game::initializeGame()
 	}
 
 	if (FULLSCREEN)
-		ssaoWorkBuffer2.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+		ssaoWorkBuffer2.InitColorTexture(0, FULLSCREEN_WIDTH/2, FULLSCREEN_HEIGHT/2, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
 	else
 		ssaoWorkBuffer2.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
 	if (!ssaoWorkBuffer2.CheckFBO())
@@ -3755,10 +3755,10 @@ void Game::drawScene()
 		SSAO.SendUniform("uTexNoise", 1);
 		SSAO.SendUniform("uDepthMap", 2);
 		if (FULLSCREEN) {
-			SSAO.SendUniform("noiseScale", glm::vec2(FULLSCREEN_WIDTH / 4.0, FULLSCREEN_HEIGHT / 4.0));
+			SSAO.SendUniform("noiseScale", glm::vec2(FULLSCREEN_WIDTH/4, FULLSCREEN_HEIGHT/4));
 		}
 		else {
-			SSAO.SendUniform("noiseScale", glm::vec2(WINDOW_WIDTH / 4.0, WINDOW_HEIGHT / 4.0));
+			SSAO.SendUniform("noiseScale", glm::vec2(WINDOW_WIDTH/4, WINDOW_HEIGHT/4));
 		}
 		for (unsigned int i = 0; i < 16; ++i) {
 			SSAO.SendUniform(("samples[" + std::to_string(i) + "]").c_str(), ssaoKernel[i]);
