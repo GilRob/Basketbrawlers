@@ -2190,9 +2190,9 @@ void Game::updateScene()
 			players[i]->setPosition(players[(i + 1) % 2]->getPosition());
 			players[(i + 1) % 2]->setPosition(temp);
 			//swap velocity
-			temp = players[i]->getVelocity();
-			players[i]->setVelocity(players[(i + 1) % 2]->getVelocity());
-			players[(i + 1) % 2]->setVelocity(temp);
+			//temp = players[i]->getVelocity();
+			//players[i]->setVelocity(players[(i + 1) % 2]->getVelocity());
+			//players[(i + 1) % 2]->setVelocity(temp);
 			//swap acceleration
 			temp = players[i]->getAccel();
 			players[i]->setAccel(players[(i + 1) % 2]->getAccel());
