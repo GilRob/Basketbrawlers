@@ -1035,7 +1035,7 @@ void Game::initializeGame()
 	}
 
 	if (FULLSCREEN)
-		ssaoWorkBuffer1.InitColorTexture(0, FULLSCREEN_WIDTH/2, FULLSCREEN_HEIGHT/2, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+		ssaoWorkBuffer1.InitColorTexture(0,FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
 	else
 		ssaoWorkBuffer1.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
 	if (!ssaoWorkBuffer1.CheckFBO())
@@ -1046,7 +1046,7 @@ void Game::initializeGame()
 	}
 
 	if (FULLSCREEN)
-		ssaoWorkBuffer2.InitColorTexture(0, FULLSCREEN_WIDTH/2, FULLSCREEN_HEIGHT/2, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+		ssaoWorkBuffer2.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
 	else
 		ssaoWorkBuffer2.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
 	if (!ssaoWorkBuffer2.CheckFBO())
@@ -1061,13 +1061,13 @@ void Game::initializeGame()
 	std::default_random_engine generator;
 	for (unsigned int i = 0; i < 16; ++i)
 	{
-		glm::vec3 sample(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator));
+		glm::vec3 sample(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator)* 0.95 + 0.05);
 		sample = glm::normalize(sample);
-		sample *= randomFloats(generator);
+		//sample *= randomFloats(generator);
 		float scale = float(i) / 16.0f;
 
 		// scale samples s.t. they're more aligned to center of kernel
-		scale = lerp(0.1f, 1.0f, scale * scale);
+		scale = lerp(0.25f, 1.0f, scale * scale);
 		sample *= scale;
 		ssaoKernel.push_back(sample);
 	}
@@ -3755,10 +3755,10 @@ void Game::drawScene()
 		SSAO.SendUniform("uTexNoise", 1);
 		SSAO.SendUniform("uDepthMap", 2);
 		if (FULLSCREEN) {
-			SSAO.SendUniform("noiseScale", glm::vec2(FULLSCREEN_WIDTH/4, FULLSCREEN_HEIGHT/4));
+			SSAO.SendUniform("noiseScale", glm::vec2(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT));
 		}
 		else {
-			SSAO.SendUniform("noiseScale", glm::vec2(WINDOW_WIDTH/4, WINDOW_HEIGHT/4));
+			SSAO.SendUniform("noiseScale", glm::vec2(WINDOW_WIDTH, WINDOW_HEIGHT));
 		}
 		for (unsigned int i = 0; i < 16; ++i) {
 			SSAO.SendUniform(("samples[" + std::to_string(i) + "]").c_str(), ssaoKernel[i]);
@@ -3831,7 +3831,7 @@ void Game::drawScene()
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetDepthHandle());
-		DrawFullScreenQuad();
+	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
