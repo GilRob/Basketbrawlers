@@ -125,6 +125,7 @@ public:
 	/// ENTITIES ///
 	std::vector<Object*> gameObjects;
 	std::vector<PointLightObj*> pointLights;
+	std::vector<PointLightObj*> thousandLights;
 	Object* hitboxObj;
 	std::vector<Object*> menuObjects;
 	std::vector<Object*> cssObjects;

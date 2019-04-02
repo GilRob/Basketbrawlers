@@ -438,6 +438,12 @@ void Game::initializeGame()
 	pointLights.push_back(new PointLightObj(glm::vec3(18.0f, 10.0f, -19.0f), glm::vec3(1.0f, 1.0f, 0.6f), "lightRight", false));
 	pointLights.push_back(new PointLightObj(glm::vec3(0.0f, 10.0f, -19.0f), glm::vec3(0.6f, 0.6f, 0.0f), "lightCenter", false));
 
+	for (int i= 0; i < 1000; i++) {
+		
+		thousandLights.push_back(new PointLightObj(glm::vec3(std::rand() % 200 - 100, std::rand() % 200 - 100, std::rand() % 200 - 100), glm::vec3(1.0f, 1.0f, 1.0f), "RandomLight" + to_string(i) , false));
+		thousandLights[i]->active = true;
+	}
+
 
 //================================================================//
 	//Load Hud Obj and Texture
@@ -1035,9 +1041,9 @@ void Game::initializeGame()
 	}
 
 	if (FULLSCREEN)
-		ssaoWorkBuffer1.InitColorTexture(0,FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+		ssaoWorkBuffer1.InitColorTexture(0,FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_R8, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	else
-		ssaoWorkBuffer1.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+		ssaoWorkBuffer1.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_R8, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	if (!ssaoWorkBuffer1.CheckFBO())
 	{
 		std::cout << "ssaoFBO FBO failed to initialize.\n";
@@ -1046,9 +1052,9 @@ void Game::initializeGame()
 	}
 
 	if (FULLSCREEN)
-		ssaoWorkBuffer2.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+		ssaoWorkBuffer2.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_R8, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	else
-		ssaoWorkBuffer2.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_R8, GL_LINEAR, GL_CLAMP_TO_EDGE);
+		ssaoWorkBuffer2.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_R8, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	if (!ssaoWorkBuffer2.CheckFBO())
 	{
 		std::cout << "ssaoBlurFBO FBO failed to initialize.\n";
@@ -3769,6 +3775,7 @@ void Game::drawScene()
 			0.0f, 0.0f, 2.0f, -1.0f,
 			0.0f, 0.0f, 0.0f, 1.0f);
 
+		
 		ProjBiasMatrix = ProjBiasMatrix * GameCamera.CameraProjection.GetInverse().matData;
 
 		SSAO.SendUniformMat4("uProjBiasMatrixInverse", glm::value_ptr(ProjBiasMatrix), true);
@@ -3895,12 +3902,30 @@ void Game::drawScene()
 	PointLight.SendUniform("uNormalMap", 2);
 	PointLight.SendUniform("uPositionMap", 3);
 
+	if (hundredParticleLight) {
+		auto end = chrono::steady_clock::now();
+		auto start = chrono::steady_clock::now();
+
+		for (int i = 0; i < (int)thousandLights.size(); i++) {
+			if (thousandLights[i]->active == true) {
+				thousandLights[i]->draw(PointLight, GameCamera.CameraTransform);
+
+				RenderCube();
+			}
+		}
+		end = chrono::steady_clock::now();
+		cout << chrono::duration_cast<chrono::milliseconds>(end - start).count() << ":";
+
+	}
 	for (int i = 0; i < (int)pointLights.size(); i++) {
 		if (pointLights[i]->active == true) {
+			PointLight.SendUniform("uRange", 100.0f);
 			pointLights[i]->draw(PointLight, GameCamera.CameraTransform);
+
 			DrawFullScreenQuad();
 		}
 	}
+
 	PointLight.UnBind();
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

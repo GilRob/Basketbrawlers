@@ -11,11 +11,8 @@ uniform vec3 samples[16];
 uniform mat4 projection;
 uniform mat4 uProjBiasMatrixInverse;
 
-// parameters (you'd probably want to use them as uniforms to more easily tweak the effect)
 int kernelSize = 16;
 float radius = 0.100;
-float bias = 0.025;
-
 
 void main()
 {
@@ -54,7 +51,7 @@ void main()
 		offset.xy = offset.xy * 0.5 + 0.5; // transform to range 0.0 - 1.0
 		
 		// get sample depth
-		float sampleDepth = texture(uDepthMap, offset.xy/2).r;
+		float sampleDepth = texture(uDepthMap, offset.xy).r;
 		vec4 sampleDepthToPos = uProjBiasMatrixInverse * vec4(texcoord, sampleDepth, 1.0);
 		sampleDepthToPos /= sampleDepthToPos.w;
 

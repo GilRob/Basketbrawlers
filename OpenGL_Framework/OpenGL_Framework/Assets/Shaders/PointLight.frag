@@ -9,7 +9,7 @@ uniform sampler2D uPositionMap;
 uniform vec3 uLightPosition = vec3(0.0, 5.0, 0.0);
 uniform vec3 uLightColor = vec3(0.0, 1.0, 0.0);
 uniform float uLightSpecularExponent = 16.0;
-
+uniform float uRange = 6.0;
 
 in vec2 texcoord;
 
@@ -17,9 +17,16 @@ out vec4 outColor;
 
 void main()
 {
+	vec3 pos = texture(uPositionMap, texcoord).xyz;
+	vec3 lightVec = uLightPosition - pos;
+	float dist = length(lightVec);	
+	if(dist > uRange){
+		discard;
+	}
+
+
 	vec3 textureColor = texture(uSceneAlbedo, texcoord).rgb;
 	vec3 normal = texture(uNormalMap, texcoord).xyz * 2.0 - 1.0; //Unpack
-	vec3 pos = texture(uPositionMap, texcoord).xyz;
 	
 	outColor.rgb = vec3(0.0);
 	outColor.a = 0.5;
@@ -27,11 +34,10 @@ void main()
 	// Fix length after rasterizer interpolates
 	//vec3 normal = normalize(norm);
 
-	vec3 lightVec = uLightPosition - pos;
-	float dist = length(lightVec);
 	vec3 lightDir = lightVec / dist;
 
 	float NdotL = dot(normal, lightDir);
+
 
 	// If the normal is facing the light
 	if (NdotL > 0.0)
