@@ -391,7 +391,7 @@ Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
 	///total number of air/double jumps
 	airJumps = jumpsLeft = 1;
 	///amount of frames character is stunned after being launched
-	hitstun = 18;//10;
+	hitstun = 10;//10;
 	///amount of frames character is launched for when hit
 	hitframes = 12;
 
@@ -587,7 +587,7 @@ Transform Ninja::uAttack()
 		///Will be changed in the future
 
 		if (currentFrame == 6) {
-			float _kb = 8.0f + (6.55f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			float _kb = 12.0f + (6.55f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.1f, 2.1f, 0.1f), 
 			3.0f, _kb, 80, 4, 0,
 			glm::vec3(((-0.5f + (int)facingRight)*0.0f), 0.65f, 0.0f));

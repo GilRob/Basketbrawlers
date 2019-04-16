@@ -480,7 +480,7 @@ Transform Knight::sAttack()
 	if (interuptable == true && action != ACTION_SIDE_ATTACK) {
 		interuptable = false;
 		action = ACTION_SIDE_ATTACK;
-		activeFrames = 24;
+		activeFrames = 32;
 		currentFrame = 1;
 		aniTimer = 0;
 		index = 0;
