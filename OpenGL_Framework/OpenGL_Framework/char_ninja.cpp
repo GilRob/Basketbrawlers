@@ -391,7 +391,7 @@ Ninja::Ninja(const std::string& bodyName, const std::string& textureName) {
 	///total number of air/double jumps
 	airJumps = jumpsLeft = 1;
 	///amount of frames character is stunned after being launched
-	hitstun = 10;//10;
+	hitstun = 8;//10;
 	///amount of frames character is launched for when hit
 	hitframes = 12;
 

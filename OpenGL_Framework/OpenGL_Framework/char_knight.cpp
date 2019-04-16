@@ -391,7 +391,7 @@ Knight::Knight(const std::string& bodyName, const std::string& textureName) {
 	///total number of air/double jumps
 	airJumps = jumpsLeft = 1;
 	///amount of frames character is stunned after being launched
-	hitstun = 10;//10;
+	hitstun = 8;//10;
 	///amount of frames character is launched for when hit
 	hitframes = 6;
 
@@ -490,7 +490,7 @@ Transform Knight::sAttack()
 		///Will be changed in the future
 
 		if (currentFrame == 7) {
-			float _kb = 8.0f + (9.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
+			float _kb = 7.0f + (9.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			//float _kb = 6.0f + (9.1f * (comboMeter * 0.01f)); //baseKB + (KBgrowth * meter/100)
 			Hitbox *newAtk = new Hitbox(glm::vec3((-0.5f + (int)facingRight)*0.2f, 0.6f, 0.1f), 2.8f, _kb, 30, 7, 0, glm::vec3(0, 0, 0));
 			newAtk->spline = true;

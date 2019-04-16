@@ -1395,9 +1395,10 @@ void Game::updateEndScreen()
 	// update our clock so we have the delta time since the last update
 	updateTimer->tick();
 	float deltaTime = updateTimer->getElapsedTimeSeconds();
-	TotalGameTime += deltaTime;
+	static float tempTime;
+	tempTime += deltaTime;
 
-	if (TotalGameTime >= 1.5f)
+	if (tempTime >= 1.5f)
 		updateInputs();
 
 	XBoxController.SetVibration(0, 0, 0);//controller 0, power 0 on left and right (off)
@@ -1444,6 +1445,7 @@ void Game::updateEndScreen()
 		thirtyPlaying = false;
 		TotalGameTime = 0.0f;
 		deltaTime = 0;
+		tempTime = 0;
 		updateTimer = new Timer();
 	}
 }
